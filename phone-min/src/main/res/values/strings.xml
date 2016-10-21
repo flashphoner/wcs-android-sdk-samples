@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Phone-min</string>
+
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="wcs_url">ws://192.168.0.1:8080</string>
+    <string name="register_required">Register required</string>
+    <string name="prompt_callee">Callee</string>
+    <string name="default_callee_name">1001</string>
+    <string name="sip_port">5060</string>
+    <string name="prompt_sip_port">Sip Port</string>
+    <string name="prompt_sip_domain">Sip Domain</string>
+    <string name="prompt_sip_password">Sip Password</string>
+    <string name="prompt_sip_login">Sip Login</string>
+    <string name="sip_login">1000</string>
+    <string name="sip_password">1234</string>
+    <string name="sip_domain">192.168.0.1</string>
+    <string name="action_call">Call</string>
+    <string name="action_hangup">Hangup</string>
+    <string name="action_hold">Hold</string>
+    <string name="action_unhold">Unhold</string>
+
+</resources>

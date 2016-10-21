@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Conference</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="prompt_login">Login</string>
+    <string name="prompt_join_room">Room</string>
+    <string name="prompt_message">Message</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_join">Join</string>
+    <string name="action_leave">Leave</string>
+    <string name="action_publish">Publish</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_send">Send</string>
+    <string name="wcs_url">ws://192.168.0.1:8080</string>
+    <string name="mute_audio">Mute Audio</string>
+    <string name="mute_video">Mute Video</string>
+
+</resources>

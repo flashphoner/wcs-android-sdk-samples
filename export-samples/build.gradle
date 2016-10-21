@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+subprojects {
+    apply plugin: 'com.android.application'
+    repositories {
+        jcenter()
+        flatDir{
+            dirs '../libs'
+        }
+    }
+    dependencies {
+        compile 'com.flashphoner.fpwcsapi:fp_wcs_api-release@aar'
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

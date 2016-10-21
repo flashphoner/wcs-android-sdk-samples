@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Media Devices</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="prompt_microphone">Microphone</string>
+    <string name="prompt_camera">Camera</string>
+    <string name="prompt_camera_fps">FPS</string>
+    <string name="prompt_camera_width">Width</string>
+    <string name="prompt_camera_height">Height</string>
+    <string name="action_start">Start</string>
+    <string name="action_stop">Stop</string>
+    <string name="wcs_url">ws://192.168.0.1:8080/test/</string>
+    <string name="camera_fps">25</string>
+    <string name="camera_width">640</string>
+    <string name="camera_height">480</string>
+
+</resources>

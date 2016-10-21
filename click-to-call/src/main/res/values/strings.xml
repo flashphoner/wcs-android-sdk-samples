@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Click-to-call</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="wcs_url">ws://192.168.0.1:8080</string>
+    <string name="prompt_callee">Callee</string>
+    <string name="callee">1001</string>
+    <string name="action_call">Call</string>
+    <string name="action_hangup">Hangup</string>
+
+</resources>

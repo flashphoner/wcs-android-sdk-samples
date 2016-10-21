@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Player</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="prompt_play_stream">Play Stream</string>
+    <string name="action_start">Start</string>
+    <string name="action_stop">Stop</string>
+    <string name="wcs_url">ws://192.168.0.1:8080</string>
+    <string name="default_play_stream">test</string>
+</resources>

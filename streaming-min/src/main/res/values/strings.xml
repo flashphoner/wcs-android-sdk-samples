@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Streaming-min</string>
+
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="prompt_publish_stream">Publish Stream</string>
+    <string name="prompt_play_stream">Play Stream</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_publish">Publish</string>
+    <string name="action_unpublish">Unpublish</string>
+    <string name="action_play">Play</string>
+    <string name="action_stop">Stop</string>
+    <string name="default_publish_name">test</string>
+    <string name="default_play_name">test</string>
+    <string name="wcs_url">ws://192.168.0.1:8080</string>
+</resources>
