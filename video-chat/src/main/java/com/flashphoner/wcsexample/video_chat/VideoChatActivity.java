@@ -409,48 +409,42 @@ public class VideoChatActivity extends AppCompatActivity {
                     editor.putString("join_room", mJoinRoomView.getText().toString());
                     editor.apply();
                 } else {
+                    final Runnable action = new Runnable() {
+                        @Override
+                        public void run() {
+                            mJoinButton.setEnabled(true);
+                            mJoinButton.setText(R.string.action_join);
+                            mJoinButton.setTag(R.string.action_join);
+                            mPublishButton.setEnabled(false);
+                            mSendButton.setEnabled(false);
+
+                            /**
+                             * The player views assigned to the other participants are freed.
+                             */
+                            Iterator<Map.Entry<String, ParticipantView>> i = busyViews.entrySet().iterator();
+                            while (i.hasNext()) {
+                                Map.Entry<String, ParticipantView> e = i.next();
+                                e.getValue().login.setText("NONE");
+                                e.getValue().surfaceViewRenderer.release();
+                                i.remove();
+                                freeViews.add(e.getValue());
+                            }
+                        }
+                    };
                     /**
                      * The participant leaves the video chat room with method Room.leave().
                      */
                     room.leave(new RestAppCommunicator.Handler() {
                         @Override
                         public void onAccepted(Data data) {
-                            runOnUiThread(new Runnable() {
-                                              @Override
-                                              public void run() {
-                                                  mJoinButton.setEnabled(true);
-                                              }
-                                          }
-                            );
+                            runOnUiThread(action);
                         }
 
                         @Override
                         public void onRejected(Data data) {
-                            runOnUiThread(new Runnable() {
-                                              @Override
-                                              public void run() {
-                                                  mJoinButton.setEnabled(true);
-                                              }
-                                          }
-                            );
+                            runOnUiThread(action);
                         }
                     });
-                    mJoinButton.setText(R.string.action_join);
-                    mJoinButton.setTag(R.string.action_join);
-                    mPublishButton.setEnabled(false);
-                    mSendButton.setEnabled(false);
-
-                    /**
-                     * The player views assigned to the other participants are freed.
-                     */
-                    Iterator<Map.Entry<String, ParticipantView>> i = busyViews.entrySet().iterator();
-                    while (i.hasNext()) {
-                        Map.Entry<String, ParticipantView> e = i.next();
-                        e.getValue().login.setText("NONE");
-                        e.getValue().surfaceViewRenderer.release();
-                        i.remove();
-                        freeViews.add(e.getValue());
-                    }
                 }
                 View currentFocus = getCurrentFocus();
                 if (currentFocus != null) {
