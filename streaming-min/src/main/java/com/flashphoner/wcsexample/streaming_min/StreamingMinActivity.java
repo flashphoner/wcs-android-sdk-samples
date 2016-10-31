@@ -54,6 +54,7 @@ public class StreamingMinActivity extends AppCompatActivity {
 
     private PercentFrameLayout localRenderLayout;
     private PercentFrameLayout remoteRenderLayout;
+    private SessionOptions sessionOptions;
 
 
     @Override
@@ -85,7 +86,7 @@ public class StreamingMinActivity extends AppCompatActivity {
                      * SurfaceViewRenderer to be used to display video from the camera is set with method SessionOptions.setLocalRenderer().
                      * SurfaceViewRenderer to be used to display video of the played stream is set with method SessionOptions.setRemoteRenderer().
                      */
-                    SessionOptions sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
+                    sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
 
@@ -337,12 +338,12 @@ public class StreamingMinActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         try {
-            localRender.init(EglBase.create().getEglBaseContext(), null);
+            localRender.init(Flashphoner.eglBase.getEglBaseContext(), null);
         } catch (IllegalStateException e) {
             //ignore
         }
         try {
-            remoteRender.init(EglBase.create().getEglBaseContext(), null);
+            remoteRender.init(Flashphoner.eglBase.getEglBaseContext(), null);
         } catch (IllegalStateException e) {
             //ignore
         }

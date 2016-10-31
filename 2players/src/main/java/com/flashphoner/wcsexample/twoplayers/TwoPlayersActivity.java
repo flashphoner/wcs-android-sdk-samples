@@ -23,7 +23,6 @@ import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 
-import org.webrtc.EglBase;
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
 
