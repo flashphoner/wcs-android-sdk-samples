@@ -1,8 +1,13 @@
 package com.flashphoner.wcsexample.streamer;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,9 +21,9 @@ import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
-import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
 import com.flashphoner.fpwcsapi.session.Session;
+import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
@@ -38,6 +43,8 @@ import java.net.URISyntaxException;
 public class StreamerActivity extends AppCompatActivity {
 
     private static String TAG = StreamerActivity.class.getName();
+
+    private static final int PUBLISH_REQUEST_CODE = 100;
 
     // UI references.
     private EditText mWcsUrlView;
@@ -83,7 +90,7 @@ public class StreamerActivity extends AppCompatActivity {
                     final String streamName;
                     try {
                         URI u = new URI(mWcsUrlView.getText().toString());
-                        url = u.getScheme()+"://"+u.getHost()+":"+u.getPort();
+                        url = u.getScheme() + "://" + u.getHost() + ":" + u.getPort();
                         streamName = u.getPath().replaceAll("/", "");
                     } catch (URISyntaxException e) {
                         mStatusView.setText("Wrong uri");
@@ -188,10 +195,9 @@ public class StreamerActivity extends AppCompatActivity {
                                         }
                                     });
 
-                                    /**
-                                     * Method Stream.publish() is called to publish stream.
-                                     */
-                                    publishStream.publish();
+                                    ActivityCompat.requestPermissions(StreamerActivity.this,
+                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                                            PUBLISH_REQUEST_CODE);
                                 }
                             });
                         }
@@ -259,7 +265,26 @@ public class StreamerActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PUBLISH_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED ||
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    /**
+                     * Method Stream.publish() is called to publish stream.
+                     */
+                    publishStream.publish();
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+            }
+        }
     }
 }
 
