@@ -1,11 +1,16 @@
 package com.flashphoner.wcsexample.phone_min_video;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -37,6 +42,11 @@ import org.webrtc.SurfaceViewRenderer;
  */
 public class PhoneMinVideoActivity extends AppCompatActivity {
 
+    private static String TAG = PhoneMinVideoActivity.class.getName();
+
+    private static final int CALL_REQUEST_CODE = 100;
+    private static final int INCOMING_CALL_REQUEST_CODE = 101;
+
     // UI references.
     private EditText mWcsUrlView;
     private EditText mSipLoginView;
@@ -62,6 +72,12 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
      * SIP call
      */
     private Call call;
+
+    /**
+     * Processing the call status and displaying UI changes
+     */
+    private CallStatusEvent callStatusEvent;
+
 
     /**
      * UI alert for incoming call
@@ -107,10 +123,7 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
         mSipRegisterRequiredView = (CheckBox) findViewById(R.id.register_required);
         mSipRegisterRequiredView.setChecked(sharedPref.getBoolean("sip_register_required", true));
 
-        /**
-         * Processing the call status and displaying UI changes
-         */
-        final CallStatusEvent callStatusEvent = new CallStatusEvent() {
+        callStatusEvent = new CallStatusEvent() {
             /**
              * WCS received SIP 100 TRYING
              * @param call
@@ -344,13 +357,9 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             PhoneMinVideoActivity.this.call = call;
-                                            mCallButton.setText(R.string.action_hangup);
-                                            mCallButton.setTag(R.string.action_hangup);
-                                            mCallButton.setEnabled(true);
-                                            mCallStatus.setText(call.getStatus());
-                                            call.getCallOptions().getConstraints().updateVideo(true);
-                                            call.answer();
-                                            incomingCallAlert = null;
+                                            ActivityCompat.requestPermissions(PhoneMinVideoActivity.this,
+                                                    new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                                                    INCOMING_CALL_REQUEST_CODE);
                                         }
                                     });
                                     builder.setNegativeButton("Hangup", new DialogInterface.OnClickListener() {
@@ -413,18 +422,10 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
                     if ("".equals(mCalleeView.getText().toString())) {
                         return;
                     }
-                    mCallButton.setEnabled(false);
-                    /**
-                     * Get call options from the callee text field
-                     */
-                    CallOptions callOptions = new CallOptions(mCalleeView.getText().toString());
-                    callOptions.getConstraints().updateVideo(true);
-                    call = session.createCall(callOptions);
-                    call.on(callStatusEvent);
-                    /**
-                     * Make a new outgoing call
-                     */
-                    call.call();
+                    ActivityCompat.requestPermissions(PhoneMinVideoActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                            CALL_REQUEST_CODE);
+
 
                     SharedPreferences sharedPref = PhoneMinVideoActivity.this.getPreferences(Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
@@ -520,6 +521,53 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case CALL_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED ||
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED ) {
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    mCallButton.setEnabled(false);
+                    /**
+                     * Get call options from the callee text field
+                     */
+                    CallOptions callOptions = new CallOptions(mCalleeView.getText().toString());
+                    callOptions.getConstraints().updateVideo(true);
+                    call = session.createCall(callOptions);
+                    call.on(callStatusEvent);
+                    /**
+                     * Make a new outgoing call
+                     */
+                    call.call();
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+                break;
+            }
+            case INCOMING_CALL_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED ||
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED ) {
+                    call.hangup();
+                    incomingCallAlert = null;
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    mCallButton.setText(R.string.action_hangup);
+                    mCallButton.setTag(R.string.action_hangup);
+                    mCallButton.setEnabled(true);
+                    mCallStatus.setText(call.getStatus());
+                    call.getCallOptions().getConstraints().updateVideo(true);
+                    call.answer();
+                    incomingCallAlert = null;
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+            }
+        }
     }
 }
 

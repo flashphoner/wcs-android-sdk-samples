@@ -275,6 +275,8 @@ public class StreamerActivity extends AppCompatActivity {
                 if (grantResults.length == 0 ||
                         grantResults[0] != PackageManager.PERMISSION_GRANTED ||
                         grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    mStartButton.setEnabled(false);
+                    session.disconnect();
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
                     /**

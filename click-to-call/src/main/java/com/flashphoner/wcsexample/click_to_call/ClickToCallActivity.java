@@ -1,9 +1,14 @@
 package com.flashphoner.wcsexample.click_to_call;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -28,6 +33,9 @@ import com.flashphoner.fpwcsapi.session.SessionOptions;
 public class ClickToCallActivity extends AppCompatActivity {
 
     private static String TAG = ClickToCallActivity.class.getName();
+
+    private static final int CALL_REQUEST_CODE = 100;
+
 
     // UI references.
     private EditText mWcsUrlView;
@@ -95,8 +103,8 @@ public class ClickToCallActivity extends AppCompatActivity {
                                     /**
                                      * Pass 'callee' to the callOptions and create a new call object
                                      */
-                                    CallOptions streamOptions = new CallOptions(mCalleeView.getText().toString());
-                                    call = session.createCall(streamOptions);
+                                    CallOptions callOptions = new CallOptions(mCalleeView.getText().toString());
+                                    call = session.createCall(callOptions);
                                     call.on(new CallStatusEvent() {
                                         /**
                                          * WCS received 100 TRYING from SIP
@@ -205,10 +213,11 @@ public class ClickToCallActivity extends AppCompatActivity {
                                             });
                                         }
                                     });
-                                    /**
-                                     * Make the outgoing call
-                                     */
-                                    call.call();
+
+                                    ActivityCompat.requestPermissions(ClickToCallActivity.this,
+                                            new String[]{Manifest.permission.RECORD_AUDIO},
+                                            CALL_REQUEST_CODE);
+
                                     SharedPreferences sharedPref = ClickToCallActivity.this.getPreferences(Context.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = sharedPref.edit();
                                     editor.putString("callee", mCalleeView.getText().toString());
@@ -268,6 +277,27 @@ public class ClickToCallActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case CALL_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    mCallButton.setEnabled(false);
+                    session.disconnect();
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    /**
+                     * Make the outgoing call
+                     */
+                    call.call();
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+            }
+        }
     }
 }
 

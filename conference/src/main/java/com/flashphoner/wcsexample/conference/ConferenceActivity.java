@@ -1,10 +1,15 @@
 package com.flashphoner.wcsexample.conference;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -46,6 +51,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Can be used to participate in video conference for three participants on Web Call Server.
  */
 public class ConferenceActivity extends AppCompatActivity {
+
+    private static String TAG = ConferenceActivity.class.getName();
+
+    private static final int PUBLISH_REQUEST_CODE = 100;
+
 
     // UI references.
     private EditText mWcsUrlView;
@@ -465,48 +475,12 @@ public class ConferenceActivity extends AppCompatActivity {
         mPublishButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPublishButton.setEnabled(false);
                 if (mPublishButton.getTag() == null || Integer.valueOf(R.string.action_publish).equals(mPublishButton.getTag())) {
-                    /**
-                     * Stream is created and published with method Room.publish().
-                     * SurfaceViewRenderer to be used to display video from the camera is passed to the method.
-                     */
-                    stream = room.publish(localRenderer);
-
-                    /**
-                     * Callback function for stream status change is added to make appropriate changes in controls of the interface when stream is being published.
-                     */
-                    stream.on(new StreamStatusEvent() {
-                        @Override
-                        public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (StreamStatus.PUBLISHING.equals(streamStatus)) {
-                                        mPublishButton.setText(R.string.action_stop);
-                                        mPublishButton.setTag(R.string.action_stop);
-                                        mMuteAudio.setEnabled(true);
-                                        mMuteVideo.setEnabled(true);
-                                    } else {
-                                        mPublishButton.setText(R.string.action_publish);
-                                        mPublishButton.setTag(R.string.action_publish);
-                                        mMuteAudio.setEnabled(false);
-                                        mMuteAudio.setChecked(false);
-                                        mMuteVideo.setEnabled(false);
-                                        mMuteVideo.setChecked(false);
-                                        ConferenceActivity.this.stream = null;
-                                    }
-                                    if (mJoinButton.getTag() == null || Integer.valueOf(R.string.action_join).equals(mJoinButton.getTag())) {
-                                        mPublishButton.setEnabled(false);
-                                    } else {
-                                        mPublishButton.setEnabled(true);
-                                    }
-                                    mPublishStatus.setText(streamStatus.toString());
-                                }
-                            });
-                        }
-                    });
+                    ActivityCompat.requestPermissions(ConferenceActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                            PUBLISH_REQUEST_CODE);
                 } else {
+                    mPublishButton.setEnabled(false);
                     /**
                      * Stream is unpublished with method Room.unpublish().
                      */
@@ -616,5 +590,63 @@ public class ConferenceActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PUBLISH_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED ||
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    mPublishButton.setEnabled(false);
+                    /**
+                     * Stream is created and published with method Room.publish().
+                     * SurfaceViewRenderer to be used to display video from the camera is passed to the method.
+                     */
+                    stream = room.publish(localRenderer);
+
+                    /**
+                     * Callback function for stream status change is added to make appropriate changes in controls of the interface when stream is being published.
+                     */
+                    stream.on(new StreamStatusEvent() {
+                        @Override
+                        public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (StreamStatus.PUBLISHING.equals(streamStatus)) {
+                                        mPublishButton.setText(R.string.action_stop);
+                                        mPublishButton.setTag(R.string.action_stop);
+                                        mMuteAudio.setEnabled(true);
+                                        mMuteVideo.setEnabled(true);
+                                    } else {
+                                        mPublishButton.setText(R.string.action_publish);
+                                        mPublishButton.setTag(R.string.action_publish);
+                                        mMuteAudio.setEnabled(false);
+                                        mMuteAudio.setChecked(false);
+                                        mMuteVideo.setEnabled(false);
+                                        mMuteVideo.setChecked(false);
+                                        ConferenceActivity.this.stream = null;
+                                    }
+                                    if (mJoinButton.getTag() == null || Integer.valueOf(R.string.action_join).equals(mJoinButton.getTag())) {
+                                        mPublishButton.setEnabled(false);
+                                    } else {
+                                        mPublishButton.setEnabled(true);
+                                    }
+                                    mPublishStatus.setText(streamStatus.toString());
+                                }
+                            });
+                        }
+                    });
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+            }
+        }
+    }
+
 }
 

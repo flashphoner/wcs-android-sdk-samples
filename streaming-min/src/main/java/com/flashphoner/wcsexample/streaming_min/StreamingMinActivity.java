@@ -1,9 +1,14 @@
 package com.flashphoner.wcsexample.streaming_min;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -32,6 +37,11 @@ import org.webrtc.SurfaceViewRenderer;
  * Demonstrates how to publish a video stream while playing another one.
  */
 public class StreamingMinActivity extends AppCompatActivity {
+
+    private static String TAG = StreamingMinActivity.class.getName();
+
+    private static final int PUBLISH_REQUEST_CODE = 100;
+
 
     // UI references.
     private EditText mWcsUrlView;
@@ -183,52 +193,17 @@ public class StreamingMinActivity extends AppCompatActivity {
         mPublishButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPublishButton.setEnabled(false);
                 if (mPublishButton.getTag() == null || Integer.valueOf(R.string.action_publish).equals(mPublishButton.getTag())) {
-                    /**
-                     * The options for the stream to publish are set.
-                     * The stream name is passed when StreamOptions object is created.
-                     */
-                    StreamOptions streamOptions = new StreamOptions(mPublishStreamView.getText().toString());
-
-                    /**
-                     * Stream is created with method Session.createStream().
-                     */
-                    publishStream = session.createStream(streamOptions);
-
-                    /**
-                     * Callback function for stream status change is added to make appropriate changes in controls of the interface when publishing.
-                     */
-                    publishStream.on(new StreamStatusEvent() {
-                        @Override
-                        public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (StreamStatus.PUBLISHING.equals(streamStatus)) {
-                                        mPublishButton.setText(R.string.action_unpublish);
-                                        mPublishButton.setTag(R.string.action_unpublish);
-                                    } else {
-                                        mPublishButton.setText(R.string.action_publish);
-                                        mPublishButton.setTag(R.string.action_publish);
-                                    }
-                                    mPublishButton.setEnabled(true);
-                                    mPublishStatus.setText(streamStatus.toString());
-                                }
-                            });
-                        }
-                    });
-
-                    /**
-                     * Method Stream.publish() is called to publish stream.
-                     */
-                    publishStream.publish();
+                    ActivityCompat.requestPermissions(StreamingMinActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                            PUBLISH_REQUEST_CODE);
 
                     SharedPreferences sharedPref = StreamingMinActivity.this.getPreferences(Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("publish_stream", mPublishStreamView.getText().toString());
                     editor.apply();
                 } else {
+                    mPublishButton.setEnabled(false);
                     /**
                      * Method Stream.stop() is called to unpublish the stream.
                      */
@@ -358,5 +333,60 @@ public class StreamingMinActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PUBLISH_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED ||
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    mPublishButton.setEnabled(false);
+                    /**
+                     * The options for the stream to publish are set.
+                     * The stream name is passed when StreamOptions object is created.
+                     */
+                    StreamOptions streamOptions = new StreamOptions(mPublishStreamView.getText().toString());
+
+                    /**
+                     * Stream is created with method Session.createStream().
+                     */
+                    publishStream = session.createStream(streamOptions);
+
+                    /**
+                     * Callback function for stream status change is added to make appropriate changes in controls of the interface when publishing.
+                     */
+                    publishStream.on(new StreamStatusEvent() {
+                        @Override
+                        public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (StreamStatus.PUBLISHING.equals(streamStatus)) {
+                                        mPublishButton.setText(R.string.action_unpublish);
+                                        mPublishButton.setTag(R.string.action_unpublish);
+                                    } else {
+                                        mPublishButton.setText(R.string.action_publish);
+                                        mPublishButton.setTag(R.string.action_publish);
+                                    }
+                                    mPublishButton.setEnabled(true);
+                                    mPublishStatus.setText(streamStatus.toString());
+                                }
+                            });
+                        }
+                    });
+
+                    /**
+                     * Method Stream.publish() is called to publish stream.
+                     */
+                    publishStream.publish();
+
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+            }
+        }
+    }
 }
 

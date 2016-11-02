@@ -1,11 +1,16 @@
 package com.flashphoner.wcsexample.phone_min;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -30,6 +35,11 @@ import com.flashphoner.fpwcsapi.session.SessionOptions;
  */
 public class PhoneMinActivity extends AppCompatActivity {
 
+    private static String TAG = PhoneMinActivity.class.getName();
+
+    private static final int CALL_REQUEST_CODE = 100;
+    private static final int INCOMING_CALL_REQUEST_CODE = 101;
+
     // UI references.
     private EditText mWcsUrlView;
     private EditText mSipLoginView;
@@ -53,6 +63,11 @@ public class PhoneMinActivity extends AppCompatActivity {
      * SIP call
      */
     private Call call;
+
+    /**
+     * Processing the call status and displaying UI changes
+     */
+    private CallStatusEvent callStatusEvent;
 
     /**
      * UI alert for incoming call
@@ -87,10 +102,7 @@ public class PhoneMinActivity extends AppCompatActivity {
         mSipRegisterRequiredView = (CheckBox) findViewById(R.id.register_required);
         mSipRegisterRequiredView.setChecked(sharedPref.getBoolean("sip_register_required", true));
 
-        /**
-         * Processing the call status and displaying UI changes
-         */
-        final CallStatusEvent callStatusEvent = new CallStatusEvent() {
+        callStatusEvent = new CallStatusEvent() {
             /**
              * WCS received SIP 100 TRYING
              * @param call
@@ -213,7 +225,7 @@ public class PhoneMinActivity extends AppCompatActivity {
         mConnectButton = (Button) findViewById(R.id.connect_button);
         /**
          * Connect button pressed
-          */
+         */
         mConnectButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -311,12 +323,9 @@ public class PhoneMinActivity extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             PhoneMinActivity.this.call = call;
-                                            mCallButton.setText(R.string.action_hangup);
-                                            mCallButton.setTag(R.string.action_hangup);
-                                            mCallButton.setEnabled(true);
-                                            mCallStatus.setText(call.getStatus());
-                                            call.answer();
-                                            incomingCallAlert = null;
+                                            ActivityCompat.requestPermissions(PhoneMinActivity.this,
+                                                    new String[]{Manifest.permission.RECORD_AUDIO},
+                                                    INCOMING_CALL_REQUEST_CODE);
                                         }
                                     });
                                     builder.setNegativeButton("Hangup", new DialogInterface.OnClickListener() {
@@ -376,20 +385,12 @@ public class PhoneMinActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mCallButton.getTag() == null || Integer.valueOf(R.string.action_call).equals(mCallButton.getTag())) {
-                    if ("".equals(mCalleeView.getText().toString())){
+                    if ("".equals(mCalleeView.getText().toString())) {
                         return;
                     }
-                    mCallButton.setEnabled(false);
-                    /**
-                     * Get call options from the callee text field
-                     */
-                    CallOptions callOptions = new CallOptions(mCalleeView.getText().toString());
-                    call = session.createCall(callOptions);
-                    call.on(callStatusEvent);
-                    /**
-                     * Make a new outgoing call
-                     */
-                    call.call();
+                    ActivityCompat.requestPermissions(PhoneMinActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO},
+                            CALL_REQUEST_CODE);
 
                     SharedPreferences sharedPref = PhoneMinActivity.this.getPreferences(Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
@@ -429,6 +430,50 @@ public class PhoneMinActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case CALL_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    mCallButton.setEnabled(false);
+                    /**
+                     * Get call options from the callee text field
+                     */
+                    CallOptions callOptions = new CallOptions(mCalleeView.getText().toString());
+                    call = session.createCall(callOptions);
+                    call.on(callStatusEvent);
+                    /**
+                     * Make the outgoing call
+                     */
+                    call.call();
+                    Log.i(TAG, "Permission has been granted by user");
+                    break;
+                }
+            }
+            case INCOMING_CALL_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    call.hangup();
+                    incomingCallAlert = null;
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    mCallButton.setText(R.string.action_hangup);
+                    mCallButton.setTag(R.string.action_hangup);
+                    mCallButton.setEnabled(true);
+                    mCallStatus.setText(call.getStatus());
+                    call.answer();
+                    incomingCallAlert = null;
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+            }
+
+        }
     }
 }
 

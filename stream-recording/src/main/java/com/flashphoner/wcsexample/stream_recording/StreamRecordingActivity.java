@@ -1,9 +1,13 @@
 package com.flashphoner.wcsexample.stream_recording;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.util.Linkify;
 import android.util.Log;
@@ -41,6 +45,8 @@ import java.net.URISyntaxException;
 public class StreamRecordingActivity extends AppCompatActivity {
 
     private static String TAG = StreamRecordingActivity.class.getName();
+
+    private static final int PUBLISH_REQUEST_CODE = 100;
 
     // UI references.
     private EditText mWcsUrlView;
@@ -167,10 +173,9 @@ public class StreamRecordingActivity extends AppCompatActivity {
                                         }
                                     });
 
-                                    /**
-                                     * Method Stream.publish() is called to publish stream.
-                                     */
-                                    publishStream.publish();
+                                    ActivityCompat.requestPermissions(StreamRecordingActivity.this,
+                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                                            PUBLISH_REQUEST_CODE);
                                 }
                             });
                         }
@@ -255,8 +260,29 @@ public class StreamRecordingActivity extends AppCompatActivity {
 
         mRecordedLink = (TextView) findViewById(R.id.recorded_link);
         mRecordedVideoView = (VideoView) findViewById(R.id.recorded_video_view);
-
-
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PUBLISH_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED ||
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    mStartButton.setEnabled(false);
+                    session.disconnect();
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    /**
+                     * Method Stream.publish() is called to publish stream.
+                     */
+                    publishStream.publish();
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+            }
+        }
+    }
+
 }
 
