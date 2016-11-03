@@ -569,5 +569,13 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (session != null) {
+            session.disconnect();
+        }
+    }
 }
 

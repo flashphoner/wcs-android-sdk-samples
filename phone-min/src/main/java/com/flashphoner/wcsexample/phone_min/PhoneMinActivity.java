@@ -475,5 +475,13 @@ public class PhoneMinActivity extends AppCompatActivity {
 
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (session != null) {
+            session.disconnect();
+        }
+    }
 }
 

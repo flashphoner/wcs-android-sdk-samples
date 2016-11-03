@@ -634,5 +634,13 @@ public class VideoChatActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (roomManager != null) {
+            roomManager.disconnect();
+        }
+    }
+
 }
 

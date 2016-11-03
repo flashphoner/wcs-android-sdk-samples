@@ -648,5 +648,13 @@ public class ConferenceActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (roomManager != null) {
+            roomManager.disconnect();
+        }
+    }
+
 }
 

@@ -334,5 +334,13 @@ public class TwoPlayersActivity extends AppCompatActivity {
         remote1Render.setMirror(false);
         remote1Render.requestLayout();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (session != null) {
+            session.disconnect();
+        }
+    }
 }
 

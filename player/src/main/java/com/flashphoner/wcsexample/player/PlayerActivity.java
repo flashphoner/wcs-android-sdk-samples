@@ -204,5 +204,13 @@ public class PlayerActivity extends AppCompatActivity {
         remoteRender.setMirror(false);
         remoteRender.requestLayout();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (session != null) {
+            session.disconnect();
+        }
+    }
 }
 

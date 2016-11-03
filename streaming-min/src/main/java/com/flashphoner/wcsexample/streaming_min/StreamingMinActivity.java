@@ -332,6 +332,13 @@ public class StreamingMinActivity extends AppCompatActivity {
         remoteRender.release();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (session != null) {
+            session.disconnect();
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
