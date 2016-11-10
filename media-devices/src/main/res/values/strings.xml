@@ -14,5 +14,7 @@
     <string name="camera_fps">25</string>
     <string name="camera_width">640</string>
     <string name="camera_height">480</string>
+    <string name="receive_audio">Receive Audio</string>
+    <string name="receive_video">Receive Video</string>
 
 </resources>

@@ -13,28 +13,29 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.flashphoner.fpwcsapi.FPSurfaceViewRenderer;
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
 import com.flashphoner.fpwcsapi.constraints.AudioConstraints;
-import com.flashphoner.fpwcsapi.session.SessionEvent;
+import com.flashphoner.fpwcsapi.constraints.Constraints;
+import com.flashphoner.fpwcsapi.constraints.VideoConstraints;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
 import com.flashphoner.fpwcsapi.session.Session;
+import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
-import com.flashphoner.fpwcsapi.constraints.Constraints;
 import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
-import com.flashphoner.fpwcsapi.constraints.VideoConstraints;
 import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.webrtc.RendererCommon;
-import org.webrtc.SurfaceViewRenderer;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,6 +58,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mCameraFPS;
     private EditText mWidth;
     private EditText mHeight;
+    private CheckBox mReceiveAudio;
+    private CheckBox mReceiveVideo;
     private Button mStartButton;
 
     private Session session;
@@ -64,8 +67,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private Stream publishStream;
     private Stream playStream;
 
-    private SurfaceViewRenderer localRender;
-    private SurfaceViewRenderer remoteRender;
+    private FPSurfaceViewRenderer localRender;
+    private TextView mLocalResolutionView;
+    private FPSurfaceViewRenderer remoteRender;
+    private TextView mRemoteResolutionView;
 
     private PercentFrameLayout localRenderLayout;
     private PercentFrameLayout remoteRenderLayout;
@@ -99,6 +104,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mCameraFPS = (EditText) findViewById(R.id.camera_fps);
         mWidth = (EditText) findViewById(R.id.camera_width);
         mHeight = (EditText) findViewById(R.id.camera_height);
+        mReceiveAudio = (CheckBox) findViewById(R.id.receive_audio);
+        mReceiveVideo = (CheckBox) findViewById(R.id.receive_video);
         mStartButton = (Button) findViewById(R.id.connect_button);
 
         /**
@@ -112,190 +119,261 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     final String streamName;
                     try {
                         URI u = new URI(mWcsUrlView.getText().toString());
-                        url = u.getScheme()+"://"+u.getHost()+":"+u.getPort();
+                        url = u.getScheme() + "://" + u.getHost() + ":" + u.getPort();
                         streamName = u.getPath().replaceAll("/", "");
                     } catch (URISyntaxException e) {
                         mStatusView.setText("Wrong uri");
                         return;
                     }
 
-                    /**
-                     * The options for connection session are set.
-                     * WCS server URL is passed when SessionOptions object is created.
-                     * SurfaceViewRenderer to be used to display video from the camera is set with method SessionOptions.setLocalRenderer().
-                     * SurfaceViewRenderer to be used to display preview stream video received from the server is set with method SessionOptions.setRemoteRenderer().
-                     */
-                    SessionOptions sessionOptions = new SessionOptions(url);
-                    sessionOptions.setLocalRenderer(localRender);
-                    sessionOptions.setRemoteRenderer(remoteRender);
+                    try {
+                        localRender.init(null, new RendererCommon.RendererEvents() {
+                            @Override
+                            public void onFirstFrameRendered() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mLocalResolutionView.setText(localRender.getFrameHeight() + "x" + localRender.getFrameWidth());
+                                    }
+                                });
 
-                    /**
-                     * Session for connection to WCS server is created with method createSession().
-                     */
-                    session = Flashphoner.createSession(sessionOptions);
+                            }
 
-                    /**
-                     * Callback functions for session status events are added to make appropriate changes in controls of the interface and publish stream when connection is established.
-                     */
-                    session.on(new SessionEvent() {
-                        @Override
-                        public void onAppData(Data data) {
+                            @Override
+                            public void onFrameResolutionChanged(int i, int i1, int i2) {
 
-                        }
+                            }
+                        });
+                    } catch (IllegalStateException e) {
+                        //ignore
+                    }
+                    try {
+                        remoteRender.init(null, new RendererCommon.RendererEvents() {
+                            @Override
+                            public void onFirstFrameRendered() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mRemoteResolutionView.setText(remoteRender.getFrameHeight() + "x" + remoteRender.getFrameWidth());
+                                    }
+                                });
+                            }
 
-                        @Override
-                        public void onConnected(final Connection connection) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mStartButton.setText(R.string.action_stop);
-                                    mStartButton.setTag(R.string.action_stop);
-                                    mStartButton.setEnabled(true);
-                                    mStatusView.setText(connection.getStatus());
+                            @Override
+                            public void onFrameResolutionChanged(int i, int i1, int i2) {
 
-                                    /**
-                                     * The options for the stream to publish are set.
-                                     * The stream name is passed when StreamOptions object is created.
-                                     * VideoConstraints object is used to set the source camera, FPS and resolution.
-                                     * Stream constraints are set with method StreamOptions.setConstraints().
-                                     */
-                                    StreamOptions streamOptions = new StreamOptions(streamName);
-                                    VideoConstraints videoConstraints = new VideoConstraints();
-                                    videoConstraints.setCameraId(((MediaDevice)mCameraSpinner.getSpinner().getSelectedItem()).getId());
-                                    videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
-                                    videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
-                                            Integer.parseInt(mHeight.getText().toString()));
-                                    streamOptions.setConstraints(new Constraints(new AudioConstraints(), videoConstraints));
+                            }
+                        });
+                    }catch(IllegalStateException e){
+                        //ignore
+                    }
 
-                                    /**
-                                     * Stream is created with method Session.createStream().
-                                     */
-                                    publishStream = session.createStream(streamOptions);
 
-                                    /**
-                                     * Callback function for stream status change is added to play the stream when it is published.
-                                     */
-                                    publishStream.on(new StreamStatusEvent() {
-                                        @Override
-                                        public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    if (StreamStatus.PUBLISHING.equals(streamStatus)) {
-                                                        /**
-                                                         * The options for the stream to play are set.
-                                                         * The stream name is passed when StreamOptions object is created.
-                                                         */
-                                                        StreamOptions streamOptions = new StreamOptions(streamName);
+                /**
+                 * The options for connection session are set.
+                 * WCS server URL is passed when SessionOptions object is created.
+                 * SurfaceViewRenderer to be used to display video from the camera is set with method SessionOptions.setLocalRenderer().
+                 * SurfaceViewRenderer to be used to display preview stream video received from the server is set with method SessionOptions.setRemoteRenderer().
+                 */
+                SessionOptions sessionOptions = new SessionOptions(url);
+                sessionOptions.setLocalRenderer(localRender);
+                sessionOptions.setRemoteRenderer(remoteRender);
 
-                                                        /**
-                                                         * Stream is created with method Session.createStream().
-                                                         */
-                                                        playStream = session.createStream(streamOptions);
+                /**
+                 * Session for connection to WCS server is created with method createSession().
+                 */
+                session = Flashphoner.createSession(sessionOptions);
 
-                                                        /**
-                                                         * Callback function for stream status change is added to display the status.
-                                                         */
-                                                        playStream.on(new StreamStatusEvent() {
-                                                            @Override
-                                                            public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
-                                                                runOnUiThread(new Runnable() {
-                                                                    @Override
-                                                                    public void run() {
-                                                                        if (!StreamStatus.PLAYING.equals(streamStatus)) {
-                                                                            Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
-                                                                        }
-                                                                        mStatusView.setText(streamStatus.toString());
+                /**
+                 * Callback functions for session status events are added to make appropriate changes in controls of the interface and publish stream when connection is established.
+                 */
+                session.on(new SessionEvent() {
+                    @Override
+                    public void onAppData(Data data) {
+
+                    }
+
+                    @Override
+                    public void onConnected(final Connection connection) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mStartButton.setText(R.string.action_stop);
+                                mStartButton.setTag(R.string.action_stop);
+                                mStartButton.setEnabled(true);
+                                mStatusView.setText(connection.getStatus());
+
+                                /**
+                                 * The options for the stream to publish are set.
+                                 * The stream name is passed when StreamOptions object is created.
+                                 * VideoConstraints object is used to set the source camera, FPS and resolution.
+                                 * Stream constraints are set with method StreamOptions.setConstraints().
+                                 */
+                                StreamOptions streamOptions = new StreamOptions(streamName);
+                                VideoConstraints videoConstraints = new VideoConstraints();
+                                videoConstraints.setCameraId(((MediaDevice) mCameraSpinner.getSpinner().getSelectedItem()).getId());
+                                videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
+                                videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
+                                        Integer.parseInt(mHeight.getText().toString()));
+                                streamOptions.setConstraints(new Constraints(new AudioConstraints(), videoConstraints));
+
+                                /**
+                                 * Stream is created with method Session.createStream().
+                                 */
+                                publishStream = session.createStream(streamOptions);
+
+                                /**
+                                 * Callback function for stream status change is added to play the stream when it is published.
+                                 */
+                                publishStream.on(new StreamStatusEvent() {
+                                    @Override
+                                    public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (StreamStatus.PUBLISHING.equals(streamStatus)) {
+                                                    /**
+                                                     * The options for the stream to play are set.
+                                                     * The stream name is passed when StreamOptions object is created.
+                                                     */
+                                                    StreamOptions streamOptions = new StreamOptions(streamName);
+
+                                                    streamOptions.setConstraints(new Constraints(mReceiveAudio.isChecked(), mReceiveVideo.isChecked()));
+                                                    /**
+                                                     * Stream is created with method Session.createStream().
+                                                     */
+                                                    playStream = session.createStream(streamOptions);
+
+                                                    /**
+                                                     * Callback function for stream status change is added to display the status.
+                                                     */
+                                                    playStream.on(new StreamStatusEvent() {
+                                                        @Override
+                                                        public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
+                                                            runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    if (!StreamStatus.PLAYING.equals(streamStatus)) {
+                                                                        Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
                                                                     }
-                                                                });
-                                                            }
-                                                        });
+                                                                    mStatusView.setText(streamStatus.toString());
+                                                                }
+                                                            });
+                                                        }
+                                                    });
 
-                                                        /**
-                                                         * Method Stream.play() is called to start playback of the stream.
-                                                         */
-                                                        playStream.play();
-                                                    } else {
-                                                        Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
-                                                    }
-                                                    mStatusView.setText(streamStatus.toString());
+                                                    /**
+                                                     * Method Stream.play() is called to start playback of the stream.
+                                                     */
+                                                    playStream.play();
+                                                } else {
+                                                    Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                 }
-                                            });
-                                        }
-                                    });
+                                                mStatusView.setText(streamStatus.toString());
+                                            }
+                                        });
+                                    }
+                                });
 
-                                    ActivityCompat.requestPermissions(MediaDevicesActivity.this,
-                                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
-                                            PUBLISH_REQUEST_CODE);
-                                }
-                            });
-                        }
+                                ActivityCompat.requestPermissions(MediaDevicesActivity.this,
+                                        new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                                        PUBLISH_REQUEST_CODE);
+                            }
+                        });
+                    }
 
-                        @Override
-                        public void onRegistered(Connection connection) {
+                    @Override
+                    public void onRegistered(Connection connection) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onDisconnection(final Connection connection) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mStartButton.setText(R.string.action_start);
-                                    mStartButton.setTag(R.string.action_start);
-                                    mStartButton.setEnabled(true);
-                                    mStatusView.setText(connection.getStatus());
-                                }
-                            });
-                        }
-                    });
+                    @Override
+                    public void onDisconnection(final Connection connection) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mStartButton.setText(R.string.action_start);
+                                mStartButton.setTag(R.string.action_start);
+                                mStartButton.setEnabled(true);
+                                mStatusView.setText(connection.getStatus());
+                            }
+                        });
+                    }
+                });
 
-                    mStartButton.setEnabled(false);
+                mStartButton.setEnabled(false);
 
-                    /**
-                     * Connection to WCS server is established with method Session.connect().
-                     */
-                    session.connect(new Connection());
+                /**
+                 * Connection to WCS server is established with method Session.connect().
+                 */
+                session.connect(new Connection());
 
-                    SharedPreferences sharedPref = MediaDevicesActivity.this.getPreferences(Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putString("wcs_url", mWcsUrlView.getText().toString());
-                    editor.apply();
-                } else {
-                    mStartButton.setEnabled(false);
-
-                    /**
-                     * Connection to WCS server is closed with method Session.disconnect().
-                     */
-                    session.disconnect();
-                }
-                View currentFocus = getCurrentFocus();
-                if (currentFocus != null) {
-                    InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
+                SharedPreferences sharedPref = MediaDevicesActivity.this.getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("wcs_url", mWcsUrlView.getText().toString());
+                editor.apply();
             }
-        });
 
-        localRender = (SurfaceViewRenderer) findViewById(R.id.local_video_view);
-        remoteRender = (SurfaceViewRenderer) findViewById(R.id.remote_video_view);
+            else
 
-        localRenderLayout = (PercentFrameLayout) findViewById(R.id.local_video_layout);
-        remoteRenderLayout = (PercentFrameLayout) findViewById(R.id.remote_video_layout);
+            {
+                mStartButton.setEnabled(false);
 
-        localRender.setZOrderMediaOverlay(true);
+                /**
+                 * Connection to WCS server is closed with method Session.disconnect().
+                 */
+                session.disconnect();
+            }
 
-        remoteRenderLayout.setPosition(0, 0, 100, 100);
-        remoteRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
-        remoteRender.setMirror(false);
-        remoteRender.requestLayout();
+            View currentFocus = getCurrentFocus();
+            if(currentFocus!=null)
 
-        localRenderLayout.setPosition(0, 0, 100, 100);
-        localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
-        localRender.setMirror(true);
-        localRender.requestLayout();
-
+            {
+                InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }
     }
+
+    );
+
+    localRender=(FPSurfaceViewRenderer)
+
+    findViewById(R.id.local_video_view);
+
+    mLocalResolutionView=(TextView)
+
+    findViewById(R.id.local_resolution);
+
+    remoteRender=(FPSurfaceViewRenderer)
+
+    findViewById(R.id.remote_video_view);
+
+    mRemoteResolutionView=(TextView)
+
+    findViewById(R.id.remote_resolution);
+
+    localRenderLayout=(PercentFrameLayout)
+
+    findViewById(R.id.local_video_layout);
+
+    remoteRenderLayout=(PercentFrameLayout)
+
+    findViewById(R.id.remote_video_layout);
+
+    localRender.setZOrderMediaOverlay(true);
+
+    remoteRenderLayout.setPosition(0,0,100,100);
+    remoteRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+    remoteRender.setMirror(false);
+    remoteRender.requestLayout();
+
+    localRenderLayout.setPosition(0,0,100,100);
+    localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+    localRender.setMirror(true);
+    localRender.requestLayout();
+
+}
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

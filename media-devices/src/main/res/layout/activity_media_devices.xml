@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ls="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:ls="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -26,31 +26,60 @@
                 android:orientation="horizontal"
                 android:weightSum="1.0">
 
-                <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
-                    android:id="@+id/local_video_layout"
+                <LinearLayout
                     android:layout_width="0dip"
-                    android:layout_height="200dp"
-                    android:layout_weight=".5">
+                    android:layout_height="210dp"
+                    android:layout_weight=".5"
+                    android:orientation="vertical">
 
-                    <org.webrtc.SurfaceViewRenderer
-                        android:id="@+id/local_video_view"
+                    <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
+                        android:id="@+id/local_video_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="190dp">
+
+                        <com.flashphoner.fpwcsapi.FPSurfaceViewRenderer
+                            android:id="@+id/local_video_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
+
+                    <TextView
+                        android:id="@+id/local_resolution"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:text=""
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                </LinearLayout>
 
-                </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
-
-                <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
-                    android:id="@+id/remote_video_layout"
+                <LinearLayout
                     android:layout_width="0dip"
-                    android:layout_height="200dp"
-                    android:layout_weight=".5">
+                    android:layout_height="210dp"
+                    android:layout_weight=".5"
+                    android:orientation="vertical">
 
-                    <org.webrtc.SurfaceViewRenderer
-                        android:id="@+id/remote_video_view"
+                    <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
+                        android:id="@+id/remote_video_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="190dp">
+
+
+                        <com.flashphoner.fpwcsapi.FPSurfaceViewRenderer
+                            android:id="@+id/remote_video_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
+
+                    <TextView
+                        android:id="@+id/remote_resolution"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:text=""
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                </LinearLayout>
             </LinearLayout>
 
             <TextView
@@ -79,17 +108,17 @@
 
             <com.satsuware.usefulviews.LabelledSpinner
                 android:id="@+id/microphone"
-                ls:labelText="@string/prompt_microphone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                ls:labelText="@string/prompt_microphone" />
 
             <com.satsuware.usefulviews.LabelledSpinner
                 android:id="@+id/camera"
-                ls:labelText="@string/prompt_camera"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                ls:labelText="@string/prompt_camera" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -138,6 +167,21 @@
                     android:text="@string/camera_height" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/receive_audio"
+                android:checked="true"
+                android:text="@string/receive_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <CheckBox
+                android:id="@+id/receive_video"
+                android:checked="true"
+                android:text="@string/receive_video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
 
             <Button
                 android:id="@+id/connect_button"
