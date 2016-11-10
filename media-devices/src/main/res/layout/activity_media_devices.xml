@@ -101,10 +101,24 @@
                     android:hint="@string/prompt_wcs_url"
                     android:inputType="textUri"
                     android:maxLines="1"
-                    android:singleLine="true"
                     android:text="@string/wcs_url" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mute_audio"
+                android:id="@+id/mute_audio"
+                android:enabled="false"/>
+
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mute_video"
+                android:id="@+id/mute_video"
+                android:enabled="false"/>
+
 
             <com.satsuware.usefulviews.LabelledSpinner
                 android:id="@+id/microphone"
