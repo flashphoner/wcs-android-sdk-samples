@@ -28,7 +28,6 @@ import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 
-import org.webrtc.EglBase;
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
 
@@ -313,12 +312,12 @@ public class StreamingMinActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         try {
-            localRender.init(Flashphoner.eglBase.getEglBaseContext(), null);
+            localRender.init(Flashphoner.context, null);
         } catch (IllegalStateException e) {
             //ignore
         }
         try {
-            remoteRender.init(Flashphoner.eglBase.getEglBaseContext(), null);
+            remoteRender.init(Flashphoner.context, null);
         } catch (IllegalStateException e) {
             //ignore
         }
