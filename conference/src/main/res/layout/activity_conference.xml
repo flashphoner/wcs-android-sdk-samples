@@ -229,8 +229,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_message"
                     android:inputType="text"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+                    android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
 

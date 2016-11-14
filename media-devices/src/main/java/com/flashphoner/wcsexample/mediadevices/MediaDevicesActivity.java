@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -62,8 +63,20 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mCameraFPS;
     private EditText mWidth;
     private EditText mHeight;
+    private CheckBox mDefaultPublishBitrate;
+    private EditText mPublishBitrate;
     private CheckBox mReceiveAudio;
+    private SeekBar mPlayVolume;
     private CheckBox mReceiveVideo;
+    private CheckBox mDefaultPlayResolution;
+    private EditText mPlayWidth;
+    private EditText mPlayHeight;
+    private CheckBox mDefaultPlayBitrate;
+    private EditText mPlayBitrate;
+    private CheckBox mDefaultPlayQuality;
+    private EditText mPlayQuality;
+
+
     private Button mStartButton;
 
     private Session session;
@@ -108,8 +121,61 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mCameraFPS = (EditText) findViewById(R.id.camera_fps);
         mWidth = (EditText) findViewById(R.id.camera_width);
         mHeight = (EditText) findViewById(R.id.camera_height);
+        mDefaultPublishBitrate = (CheckBox) findViewById(R.id.publish_bitrate_default);
+        mDefaultPublishBitrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mPublishBitrate.setEnabled(!b);
+            }
+        });
+        mPublishBitrate = (EditText) findViewById(R.id.publish_bitrate);
         mReceiveAudio = (CheckBox) findViewById(R.id.receive_audio);
+        mPlayVolume = (SeekBar) findViewById(R.id.play_volume);
+        mPlayVolume.setMax(Flashphoner.getMaxVolume());
+        mPlayVolume.setProgress(Flashphoner.getVolume());
+        mPlayVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                Flashphoner.setVolume(i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         mReceiveVideo = (CheckBox) findViewById(R.id.receive_video);
+        mDefaultPlayResolution = (CheckBox) findViewById(R.id.play_resolution_default);
+        mDefaultPlayResolution.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mPlayWidth.setEnabled(!b);
+                mPlayHeight.setEnabled(!b);
+            }
+        });
+        mPlayWidth = (EditText) findViewById(R.id.play_width);
+        mPlayHeight = (EditText) findViewById(R.id.play_height);
+        mDefaultPlayBitrate = (CheckBox) findViewById(R.id.play_bitrate_default);
+        mDefaultPlayBitrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mPlayBitrate.setEnabled(!b);
+            }
+        });
+        mPlayBitrate = (EditText) findViewById(R.id.play_bitrate);
+        mDefaultPlayQuality = (CheckBox) findViewById(R.id.play_quality_default);
+        mDefaultPlayQuality.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mPlayQuality.setEnabled(!b);
+            }
+        });
+        mPlayQuality = (EditText) findViewById(R.id.play_quality);
         mStartButton = (Button) findViewById(R.id.connect_button);
 
         /**
@@ -219,13 +285,21 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
                                     videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
                                             Integer.parseInt(mHeight.getText().toString()));
+                                    if (!mDefaultPublishBitrate.isChecked()) {
+                                        videoConstraints.setBitrate(Integer.parseInt(mPublishBitrate.getText().toString()));
+                                    }
                                     streamOptions.setConstraints(new Constraints(new AudioConstraints(), videoConstraints));
 
                                     /**
                                      * Stream is created with method Session.createStream().
                                      */
                                     publishStream = session.createStream(streamOptions);
-
+                                    if (mMuteAudio.isChecked()) {
+                                        publishStream.muteAudio();
+                                    }
+                                    if (mMuteVideo.isChecked()) {
+                                        publishStream.muteVideo();
+                                    }
                                     /**
                                      * Callback function for stream status change is added to play the stream when it is published.
                                      */
@@ -236,8 +310,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                 @Override
                                                 public void run() {
                                                     if (StreamStatus.PUBLISHING.equals(streamStatus)) {
-                                                        mMuteAudio.setEnabled(true);
-                                                        mMuteVideo.setEnabled(true);
                                                         /**
                                                          * The options for the stream to play are set.
                                                          * The stream name is passed when StreamOptions object is created.
@@ -245,6 +317,28 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                         StreamOptions streamOptions = new StreamOptions(streamName);
 
                                                         streamOptions.setConstraints(new Constraints(mReceiveAudio.isChecked(), mReceiveVideo.isChecked()));
+
+                                                        VideoConstraints videoConstraints = null;
+                                                        if (mReceiveVideo.isChecked()) {
+                                                            videoConstraints = new VideoConstraints();
+                                                            if (!mDefaultPlayResolution.isChecked()) {
+                                                                videoConstraints.setResolution(Integer.parseInt(mPlayWidth.getText().toString()),
+                                                                        Integer.parseInt(mPlayHeight.getText().toString()));
+                                                            }
+                                                            if (!mDefaultPlayBitrate.isChecked()) {
+                                                                videoConstraints.setBitrate(Integer.parseInt(mPlayBitrate.getText().toString()));
+                                                            }
+                                                            if (!mDefaultPlayQuality.isChecked()) {
+                                                                videoConstraints.setQuality(Integer.parseInt(mPlayQuality.getText().toString()));
+                                                            }
+
+                                                        }
+                                                        AudioConstraints audioConstraints = null;
+                                                        if (mReceiveAudio.isChecked()) {
+                                                            audioConstraints = new AudioConstraints();
+                                                        }
+                                                        streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
+
                                                         /**
                                                          * Stream is created with method Session.createStream().
                                                          */
@@ -273,10 +367,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                          */
                                                         playStream.play();
                                                     } else {
-                                                        mMuteAudio.setEnabled(false);
-                                                        mMuteAudio.setChecked(false);
-                                                        mMuteVideo.setEnabled(false);
-                                                        mMuteVideo.setChecked(false);
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                     }
                                                     mStatusView.setText(streamStatus.toString());
@@ -306,10 +396,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     mStartButton.setTag(R.string.action_start);
                                     mStartButton.setEnabled(true);
                                     mStatusView.setText(connection.getStatus());
-                                    mMuteAudio.setEnabled(false);
-                                    mMuteAudio.setChecked(false);
-                                    mMuteVideo.setEnabled(false);
-                                    mMuteVideo.setChecked(false);
                                 }
                             });
                         }

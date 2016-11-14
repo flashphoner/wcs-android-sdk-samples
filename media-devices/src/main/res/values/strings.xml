@@ -8,6 +8,10 @@
     <string name="prompt_camera_fps">FPS</string>
     <string name="prompt_camera_width">Width</string>
     <string name="prompt_camera_height">Height</string>
+    <string name="prompt_play_width">Play Width</string>
+    <string name="prompt_play_height">Play Height</string>
+    <string name="prompt_play_bitrate">Play Bitrate (kbps)</string>
+    <string name="prompt_play_quality">Play Qulity</string>
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
     <string name="wcs_url">ws://192.168.0.1:8080/test/</string>
@@ -18,5 +22,11 @@
     <string name="receive_video">Receive Video</string>
     <string name="mute_audio">Mute Audio</string>
     <string name="mute_video">Mute Video</string>
+    <string name="play_quality">0</string>
+    <string name="resolution_default">Resolution (default)</string>
+    <string name="bitrate_default">Bitrate (default)</string>
+    <string name="quality_default">Quality (default)</string>
+    <string name="publish_bitrate">0</string>
+    <string name="play_bitrate">0</string>
 
 </resources>

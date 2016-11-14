@@ -28,7 +28,7 @@
 
                 <LinearLayout
                     android:layout_width="0dip"
-                    android:layout_height="210dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".5"
                     android:orientation="vertical">
 
@@ -51,11 +51,107 @@
                         android:layout_gravity="center_horizontal|center_vertical"
                         android:text=""
                         android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    <Switch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mute_audio"
+                        android:id="@+id/mute_audio"/>
+
+                    <Switch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mute_video"
+                        android:id="@+id/mute_video"/>
+
+
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/microphone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="@string/prompt_microphone" />
+
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/camera"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="@string/prompt_camera" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/camera_fps"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_camera_fps"
+                            android:inputType="textUri"
+                            android:maxLines="1"
+                            android:text="@string/camera_fps" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <CheckBox
+                        android:id="@+id/publish_bitrate_default"
+                        android:checked="true"
+                        android:text="@string/bitrate_default"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/publish_bitrate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_play_bitrate"
+                            android:inputType="textUri"
+                            android:maxLines="1"
+                            android:text="@string/publish_bitrate"
+                            android:enabled="false"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/camera_width"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_camera_width"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:text="@string/camera_width" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/camera_height"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_camera_height"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:text="@string/camera_height" />
+
+                    </android.support.design.widget.TextInputLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dip"
-                    android:layout_height="210dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".5"
                     android:orientation="vertical">
 
@@ -79,6 +175,113 @@
                         android:layout_gravity="center_horizontal|center_vertical"
                         android:text=""
                         android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    <CheckBox
+                        android:id="@+id/receive_audio"
+                        android:checked="true"
+                        android:text="@string/receive_audio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <SeekBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/play_volume"
+                        android:max="100"
+                        android:layout_gravity="center_horizontal"/>
+
+                    <CheckBox
+                        android:id="@+id/receive_video"
+                        android:checked="true"
+                        android:text="@string/receive_video"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <CheckBox
+                        android:id="@+id/play_resolution_default"
+                        android:checked="true"
+                        android:text="@string/resolution_default"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/play_width"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_play_width"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:text="@string/camera_width"
+                            android:enabled="false"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/play_height"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_play_height"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:text="@string/camera_height"
+                            android:enabled="false"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <CheckBox
+                        android:id="@+id/play_bitrate_default"
+                        android:checked="true"
+                        android:text="@string/bitrate_default"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/play_bitrate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_play_bitrate"
+                            android:inputType="textUri"
+                            android:maxLines="1"
+                            android:text="@string/play_bitrate"
+                            android:enabled="false"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <CheckBox
+                        android:id="@+id/play_quality_default"
+                        android:checked="true"
+                        android:text="@string/quality_default"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/play_quality"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_play_quality"
+                            android:inputType="textUri"
+                            android:maxLines="1"
+                            android:text="@string/play_quality"
+                            android:enabled="false"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -105,98 +308,6 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <Switch
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/mute_audio"
-                android:id="@+id/mute_audio"
-                android:enabled="false"/>
-
-            <Switch
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/mute_video"
-                android:id="@+id/mute_video"
-                android:enabled="false"/>
-
-
-            <com.satsuware.usefulviews.LabelledSpinner
-                android:id="@+id/microphone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                ls:labelText="@string/prompt_microphone" />
-
-            <com.satsuware.usefulviews.LabelledSpinner
-                android:id="@+id/camera"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                ls:labelText="@string/prompt_camera" />
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/camera_fps"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_camera_fps"
-                    android:inputType="textUri"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="@string/camera_fps" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/camera_width"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_camera_width"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="@string/camera_width" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/camera_height"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_camera_height"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="@string/camera_height" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <CheckBox
-                android:id="@+id/receive_audio"
-                android:checked="true"
-                android:text="@string/receive_audio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <CheckBox
-                android:id="@+id/receive_video"
-                android:checked="true"
-                android:text="@string/receive_video"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-
             <Button
                 android:id="@+id/connect_button"
                 style="?android:textAppearanceSmall"
@@ -207,7 +318,5 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-
-
     </ScrollView>
 </LinearLayout>
