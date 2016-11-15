@@ -56,6 +56,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     // UI references.
     private EditText mWcsUrlView;
     private TextView mStatusView;
+    private CheckBox mSendAudio;
     private Switch mMuteAudio;
     private Switch mMuteVideo;
     private LabelledSpinner mMicSpinner;
@@ -65,6 +66,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mHeight;
     private CheckBox mDefaultPublishBitrate;
     private EditText mPublishBitrate;
+    private CheckBox mSendVideo;
     private CheckBox mReceiveAudio;
     private SeekBar mPlayVolume;
     private CheckBox mReceiveVideo;
@@ -108,6 +110,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mWcsUrlView.setText(sharedPref.getString("wcs_url", getString(R.string.wcs_url)));
         mStatusView = (TextView) findViewById(R.id.status);
 
+        mSendAudio = (CheckBox) findViewById(R.id.send_audio);
         /**
          * Method getMediaDevices(), which returns MediaDeviceList object, is used to request list of all available media devices.
          * Then methods MediaDeviceList.getAudioList() and MediaDeviceList.getVideoList() are used to list available microphones and cameras.
@@ -129,6 +132,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
         mPublishBitrate = (EditText) findViewById(R.id.publish_bitrate);
+        mSendVideo = (CheckBox) findViewById(R.id.send_video);
         mReceiveAudio = (CheckBox) findViewById(R.id.receive_audio);
         mPlayVolume = (SeekBar) findViewById(R.id.play_volume);
         mPlayVolume.setMax(Flashphoner.getMaxVolume());
@@ -200,18 +204,16 @@ public class MediaDevicesActivity extends AppCompatActivity {
                         localRender.init(null, new RendererCommon.RendererEvents() {
                             @Override
                             public void onFirstFrameRendered() {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mLocalResolutionView.setText(localRender.getFrameHeight() + "x" + localRender.getFrameWidth());
-                                    }
-                                });
-
                             }
 
                             @Override
-                            public void onFrameResolutionChanged(int i, int i1, int i2) {
-
+                            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mLocalResolutionView.setText(i+ "x" + i1);
+                                    }
+                                });
                             }
                         });
                     } catch (IllegalStateException e) {
@@ -221,17 +223,16 @@ public class MediaDevicesActivity extends AppCompatActivity {
                         remoteRender.init(null, new RendererCommon.RendererEvents() {
                             @Override
                             public void onFirstFrameRendered() {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mRemoteResolutionView.setText(remoteRender.getFrameHeight() + "x" + remoteRender.getFrameWidth());
-                                    }
-                                });
                             }
 
                             @Override
-                            public void onFrameResolutionChanged(int i, int i1, int i2) {
-
+                            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mRemoteResolutionView.setText(i+ "x" + i1);
+                                    }
+                                });
                             }
                         });
                     } catch (IllegalStateException e) {
@@ -280,15 +281,26 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                      * Stream constraints are set with method StreamOptions.setConstraints().
                                      */
                                     StreamOptions streamOptions = new StreamOptions(streamName);
-                                    VideoConstraints videoConstraints = new VideoConstraints();
-                                    videoConstraints.setCameraId(((MediaDevice) mCameraSpinner.getSpinner().getSelectedItem()).getId());
-                                    videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
-                                    videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
-                                            Integer.parseInt(mHeight.getText().toString()));
-                                    if (!mDefaultPublishBitrate.isChecked()) {
-                                        videoConstraints.setBitrate(Integer.parseInt(mPublishBitrate.getText().toString()));
+                                    AudioConstraints audioConstraints = null;
+                                    if (mSendAudio.isChecked()) {
+                                        audioConstraints = new AudioConstraints();
                                     }
-                                    streamOptions.setConstraints(new Constraints(new AudioConstraints(), videoConstraints));
+                                    VideoConstraints videoConstraints = null;
+                                    if (mSendVideo.isChecked()) {
+                                        videoConstraints = new VideoConstraints();
+                                        videoConstraints.setCameraId(((MediaDevice) mCameraSpinner.getSpinner().getSelectedItem()).getId());
+                                        if (mCameraFPS.getText().length() > 0) {
+                                            videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
+                                        }
+                                        if (mWidth.getText().length() > 0 && mHeight.getText().length() > 0) {
+                                            videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
+                                                    Integer.parseInt(mHeight.getText().toString()));
+                                        }
+                                        if (!mDefaultPublishBitrate.isChecked() && mPublishBitrate.getText().length() > 0) {
+                                            videoConstraints.setBitrate(Integer.parseInt(mPublishBitrate.getText().toString()));
+                                        }
+                                    }
+                                    streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
 
                                     /**
                                      * Stream is created with method Session.createStream().
@@ -321,14 +333,14 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                         VideoConstraints videoConstraints = null;
                                                         if (mReceiveVideo.isChecked()) {
                                                             videoConstraints = new VideoConstraints();
-                                                            if (!mDefaultPlayResolution.isChecked()) {
+                                                            if (!mDefaultPlayResolution.isChecked() && mPlayWidth.getText().length() > 0 && mPlayHeight.getText().length() > 0) {
                                                                 videoConstraints.setResolution(Integer.parseInt(mPlayWidth.getText().toString()),
                                                                         Integer.parseInt(mPlayHeight.getText().toString()));
                                                             }
-                                                            if (!mDefaultPlayBitrate.isChecked()) {
+                                                            if (!mDefaultPlayBitrate.isChecked() && mPlayBitrate.getText().length() > 0) {
                                                                 videoConstraints.setBitrate(Integer.parseInt(mPlayBitrate.getText().toString()));
                                                             }
-                                                            if (!mDefaultPlayQuality.isChecked()) {
+                                                            if (!mDefaultPlayQuality.isChecked() && mPlayQuality.getText().length() > 0) {
                                                                 videoConstraints.setQuality(Integer.parseInt(mPlayQuality.getText().toString()));
                                                             }
 

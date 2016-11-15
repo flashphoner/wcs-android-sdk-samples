@@ -28,5 +28,8 @@
     <string name="quality_default">Quality (default)</string>
     <string name="publish_bitrate">0</string>
     <string name="play_bitrate">0</string>
+    <string name="prompt_publish_bitrate">Publish Bitrate</string>
+    <string name="send_audio">Send Audio</string>
+    <string name="send_video">Send Video</string>
 
 </resources>

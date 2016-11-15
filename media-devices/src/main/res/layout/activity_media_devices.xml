@@ -52,18 +52,13 @@
                         android:text=""
                         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-                    <Switch
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mute_audio"
-                        android:id="@+id/mute_audio"/>
 
-                    <Switch
+                    <CheckBox
+                        android:id="@+id/send_audio"
+                        android:checked="true"
+                        android:text="@string/send_audio"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mute_video"
-                        android:id="@+id/mute_video"/>
-
+                        android:layout_height="wrap_content" />
 
                     <com.satsuware.usefulviews.LabelledSpinner
                         android:id="@+id/microphone"
@@ -71,6 +66,19 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         ls:labelText="@string/prompt_microphone" />
+
+                    <Switch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mute_audio"
+                        android:id="@+id/mute_audio"/>
+
+                    <CheckBox
+                        android:id="@+id/send_video"
+                        android:checked="true"
+                        android:text="@string/send_video"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                     <com.satsuware.usefulviews.LabelledSpinner
                         android:id="@+id/camera"
@@ -88,7 +96,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_camera_fps"
-                            android:inputType="textUri"
+                            android:inputType="number"
                             android:maxLines="1"
                             android:text="@string/camera_fps" />
 
@@ -109,8 +117,8 @@
                             android:id="@+id/publish_bitrate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/prompt_play_bitrate"
-                            android:inputType="textUri"
+                            android:hint="@string/prompt_publish_bitrate"
+                            android:inputType="number"
                             android:maxLines="1"
                             android:text="@string/publish_bitrate"
                             android:enabled="false"/>
@@ -146,6 +154,12 @@
                             android:text="@string/camera_height" />
 
                     </android.support.design.widget.TextInputLayout>
+
+                    <Switch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mute_video"
+                        android:id="@+id/mute_video"/>
 
                 </LinearLayout>
 
@@ -252,7 +266,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_play_bitrate"
-                            android:inputType="textUri"
+                            android:inputType="number"
                             android:maxLines="1"
                             android:text="@string/play_bitrate"
                             android:enabled="false"/>
@@ -275,7 +289,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_play_quality"
-                            android:inputType="textUri"
+                            android:inputType="number"
                             android:maxLines="1"
                             android:text="@string/play_quality"
                             android:enabled="false"/>
