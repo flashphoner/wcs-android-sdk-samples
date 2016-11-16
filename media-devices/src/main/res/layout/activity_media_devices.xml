@@ -97,6 +97,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_camera_fps"
                             android:inputType="number"
+                            android:maxLength="3"
                             android:maxLines="1"
                             android:text="@string/camera_fps" />
 
@@ -119,6 +120,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_publish_bitrate"
                             android:inputType="number"
+                            android:maxLength="6"
                             android:maxLines="1"
                             android:text="@string/publish_bitrate"
                             android:enabled="false"/>
@@ -135,6 +137,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_camera_width"
                             android:inputType="number"
+                            android:maxLength="4"
                             android:maxLines="1"
                             android:text="@string/camera_width" />
 
@@ -150,6 +153,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_camera_height"
                             android:inputType="number"
+                            android:maxLength="4"
                             android:maxLines="1"
                             android:text="@string/camera_height" />
 
@@ -229,6 +233,7 @@
                             android:hint="@string/prompt_play_width"
                             android:inputType="number"
                             android:maxLines="1"
+                            android:maxLength="4"
                             android:text="@string/camera_width"
                             android:enabled="false"/>
 
@@ -244,6 +249,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_play_height"
                             android:inputType="number"
+                            android:maxLength="4"
                             android:maxLines="1"
                             android:text="@string/camera_height"
                             android:enabled="false"/>
@@ -267,6 +273,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_play_bitrate"
                             android:inputType="number"
+                            android:maxLength="6"
                             android:maxLines="1"
                             android:text="@string/play_bitrate"
                             android:enabled="false"/>
@@ -290,6 +297,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_play_quality"
                             android:inputType="number"
+                            android:maxLength="2"
                             android:maxLines="1"
                             android:text="@string/play_quality"
                             android:enabled="false"/>
