@@ -67,6 +67,45 @@
                         android:layout_gravity="center_horizontal"
                         ls:labelText="@string/prompt_microphone" />
 
+                    <CheckBox
+                        android:id="@+id/use_fec"
+                        android:checked="false"
+                        android:text="@string/use_fec"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <CheckBox
+                        android:id="@+id/use_stereo"
+                        android:checked="false"
+                        android:text="@string/use_stereo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <CheckBox
+                        android:id="@+id/publish_audio_bitrate_default"
+                        android:checked="true"
+                        android:text="@string/bitrate_default"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/publish_audio_bitrate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_publish_audio_bitrate"
+                            android:inputType="number"
+                            android:maxLength="6"
+                            android:maxLines="1"
+                            android:text="@string/publish_bitrate"
+                            android:enabled="false"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
                     <Switch
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -104,7 +143,7 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <CheckBox
-                        android:id="@+id/publish_bitrate_default"
+                        android:id="@+id/publish_video_bitrate_default"
                         android:checked="true"
                         android:text="@string/bitrate_default"
                         android:layout_width="match_parent"
@@ -115,7 +154,7 @@
                         android:layout_height="wrap_content">
 
                         <EditText
-                            android:id="@+id/publish_bitrate"
+                            android:id="@+id/publish_video_bitrate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_publish_bitrate"

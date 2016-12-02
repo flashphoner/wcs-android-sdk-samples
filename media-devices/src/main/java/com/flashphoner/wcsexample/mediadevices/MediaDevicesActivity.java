@@ -64,8 +64,12 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mCameraFPS;
     private EditText mWidth;
     private EditText mHeight;
-    private CheckBox mDefaultPublishBitrate;
-    private EditText mPublishBitrate;
+    private CheckBox mDefaultPublishVideoBitrate;
+    private CheckBox mDefaultPublishAudioBitrate;
+    private EditText mPublishVideoBitrate;
+    private EditText mPublishAudioBitrate;
+    private CheckBox mUseFEC;
+    private CheckBox mUseStereo;
     private CheckBox mSendVideo;
     private CheckBox mReceiveAudio;
     private SeekBar mPlayVolume;
@@ -124,15 +128,25 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mCameraFPS = (EditText) findViewById(R.id.camera_fps);
         mWidth = (EditText) findViewById(R.id.camera_width);
         mHeight = (EditText) findViewById(R.id.camera_height);
-        mDefaultPublishBitrate = (CheckBox) findViewById(R.id.publish_bitrate_default);
-        mDefaultPublishBitrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mDefaultPublishVideoBitrate = (CheckBox) findViewById(R.id.publish_video_bitrate_default);
+        mDefaultPublishVideoBitrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mPublishBitrate.setEnabled(!b);
+                mPublishVideoBitrate.setEnabled(!b);
             }
         });
-        mPublishBitrate = (EditText) findViewById(R.id.publish_bitrate);
+        mDefaultPublishAudioBitrate = (CheckBox) findViewById(R.id.publish_audio_bitrate_default);
+        mDefaultPublishAudioBitrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mPublishAudioBitrate.setEnabled(!b);
+            }
+        });
+        mPublishVideoBitrate = (EditText) findViewById(R.id.publish_video_bitrate);
+        mPublishAudioBitrate = (EditText) findViewById(R.id.publish_audio_bitrate);
         mSendVideo = (CheckBox) findViewById(R.id.send_video);
+        mUseStereo = (CheckBox) findViewById(R.id.use_stereo);
+        mUseFEC = (CheckBox) findViewById(R.id.use_fec);
         mReceiveAudio = (CheckBox) findViewById(R.id.receive_audio);
         mPlayVolume = (SeekBar) findViewById(R.id.play_volume);
         mPlayVolume.setMax(Flashphoner.getMaxVolume());
@@ -284,6 +298,15 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     AudioConstraints audioConstraints = null;
                                     if (mSendAudio.isChecked()) {
                                         audioConstraints = new AudioConstraints();
+                                        if (mUseFEC.isChecked()) {
+                                            audioConstraints.setUseFEC(true);
+                                        }
+                                        if (mUseStereo.isChecked()) {
+                                            audioConstraints.setUseStereo(true);
+                                        }
+                                        if (!mDefaultPublishAudioBitrate.isChecked() && mDefaultPublishAudioBitrate.getText().length() > 0) {
+                                            audioConstraints.setBitrate(Integer.parseInt(mPublishAudioBitrate.getText().toString()));
+                                        }
                                     }
                                     VideoConstraints videoConstraints = null;
                                     if (mSendVideo.isChecked()) {
@@ -296,8 +319,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                             videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
                                                     Integer.parseInt(mHeight.getText().toString()));
                                         }
-                                        if (!mDefaultPublishBitrate.isChecked() && mPublishBitrate.getText().length() > 0) {
-                                            videoConstraints.setBitrate(Integer.parseInt(mPublishBitrate.getText().toString()));
+                                        if (!mDefaultPublishVideoBitrate.isChecked() && mPublishVideoBitrate.getText().length() > 0) {
+                                            videoConstraints.setBitrate(Integer.parseInt(mPublishVideoBitrate.getText().toString()));
                                         }
                                     }
                                     streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
