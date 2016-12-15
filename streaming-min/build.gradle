@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
 
 android {
     compileSdkVersion 24
@@ -8,15 +9,27 @@ android {
         applicationId "com.flashphoner.wcsexample.streaming_min"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 1
+        versionCode 6
         versionName "1.0"
     }
+
+    signingConfigs {
+        release {
+            storeFile file("${System.env.RELEASE_STORE_FILE}")
+            storePassword "${System.env.RELEASE_STORE_PASSWORD}"
+            keyAlias "TwoWayStreaming"
+            keyPassword "${System.env.RELEASE_KEY_PASSWORD}"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
+
 }
 
 dependencies {
@@ -25,4 +38,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
+}
+
+play {
+    track = 'production'
+    serviceAccountEmail = "${System.env.SERVICE_ACCOUNT_EMAIL}"
+    pk12File = file("${System.env.SERVICE_ACCOUNT_PK12FILE}")
 }
