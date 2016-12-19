@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
+
+Properties signingProps = null
 
 android {
     compileSdkVersion 24
@@ -11,10 +14,30 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    def signingPropsFile = System.getenv('SIGNING_PROPERTIES')
+    if (signingPropsFile && new File(signingPropsFile).exists()) {
+        signingProps = new Properties()
+        signingProps.load(new FileInputStream(file(signingPropsFile)))
+
+        signingConfigs {
+            release {
+                storeFile file(signingProps['keystore'])
+                storePassword signingProps['keystore.password']
+                keyAlias signingProps['key.alias']
+                keyPassword signingProps['key.password']
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            if(signingProps) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
@@ -25,4 +48,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
+}
+
+play {
+    if(signingProps) {
+        track = 'production'
+        serviceAccountEmail = signingProps['service.account.email']
+        pk12File = file(signingProps['service.account.pk12file'])
+    }
 }
