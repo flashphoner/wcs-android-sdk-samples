@@ -14,6 +14,7 @@
     <string name="prompt_play_quality">Play Qulity</string>
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
+    <string name="action_switch_camera">Switch Camera</string>
     <string name="wcs_url">ws://192.168.0.1:8080/test/</string>
     <string name="camera_fps">25</string>
     <string name="camera_width">640</string>

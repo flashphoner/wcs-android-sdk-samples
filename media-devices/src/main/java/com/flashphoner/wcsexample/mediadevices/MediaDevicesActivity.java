@@ -28,6 +28,7 @@ import com.flashphoner.fpwcsapi.bean.StreamStatus;
 import com.flashphoner.fpwcsapi.constraints.AudioConstraints;
 import com.flashphoner.fpwcsapi.constraints.Constraints;
 import com.flashphoner.fpwcsapi.constraints.VideoConstraints;
+import com.flashphoner.fpwcsapi.handler.CameraSwitchHandler;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
 import com.flashphoner.fpwcsapi.session.Session;
 import com.flashphoner.fpwcsapi.session.SessionEvent;
@@ -84,6 +85,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
 
     private Button mStartButton;
+    private Button mSwitchCameraButton;
 
     private Session session;
 
@@ -225,7 +227,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mLocalResolutionView.setText(i+ "x" + i1);
+                                        mLocalResolutionView.setText(i + "x" + i1);
                                     }
                                 });
                             }
@@ -244,7 +246,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mRemoteResolutionView.setText(i+ "x" + i1);
+                                        mRemoteResolutionView.setText(i + "x" + i1);
                                     }
                                 });
                             }
@@ -401,6 +403,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                          * Method Stream.play() is called to start playback of the stream.
                                                          */
                                                         playStream.play();
+
+                                                        mSwitchCameraButton.setEnabled(true);
                                                     } else {
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                     }
@@ -430,6 +434,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     mStartButton.setText(R.string.action_start);
                                     mStartButton.setTag(R.string.action_start);
                                     mStartButton.setEnabled(true);
+                                    mSwitchCameraButton.setEnabled(false);
                                     mStatusView.setText(connection.getStatus());
                                 }
                             });
@@ -466,6 +471,32 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             }
+        });
+
+        mSwitchCameraButton = (Button) findViewById(R.id.switch_camera_button);
+
+        /**
+         * Connection to server will be established and stream will be published when Start button is clicked.
+         */
+        mSwitchCameraButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (publishStream != null) {
+                    mSwitchCameraButton.setEnabled(false);
+                    publishStream.switchCamera(new CameraSwitchHandler() {
+                        @Override
+                        public void onCameraSwitchDone(boolean var1) {
+                            mSwitchCameraButton.setEnabled(true);
+                        }
+
+                        @Override
+                        public void onCameraSwitchError(String var1) {
+                            mSwitchCameraButton.setEnabled(true);
+                        }
+                    });
+                }
+            }
+
         });
 
         /**

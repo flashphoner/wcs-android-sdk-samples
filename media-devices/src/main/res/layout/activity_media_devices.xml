@@ -378,6 +378,16 @@
                 android:text="@string/action_start"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/switch_camera_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_switch_camera"
+                android:enabled="false"
+                android:textStyle="bold" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
