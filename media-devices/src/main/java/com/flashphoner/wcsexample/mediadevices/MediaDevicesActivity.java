@@ -486,12 +486,23 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     publishStream.switchCamera(new CameraSwitchHandler() {
                         @Override
                         public void onCameraSwitchDone(boolean var1) {
-                            mSwitchCameraButton.setEnabled(true);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mSwitchCameraButton.setEnabled(true);
+                                }
+                            });
+
                         }
 
                         @Override
                         public void onCameraSwitchError(String var1) {
-                            mSwitchCameraButton.setEnabled(true);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mSwitchCameraButton.setEnabled(true);
+                                }
+                            });
                         }
                     });
                 }
