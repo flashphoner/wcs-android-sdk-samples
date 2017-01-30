@@ -403,8 +403,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                          * Method Stream.play() is called to start playback of the stream.
                                                          */
                                                         playStream.play();
-
-                                                        mSwitchCameraButton.setEnabled(true);
+                                                        if (mSendVideo.isChecked())
+                                                            mSwitchCameraButton.setEnabled(true);
                                                     } else {
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                     }
