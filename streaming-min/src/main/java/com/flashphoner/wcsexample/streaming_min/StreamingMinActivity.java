@@ -28,8 +28,12 @@ import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 
+import org.webrtc.PeerConnection;
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Example with streamer and player.
@@ -98,6 +102,14 @@ public class StreamingMinActivity extends AppCompatActivity {
                     sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
+
+                    /**
+                     * Uncomment this code to use your own RTCConfiguration. For example, you can use custom TURN server
+                     */
+                    //List<PeerConnection.IceServer> iceServers = new ArrayList<>();
+                    //iceServers.add(new PeerConnection.IceServer("turn:your.turn-server.com:443?transport=tcp","username","passw0rd"));
+                    //PeerConnection.RTCConfiguration customConfig = new PeerConnection.RTCConfiguration(iceServers);
+                    //sessionOptions.setMediaOptions(customConfig);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -355,6 +367,11 @@ public class StreamingMinActivity extends AppCompatActivity {
                      * The stream name is passed when StreamOptions object is created.
                      */
                     StreamOptions streamOptions = new StreamOptions(mPublishStreamView.getText().toString());
+
+                    /**
+                     * Uncomment this code to use case WebRTC-as-RTMP. Stream will be republished to your rtmpUrl
+                     */
+                    //streamOptions.setRtmpUrl("rtmp://192.168.1.100:1935/live2");
 
                     /**
                      * Stream is created with method Session.createStream().
