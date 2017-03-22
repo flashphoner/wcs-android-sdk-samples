@@ -129,14 +129,20 @@ public class PlayerActivity extends AppCompatActivity {
                                                 public void run() {
                                                     if (!StreamStatus.PLAYING.equals(streamStatus)) {
                                                         Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
+                                                        mStatusView.setText(streamStatus.toString());
+                                                    } else if (StreamStatus.NOT_ENOUGH_BANDWIDTH.equals(streamStatus)) {
+                                                        Log.w(TAG, "Not enough bandwidth stream " + stream.getName() + ", consider using lower video resolution or bitrate. " +
+                                                                "Bandwidth " + (Math.round(stream.getNetworkBandwidth() / 1000)) + " " +
+                                                                "bitrate " + (Math.round(stream.getRemoteBitrate() / 1000)));
+                                                    } else {
+                                                        mStatusView.setText(streamStatus.toString());
                                                     }
-                                                    mStatusView.setText(streamStatus.toString());
                                                 }
                                             });
                                         }
                                     });
 
-                                    /**
+                                    /*
                                      * Method Stream.play() is called to start playback of the stream.
                                      */
                                     playStream.play();
