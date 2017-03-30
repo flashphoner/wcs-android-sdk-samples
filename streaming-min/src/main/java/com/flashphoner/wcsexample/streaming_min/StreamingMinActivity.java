@@ -266,6 +266,10 @@ public class StreamingMinActivity extends AppCompatActivity {
                                     if (StreamStatus.PLAYING.equals(streamStatus)) {
                                         mPlayButton.setText(R.string.action_stop);
                                         mPlayButton.setTag(R.string.action_stop);
+                                    } else if (StreamStatus.NOT_ENOUGH_BANDWIDTH.equals(streamStatus)) {
+                                        Log.w(TAG, "Not enough bandwidth stream " + stream.getName() + ", consider using lower video resolution or bitrate. " +
+                                                "Bandwidth " + (Math.round(stream.getNetworkBandwidth() / 1000)) + " " +
+                                                "bitrate " + (Math.round(stream.getRemoteBitrate() / 1000)));
                                     } else {
                                         mPlayButton.setText(R.string.action_play);
                                         mPlayButton.setTag(R.string.action_play);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -31,6 +32,8 @@ import org.webrtc.SurfaceViewRenderer;
  * Each of the players can be used to play a different video stream.
  */
 public class TwoPlayersActivity extends AppCompatActivity {
+
+    private static String TAG = TwoPlayersActivity.class.getName();
 
     // UI references.
     private EditText mWcsUrlView;
@@ -207,6 +210,10 @@ public class TwoPlayersActivity extends AppCompatActivity {
                                     if (StreamStatus.PLAYING.equals(streamStatus)) {
                                         mPlay1Button.setText(R.string.action_stop);
                                         mPlay1Button.setTag(R.string.action_stop);
+                                    } else if (StreamStatus.NOT_ENOUGH_BANDWIDTH.equals(streamStatus)) {
+                                        Log.w(TAG, "Not enough bandwidth stream " + stream.getName() + ", consider using lower video resolution or bitrate. " +
+                                                "Bandwidth " + (Math.round(stream.getNetworkBandwidth() / 1000)) + " " +
+                                                "bitrate " + (Math.round(stream.getRemoteBitrate() / 1000)));
                                     } else {
                                         mPlay1Button.setText(R.string.action_play);
                                         mPlay1Button.setTag(R.string.action_play);
@@ -281,6 +288,10 @@ public class TwoPlayersActivity extends AppCompatActivity {
                                     if (StreamStatus.PLAYING.equals(streamStatus)) {
                                         mPlay2Button.setText(R.string.action_stop);
                                         mPlay2Button.setTag(R.string.action_stop);
+                                    } else if (StreamStatus.NOT_ENOUGH_BANDWIDTH.equals(streamStatus)) {
+                                        Log.w(TAG, "Not enough bandwidth stream " + stream.getName() + ", consider using lower video resolution or bitrate. " +
+                                                "Bandwidth " + (Math.round(stream.getNetworkBandwidth() / 1000)) + " " +
+                                                "bitrate " + (Math.round(stream.getRemoteBitrate() / 1000)));
                                     } else {
                                         mPlay2Button.setText(R.string.action_play);
                                         mPlay2Button.setTag(R.string.action_play);

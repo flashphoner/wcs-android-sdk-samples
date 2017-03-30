@@ -562,6 +562,7 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
                     mCallButton.setEnabled(true);
                     mCallStatus.setText(call.getStatus());
                     call.getCallOptions().getConstraints().updateVideo(true);
+                    call.getCallObject().setHasVideo(true);
                     call.answer();
                     incomingCallAlert = null;
                     Log.i(TAG, "Permission has been granted by user");
