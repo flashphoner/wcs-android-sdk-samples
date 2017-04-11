@@ -62,6 +62,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private Switch mMuteVideo;
     private LabelledSpinner mMicSpinner;
     private LabelledSpinner mCameraSpinner;
+    private LabelledSpinner mDisabledCodec;
     private EditText mCameraFPS;
     private EditText mWidth;
     private EditText mHeight;
@@ -126,6 +127,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
         mCameraSpinner = (LabelledSpinner) findViewById(R.id.camera);
         mCameraSpinner.setItemsArray(Flashphoner.getMediaDevices().getVideoList());
+
+        mDisabledCodec = (LabelledSpinner) findViewById(R.id.strip_codec);
+        mDisabledCodec.setItemsArray(new String[] {"H264","VP8"});
 
         mCameraFPS = (EditText) findViewById(R.id.camera_fps);
         mWidth = (EditText) findViewById(R.id.camera_width);
@@ -326,6 +330,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                         }
                                     }
                                     streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
+                                    String[] stripCodec = {(String) mDisabledCodec.getSpinner().getSelectedItem()};
+                                    streamOptions.setStripCodecs(stripCodec);
 
                                     /**
                                      * Stream is created with method Session.createStream().

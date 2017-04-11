@@ -5,6 +5,7 @@
     <string name="prompt_wcs_url">WCS Url</string>
     <string name="prompt_microphone">Microphone</string>
     <string name="prompt_camera">Camera</string>
+    <string name="prompt_codec">Disable codec</string>
     <string name="prompt_camera_fps">FPS</string>
     <string name="prompt_camera_width">Width</string>
     <string name="prompt_camera_height">Height</string>

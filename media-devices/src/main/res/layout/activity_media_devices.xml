@@ -198,6 +198,13 @@
 
                     </android.support.design.widget.TextInputLayout>
 
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/strip_codec"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="@string/prompt_codec" />
+
                     <Switch
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
