@@ -62,7 +62,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private Switch mMuteVideo;
     private LabelledSpinner mMicSpinner;
     private LabelledSpinner mCameraSpinner;
-    private LabelledSpinner mDisabledCodec;
+    private LabelledSpinner mStripStreamerCodec;
+    private LabelledSpinner mStripPlayerCodec;
     private EditText mCameraFPS;
     private EditText mWidth;
     private EditText mHeight;
@@ -128,8 +129,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mCameraSpinner = (LabelledSpinner) findViewById(R.id.camera);
         mCameraSpinner.setItemsArray(Flashphoner.getMediaDevices().getVideoList());
 
-        mDisabledCodec = (LabelledSpinner) findViewById(R.id.strip_codec);
-        mDisabledCodec.setItemsArray(new String[] {"H264","VP8"});
+        mStripStreamerCodec = (LabelledSpinner) findViewById(R.id.strip_streamer_codec);
+        mStripStreamerCodec.setItemsArray(new String[] {"","H264","VP8"});
+
+        mStripPlayerCodec = (LabelledSpinner) findViewById(R.id.strip_player_codec);
+        mStripPlayerCodec.setItemsArray(new String[] {"","H264","VP8"});
 
         mCameraFPS = (EditText) findViewById(R.id.camera_fps);
         mWidth = (EditText) findViewById(R.id.camera_width);
@@ -330,7 +334,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                         }
                                     }
                                     streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
-                                    String[] stripCodec = {(String) mDisabledCodec.getSpinner().getSelectedItem()};
+                                    String[] stripCodec = {(String) mStripStreamerCodec.getSpinner().getSelectedItem()};
                                     streamOptions.setStripCodecs(stripCodec);
 
                                     /**
@@ -381,7 +385,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                             audioConstraints = new AudioConstraints();
                                                         }
                                                         streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
-
+                                                        String[] stripCodec = {(String) mStripPlayerCodec.getSpinner().getSelectedItem()};
+                                                        streamOptions.setStripCodecs(stripCodec);
                                                         /**
                                                          * Stream is created with method Session.createStream().
                                                          */

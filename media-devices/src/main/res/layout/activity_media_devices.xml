@@ -199,7 +199,7 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/strip_codec"
+                        android:id="@+id/strip_streamer_codec"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -301,6 +301,13 @@
                             android:enabled="false"/>
 
                     </android.support.design.widget.TextInputLayout>
+
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/strip_player_codec"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="@string/prompt_codec" />
 
                     <CheckBox
                         android:id="@+id/play_bitrate_default"
