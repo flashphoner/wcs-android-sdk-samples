@@ -16,5 +16,6 @@
     <string name="wcs_url">ws://192.168.0.1:8080</string>
     <string name="mute_audio">Mute Audio</string>
     <string name="mute_video">Mute Video</string>
+    <string name="record">Record</string>
 
 </resources>

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -35,6 +36,7 @@ import com.flashphoner.fpwcsapi.room.RoomManagerOptions;
 import com.flashphoner.fpwcsapi.room.RoomOptions;
 import com.flashphoner.fpwcsapi.session.RestAppCommunicator;
 import com.flashphoner.fpwcsapi.session.Stream;
+import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 
 import org.webrtc.RendererCommon;
@@ -78,6 +80,7 @@ public class ConferenceActivity extends AppCompatActivity {
     private TextView mMessageHistory;
     private EditText mMessage;
     private Button mSendButton;
+    private CheckBox mRecord;
 
     /**
      * RoomManager object is used to manage connection to server and conference room.
@@ -134,6 +137,7 @@ public class ConferenceActivity extends AppCompatActivity {
         mLoginView.setText(sharedPref.getString("login", ""));
         mConnectStatus = (TextView) findViewById(R.id.connect_status);
         mConnectButton = (Button) findViewById(R.id.connect_button);
+        mRecord = (CheckBox) findViewById(R.id.record);
 
         /**
          * Connection to server will be established when Connect button is clicked.
@@ -607,7 +611,10 @@ public class ConferenceActivity extends AppCompatActivity {
                      * Stream is created and published with method Room.publish().
                      * SurfaceViewRenderer to be used to display video from the camera is passed to the method.
                      */
-                    stream = room.publish(localRenderer);
+                    boolean record = mRecord.isChecked();
+                    StreamOptions streamOptions = new StreamOptions();
+                    streamOptions.setRecord(record);
+                    stream = room.publish(localRenderer, streamOptions);
 
                     /**
                      * Callback function for stream status change is added to make appropriate changes in controls of the interface when stream is being published.

@@ -78,6 +78,13 @@
                     android:maxLines="1"
                     android:singleLine="true" />
 
+                <CheckBox
+                    android:id="@+id/record"
+                    android:checked="false"
+                    android:text="@string/record"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
             </android.support.design.widget.TextInputLayout>
 
             <TextView
