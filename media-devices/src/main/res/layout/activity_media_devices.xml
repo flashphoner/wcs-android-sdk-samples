@@ -52,7 +52,6 @@
                         android:text=""
                         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-
                     <CheckBox
                         android:id="@+id/send_audio"
                         android:checked="true"
@@ -66,6 +65,15 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         ls:labelText="@string/prompt_microphone" />
+
+                    <TextView
+                        android:id="@+id/microphone_level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:textColor="@color/green"
+                        android:text="Level: 0"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <CheckBox
                         android:id="@+id/use_fec"
@@ -382,6 +390,15 @@
                     android:text="@string/wcs_url" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/test_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_test"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/connect_button"

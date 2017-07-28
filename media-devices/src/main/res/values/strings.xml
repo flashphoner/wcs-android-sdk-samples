@@ -13,6 +13,8 @@
     <string name="prompt_play_height">Play Height</string>
     <string name="prompt_play_bitrate">Play Bitrate (kbps)</string>
     <string name="prompt_play_quality">Play Quality</string>
+    <string name="action_test">Test</string>
+    <string name="action_release">Release</string>
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
     <string name="action_switch_camera">Switch Camera</string>

@@ -43,6 +43,8 @@ import org.webrtc.RendererCommon;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Example of media device manager.
@@ -61,6 +63,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private Switch mMuteAudio;
     private Switch mMuteVideo;
     private LabelledSpinner mMicSpinner;
+    private TextView mMicLevel;
+    private SoundMeter soundMeter;
     private LabelledSpinner mCameraSpinner;
     private LabelledSpinner mStripStreamerCodec;
     private LabelledSpinner mStripPlayerCodec;
@@ -86,6 +90,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mPlayQuality;
 
 
+    private Button mTestButton;
     private Button mStartButton;
     private Button mSwitchCameraButton;
 
@@ -126,14 +131,16 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mMicSpinner = (LabelledSpinner) findViewById(R.id.microphone);
         mMicSpinner.setItemsArray(Flashphoner.getMediaDevices().getAudioList());
 
+        mMicLevel = (TextView) findViewById(R.id.microphone_level);
+
         mCameraSpinner = (LabelledSpinner) findViewById(R.id.camera);
         mCameraSpinner.setItemsArray(Flashphoner.getMediaDevices().getVideoList());
 
         mStripStreamerCodec = (LabelledSpinner) findViewById(R.id.strip_streamer_codec);
-        mStripStreamerCodec.setItemsArray(new String[] {"","H264","VP8"});
+        mStripStreamerCodec.setItemsArray(new String[]{"", "H264", "VP8"});
 
         mStripPlayerCodec = (LabelledSpinner) findViewById(R.id.strip_player_codec);
-        mStripPlayerCodec.setItemsArray(new String[] {"","H264","VP8"});
+        mStripPlayerCodec.setItemsArray(new String[]{"", "H264", "VP8"});
 
         mCameraFPS = (EditText) findViewById(R.id.camera_fps);
         mWidth = (EditText) findViewById(R.id.camera_width);
@@ -305,35 +312,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                      * Stream constraints are set with method StreamOptions.setConstraints().
                                      */
                                     StreamOptions streamOptions = new StreamOptions(streamName);
-                                    AudioConstraints audioConstraints = null;
-                                    if (mSendAudio.isChecked()) {
-                                        audioConstraints = new AudioConstraints();
-                                        if (mUseFEC.isChecked()) {
-                                            audioConstraints.setUseFEC(true);
-                                        }
-                                        if (mUseStereo.isChecked()) {
-                                            audioConstraints.setUseStereo(true);
-                                        }
-                                        if (!mDefaultPublishAudioBitrate.isChecked() && mDefaultPublishAudioBitrate.getText().length() > 0) {
-                                            audioConstraints.setBitrate(Integer.parseInt(mPublishAudioBitrate.getText().toString()));
-                                        }
-                                    }
-                                    VideoConstraints videoConstraints = null;
-                                    if (mSendVideo.isChecked()) {
-                                        videoConstraints = new VideoConstraints();
-                                        videoConstraints.setCameraId(((MediaDevice) mCameraSpinner.getSpinner().getSelectedItem()).getId());
-                                        if (mCameraFPS.getText().length() > 0) {
-                                            videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
-                                        }
-                                        if (mWidth.getText().length() > 0 && mHeight.getText().length() > 0) {
-                                            videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
-                                                    Integer.parseInt(mHeight.getText().toString()));
-                                        }
-                                        if (!mDefaultPublishVideoBitrate.isChecked() && mPublishVideoBitrate.getText().length() > 0) {
-                                            videoConstraints.setBitrate(Integer.parseInt(mPublishVideoBitrate.getText().toString()));
-                                        }
-                                    }
-                                    streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
+                                    Constraints constraints = getConstraints();
+                                    streamOptions.setConstraints(constraints);
                                     String[] stripCodec = {(String) mStripStreamerCodec.getSpinner().getSelectedItem()};
                                     streamOptions.setStripCodecs(stripCodec);
 
@@ -484,6 +464,42 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
 
+        mTestButton = (Button) findViewById(R.id.test_button);
+
+
+        mTestButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mTestButton.getTag() == null || Integer.valueOf(R.string.action_test).equals(mTestButton.getTag())) {
+                    Flashphoner.getLocalMediaAccess(getConstraints(), localRender);
+                    mTestButton.setText(R.string.action_release);
+                    mTestButton.setTag(R.string.action_release);
+
+                    soundMeter = new SoundMeter();
+                    soundMeter.start();
+                    soundMeter.getTimer().scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String text = "Level: " + Math.floor(soundMeter.getAmplitude() * 10);
+                                    mMicLevel.setText(text);
+                                }
+                            });
+                        }
+                    }, 0, 300);
+
+                } else {
+                    Flashphoner.releaseLocalMediaAccess();
+                    soundMeter.stop();
+                    mTestButton.setText(R.string.action_test);
+                    mTestButton.setTag(R.string.action_test);
+                }
+            }
+        });
+
+
         mSwitchCameraButton = (Button) findViewById(R.id.switch_camera_button);
 
         /**
@@ -574,6 +590,39 @@ public class MediaDevicesActivity extends AppCompatActivity {
         localRender.setMirror(true);
         localRender.requestLayout();
 
+    }
+
+    @NonNull
+    private Constraints getConstraints() {
+        AudioConstraints audioConstraints = null;
+        if (mSendAudio.isChecked()) {
+            audioConstraints = new AudioConstraints();
+            if (mUseFEC.isChecked()) {
+                audioConstraints.setUseFEC(true);
+            }
+            if (mUseStereo.isChecked()) {
+                audioConstraints.setUseStereo(true);
+            }
+            if (!mDefaultPublishAudioBitrate.isChecked() && mDefaultPublishAudioBitrate.getText().length() > 0) {
+                audioConstraints.setBitrate(Integer.parseInt(mPublishAudioBitrate.getText().toString()));
+            }
+        }
+        VideoConstraints videoConstraints = null;
+        if (mSendVideo.isChecked()) {
+            videoConstraints = new VideoConstraints();
+            videoConstraints.setCameraId(((MediaDevice) mCameraSpinner.getSpinner().getSelectedItem()).getId());
+            if (mCameraFPS.getText().length() > 0) {
+                videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
+            }
+            if (mWidth.getText().length() > 0 && mHeight.getText().length() > 0) {
+                videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
+                        Integer.parseInt(mHeight.getText().toString()));
+            }
+            if (!mDefaultPublishVideoBitrate.isChecked() && mPublishVideoBitrate.getText().length() > 0) {
+                videoConstraints.setBitrate(Integer.parseInt(mPublishVideoBitrate.getText().toString()));
+            }
+        }
+        return new Constraints(audioConstraints, videoConstraints);
     }
 
     @Override
