@@ -55,6 +55,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private static String TAG = MediaDevicesActivity.class.getName();
 
     private static final int PUBLISH_REQUEST_CODE = 100;
+    private static final int TEST_REQUEST_CODE = 101;
 
     // UI references.
     private EditText mWcsUrlView;
@@ -303,6 +304,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     mStartButton.setText(R.string.action_stop);
                                     mStartButton.setTag(R.string.action_stop);
                                     mStartButton.setEnabled(true);
+                                    mTestButton.setEnabled(false);
                                     mStatusView.setText(connection.getStatus());
 
                                     /**
@@ -427,12 +429,14 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     mStartButton.setEnabled(true);
                                     mSwitchCameraButton.setEnabled(false);
                                     mStatusView.setText(connection.getStatus());
+                                    mTestButton.setEnabled(true);
                                 }
                             });
                         }
                     });
 
                     mStartButton.setEnabled(false);
+                    mTestButton.setEnabled(false);
 
                     /**
                      * Connection to WCS server is established with method Session.connect().
@@ -471,30 +475,15 @@ public class MediaDevicesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mTestButton.getTag() == null || Integer.valueOf(R.string.action_test).equals(mTestButton.getTag())) {
-                    Flashphoner.getLocalMediaAccess(getConstraints(), localRender);
-                    mTestButton.setText(R.string.action_release);
-                    mTestButton.setTag(R.string.action_release);
-
-                    soundMeter = new SoundMeter();
-                    soundMeter.start();
-                    soundMeter.getTimer().scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String text = "Level: " + Math.floor(soundMeter.getAmplitude() * 10);
-                                    mMicLevel.setText(text);
-                                }
-                            });
-                        }
-                    }, 0, 300);
-
+                    ActivityCompat.requestPermissions(MediaDevicesActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
+                            TEST_REQUEST_CODE);
                 } else {
                     Flashphoner.releaseLocalMediaAccess();
                     soundMeter.stop();
                     mTestButton.setText(R.string.action_test);
                     mTestButton.setTag(R.string.action_test);
+                    mStartButton.setEnabled(true);
                 }
             }
         });
@@ -634,6 +623,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                         grantResults[0] != PackageManager.PERMISSION_GRANTED ||
                         grantResults[1] != PackageManager.PERMISSION_GRANTED) {
                     mStartButton.setEnabled(false);
+                    mTestButton.setEnabled(false);
                     session.disconnect();
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
@@ -643,6 +633,35 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     publishStream.publish();
                     Log.i(TAG, "Permission has been granted by user");
                 }
+                break;
+            }
+            case TEST_REQUEST_CODE: {
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED ||
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "Permission has been denied by user");
+                } else {
+                    Flashphoner.getLocalMediaAccess(getConstraints(), localRender);
+                    mTestButton.setText(R.string.action_release);
+                    mTestButton.setTag(R.string.action_release);
+                    mStartButton.setEnabled(false);
+                    soundMeter = new SoundMeter();
+                    soundMeter.start();
+                    soundMeter.getTimer().scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String text = "Level: " + Math.floor(soundMeter.getAmplitude() * 10);
+                                    mMicLevel.setText(text);
+                                }
+                            });
+                        }
+                    }, 0, 300);
+                    Log.i(TAG, "Permission has been granted by user");
+                }
+                break;
             }
         }
     }
