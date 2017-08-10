@@ -6,14 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".webview_example.MainActivity"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <EditText
         android:id="@+id/textUrl"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:cursorVisible="true"
-        android:inputType="text"/>
+        android:hint="Url"
+        android:inputType="text">
+        <requestFocus/>
+    </EditText>
     <Button
         android:id="@+id/btnUrl"
         android:layout_width="wrap_content"

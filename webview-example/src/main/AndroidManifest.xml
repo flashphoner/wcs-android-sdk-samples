@@ -12,6 +12,7 @@
             android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name=".webview_example.MainActivity"
+            android:windowSoftInputMode="stateVisible"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
