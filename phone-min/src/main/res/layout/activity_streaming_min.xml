@@ -133,6 +133,48 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <CheckBox
+                android:id="@+id/googEchoCancellationCB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/googechocancellation" />
+
+            <CheckBox
+                android:id="@+id/googAutoGainControlCB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/googautogaincontrol" />
+
+            <CheckBox
+                android:id="@+id/googNoiseSupressionCB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/goognoisesupression" />
+
+            <CheckBox
+                android:id="@+id/googHighpassFilterCB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/googhighpassfilter" />
+
+            <CheckBox
+                android:id="@+id/googEchoCancellation2CB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/googechocancellation2" />
+
+            <CheckBox
+                android:id="@+id/googAutoGainControl2CB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/googautogaincontrol2" />
+
+            <CheckBox
+                android:id="@+id/googNoiseSuppression2CB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/goognoiseSuppression2" />
+
             <TextView
                 android:id="@+id/call_status"
                 android:layout_width="wrap_content"

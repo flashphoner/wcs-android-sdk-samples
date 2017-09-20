@@ -20,5 +20,12 @@
     <string name="action_hangup">Hangup</string>
     <string name="action_hold">Hold</string>
     <string name="action_unhold">Unhold</string>
+    <string name="googechocancellation">googEchoCancellation</string>
+    <string name="googautogaincontrol">googAutoGainControl</string>
+    <string name="googhighpassfilter">googHighpassFilter</string>
+    <string name="goognoisesupression">googNoiseSupression</string>
+    <string name="googechocancellation2">googEchoCancellation2</string>
+    <string name="googautogaincontrol2">googAutoGainControl2</string>
+    <string name="goognoiseSuppression2">googNoiseSuppression2</string>
 
 </resources>

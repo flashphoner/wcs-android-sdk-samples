@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
+import com.flashphoner.fpwcsapi.constraints.AudioConstraints;
 import com.flashphoner.fpwcsapi.session.Call;
 import com.flashphoner.fpwcsapi.session.CallOptions;
 import com.flashphoner.fpwcsapi.session.CallStatusEvent;
@@ -29,6 +30,8 @@ import com.flashphoner.fpwcsapi.session.IncomingCallEvent;
 import com.flashphoner.fpwcsapi.session.Session;
 import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
+
+import org.webrtc.MediaConstraints;
 
 /**
  * Example of a SIP phone built-in into a mobile app
@@ -50,6 +53,15 @@ public class PhoneMinActivity extends AppCompatActivity {
     private TextView mConnectStatus;
     private Button mConnectButton;
     private EditText mCalleeView;
+
+    private CheckBox googEchoCancellation;
+    private CheckBox googAutoGainControl;
+    private CheckBox googNoiseSupression;
+    private CheckBox googHighpassFilter;
+    private CheckBox googEchoCancellation2;
+    private CheckBox googAutoGainControl2;
+    private CheckBox googNoiseSuppression2;
+
     private TextView mCallStatus;
     private Button mCallButton;
     private Button mHoldButton;
@@ -376,6 +388,15 @@ public class PhoneMinActivity extends AppCompatActivity {
 
         mCalleeView = (EditText) findViewById(R.id.callee);
         mCalleeView.setText(sharedPref.getString("callee", getString(R.string.default_callee_name)));
+
+        googEchoCancellation = (CheckBox) findViewById(R.id.googEchoCancellationCB);
+        googAutoGainControl = (CheckBox) findViewById(R.id.googAutoGainControlCB);
+        googNoiseSupression = (CheckBox) findViewById(R.id.googNoiseSupressionCB);
+        googHighpassFilter = (CheckBox) findViewById(R.id.googHighpassFilterCB);
+        googEchoCancellation2 = (CheckBox) findViewById(R.id.googEchoCancellation2CB);
+        googAutoGainControl2 = (CheckBox) findViewById(R.id.googAutoGainControl2CB);
+        googNoiseSuppression2 = (CheckBox) findViewById(R.id.googNoiseSuppression2CB);
+
         mCallStatus = (TextView) findViewById(R.id.call_status);
         mCallButton = (Button) findViewById(R.id.call_button);
         /**
@@ -446,6 +467,24 @@ public class PhoneMinActivity extends AppCompatActivity {
                      * Get call options from the callee text field
                      */
                     CallOptions callOptions = new CallOptions(mCalleeView.getText().toString());
+                    AudioConstraints audioConstraints = callOptions.getConstraints().getAudioConstraints();
+                    MediaConstraints mediaConstraints = audioConstraints.getMediaConstraints();
+
+                    mediaConstraints.optional.add(
+                            new MediaConstraints.KeyValuePair("googEchoCancellation", Boolean.toString(googEchoCancellation.isChecked())));
+                    mediaConstraints.optional.add(
+                            new MediaConstraints.KeyValuePair("googAutoGainControl", Boolean.toString(googAutoGainControl.isChecked())));
+                    mediaConstraints.optional.add(
+                            new MediaConstraints.KeyValuePair("googNoiseSupression", Boolean.toString(googNoiseSupression.isChecked())));
+                    mediaConstraints.optional.add(
+                            new MediaConstraints.KeyValuePair("googHighpassFilter", Boolean.toString(googHighpassFilter.isChecked())));
+                    mediaConstraints.optional.add(
+                            new MediaConstraints.KeyValuePair("googEchoCancellation2", Boolean.toString(googEchoCancellation2.isChecked())));
+                    mediaConstraints.optional.add(
+                            new MediaConstraints.KeyValuePair("googAutoGainControl2", Boolean.toString(googAutoGainControl2.isChecked())));
+                    mediaConstraints.optional.add(
+                            new MediaConstraints.KeyValuePair("googNoiseSuppression2", Boolean.toString(googNoiseSuppression2.isChecked())));
+
                     call = session.createCall(callOptions);
                     call.on(callStatusEvent);
                     /**
