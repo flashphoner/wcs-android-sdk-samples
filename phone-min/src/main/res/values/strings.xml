@@ -27,5 +27,7 @@
     <string name="googechocancellation2">googEchoCancellation2</string>
     <string name="googautogaincontrol2">googAutoGainControl2</string>
     <string name="goognoiseSuppression2">googNoiseSuppression2</string>
+    <string name="proximitySensor">proximitySensor</string>
+    <string name="speakerPhone">speakerPhone</string>
 
 </resources>

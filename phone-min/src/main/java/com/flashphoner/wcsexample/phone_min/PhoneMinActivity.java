@@ -16,10 +16,12 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.flashphoner.fpwcsapi.Flashphoner;
+import com.flashphoner.fpwcsapi.WCSAudioManager;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.constraints.AudioConstraints;
@@ -61,6 +63,9 @@ public class PhoneMinActivity extends AppCompatActivity {
     private CheckBox googEchoCancellation2;
     private CheckBox googAutoGainControl2;
     private CheckBox googNoiseSuppression2;
+
+    private CheckBox mProximitySensor;
+    private CheckBox mSpeakerPhone;
 
     private TextView mCallStatus;
     private Button mCallButton;
@@ -396,6 +401,21 @@ public class PhoneMinActivity extends AppCompatActivity {
         googEchoCancellation2 = (CheckBox) findViewById(R.id.googEchoCancellation2CB);
         googAutoGainControl2 = (CheckBox) findViewById(R.id.googAutoGainControl2CB);
         googNoiseSuppression2 = (CheckBox) findViewById(R.id.googNoiseSuppression2CB);
+
+        mProximitySensor = (CheckBox) findViewById(R.id.proximitySensor);
+        mProximitySensor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Flashphoner.getAudioManager().setUseProximitySensor(isChecked);
+            }
+        });
+        mSpeakerPhone = (CheckBox) findViewById(R.id.speakerPhone);
+        mSpeakerPhone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Flashphoner.getAudioManager().setAudioDevice(isChecked? WCSAudioManager.AudioDevice.SPEAKER_PHONE : WCSAudioManager.AudioDevice.EARPIECE);
+            }
+        });
 
         mCallStatus = (TextView) findViewById(R.id.call_status);
         mCallButton = (Button) findViewById(R.id.call_button);

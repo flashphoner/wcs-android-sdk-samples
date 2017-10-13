@@ -175,6 +175,19 @@
                 android:layout_height="wrap_content"
                 android:text="@string/goognoiseSuppression2" />
 
+            <CheckBox
+                android:id="@+id/proximitySensor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/proximitySensor" />
+
+            <CheckBox
+                android:id="@+id/speakerPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/speakerPhone" />
+
             <TextView
                 android:id="@+id/call_status"
                 android:layout_width="wrap_content"
