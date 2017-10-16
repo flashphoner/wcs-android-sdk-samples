@@ -71,6 +71,9 @@ public class PhoneMinActivity extends AppCompatActivity {
     private Button mCallButton;
     private Button mHoldButton;
 
+    private EditText mDTMF;
+    private Button mDTMFButton;
+
     /**
      * Associated session with WCS
      */
@@ -207,6 +210,7 @@ public class PhoneMinActivity extends AppCompatActivity {
                     public void run() {
                         mCallStatus.setText(call.getStatus());
                         mHoldButton.setEnabled(true);
+                        mDTMFButton.setEnabled(true);
                     }
                 });
 
@@ -228,6 +232,7 @@ public class PhoneMinActivity extends AppCompatActivity {
                         mHoldButton.setText(R.string.action_hold);
                         mHoldButton.setTag(R.string.action_hold);
                         mHoldButton.setEnabled(false);
+                        mDTMFButton.setEnabled(false);
                         if (incomingCallAlert != null) {
                             incomingCallAlert.hide();
                             incomingCallAlert = null;
@@ -313,6 +318,7 @@ public class PhoneMinActivity extends AppCompatActivity {
                                     mHoldButton.setText(R.string.action_hold);
                                     mHoldButton.setTag(R.string.action_hold);
                                     mHoldButton.setEnabled(false);
+                                    mDTMFButton.setEnabled(false);
                                 }
                             });
                         }
@@ -469,6 +475,17 @@ public class PhoneMinActivity extends AppCompatActivity {
                     mHoldButton.setTag(R.string.action_hold);
                 }
 
+            }
+        });
+
+        mDTMF = (EditText) findViewById(R.id.dtmf);
+        mDTMFButton = (Button) findViewById(R.id.dtmf_button);
+        mDTMFButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (call != null) {
+                    call.sendDTMF(mDTMF.getText().toString(), Call.DTMFType.RFC2833);
+                }
             }
         });
     }
