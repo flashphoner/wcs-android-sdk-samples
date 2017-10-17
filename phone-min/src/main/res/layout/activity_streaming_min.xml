@@ -94,11 +94,11 @@
 
 
             <CheckBox
-                android:text="@string/register_required"
+                android:id="@+id/register_required"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:id="@+id/register_required" />
+                android:text="@string/register_required" />
 
             <TextView
                 android:id="@+id/connect_status"
@@ -215,8 +215,32 @@
                 android:enabled="false"
                 android:text="@string/action_hold"
                 android:textStyle="bold" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/dtmf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_dtmf"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:text="1" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/dtmf_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:enabled="false"
+                android:text="@string/action_dtmf"
+                android:textStyle="bold" />
+
         </LinearLayout>
-
-
     </ScrollView>
 </LinearLayout>

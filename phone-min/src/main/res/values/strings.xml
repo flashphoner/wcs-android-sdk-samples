@@ -29,5 +29,7 @@
     <string name="goognoiseSuppression2">googNoiseSuppression2</string>
     <string name="proximitySensor">proximitySensor</string>
     <string name="speakerPhone">speakerPhone</string>
+    <string name="action_dtmf">Send DTMF</string>
+    <string name="prompt_dtmf">dtmf</string>
 
 </resources>
