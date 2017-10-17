@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.flashphoner.fpwcsapi.Flashphoner;
-import com.flashphoner.fpwcsapi.WCSAudioManager;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.constraints.AudioConstraints;
@@ -413,7 +412,7 @@ public class PhoneMinActivity extends AppCompatActivity {
         mSpeakerPhone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Flashphoner.getAudioManager().setAudioDevice(isChecked? WCSAudioManager.AudioDevice.SPEAKER_PHONE : WCSAudioManager.AudioDevice.EARPIECE);
+                Flashphoner.getAudioManager().setUseSpeakerPhone(isChecked);
             }
         });
 
