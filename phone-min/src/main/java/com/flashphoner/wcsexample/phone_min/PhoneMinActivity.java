@@ -31,19 +31,21 @@ import com.flashphoner.fpwcsapi.session.IncomingCallEvent;
 import com.flashphoner.fpwcsapi.session.Session;
 import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.webrtc.MediaConstraints;
+
+import java.util.Map;
 
 /**
  * Example of a SIP phone built-in into a mobile app
  */
 public class PhoneMinActivity extends AppCompatActivity {
 
-    private static String TAG = PhoneMinActivity.class.getName();
-
     private static final int CALL_REQUEST_CODE = 100;
     private static final int INCOMING_CALL_REQUEST_CODE = 101;
-
+    private static String TAG = PhoneMinActivity.class.getName();
     // UI references.
     private EditText mWcsUrlView;
     private EditText mSipLoginView;
@@ -54,6 +56,7 @@ public class PhoneMinActivity extends AppCompatActivity {
     private TextView mConnectStatus;
     private Button mConnectButton;
     private EditText mCalleeView;
+    private EditText mInviteParametersView;
 
     private CheckBox googEchoCancellation;
     private CheckBox googAutoGainControl;
@@ -399,6 +402,8 @@ public class PhoneMinActivity extends AppCompatActivity {
         mCalleeView = (EditText) findViewById(R.id.callee);
         mCalleeView.setText(sharedPref.getString("callee", getString(R.string.default_callee_name)));
 
+        mInviteParametersView = (EditText) findViewById(R.id.invite_parameters);
+
         googEchoCancellation = (CheckBox) findViewById(R.id.googEchoCancellationCB);
         googAutoGainControl = (CheckBox) findViewById(R.id.googAutoGainControlCB);
         googNoiseSupression = (CheckBox) findViewById(R.id.googNoiseSupressionCB);
@@ -521,6 +526,14 @@ public class PhoneMinActivity extends AppCompatActivity {
                     mediaConstraints.optional.add(
                             new MediaConstraints.KeyValuePair("googNoiseSuppression2", Boolean.toString(googNoiseSuppression2.isChecked())));
 
+                    try {
+                        Map<String, String> inviteParameters = new Gson().fromJson(mInviteParametersView.getText().toString(),
+                                new TypeToken<Map<String, String>>() {
+                                }.getType());
+                        callOptions.setInviteParameters(inviteParameters);
+                    } catch (Throwable t) {
+                        Log.e(TAG, "Invite Parameters have wrong format of json object");
+                    }
                     call = session.createCall(callOptions);
                     call.on(callStatusEvent);
                     /**

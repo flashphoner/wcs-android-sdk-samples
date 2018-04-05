@@ -117,6 +117,21 @@
                 android:text="@string/action_connect"
                 android:textStyle="bold" />
 
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/invite_parameters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_invite_parameters"
+                    android:inputType="text"
+                    android:maxLines="5"
+                    android:text="@string/invite_parameters" />
+
+            </android.support.design.widget.TextInputLayout>
+
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
