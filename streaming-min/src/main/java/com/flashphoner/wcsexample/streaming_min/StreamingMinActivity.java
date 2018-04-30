@@ -20,6 +20,7 @@ import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
+import com.flashphoner.fpwcsapi.bean.StreamStatusInfo;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
 import com.flashphoner.fpwcsapi.session.Session;
 import com.flashphoner.fpwcsapi.session.SessionEvent;
@@ -275,7 +276,36 @@ public class StreamingMinActivity extends AppCompatActivity {
                                         mPlayButton.setTag(R.string.action_play);
                                     }
                                     mPlayButton.setEnabled(true);
-                                    mPlayStatus.setText(streamStatus.toString());
+                                    if (StreamStatus.FAILED.equals(streamStatus)){
+                                        switch (stream.getInfo()){
+                                            case StreamStatusInfo.SESSION_DOES_NOT_EXIST:
+                                                mPlayStatus.setText(streamStatus+": Actual session does not exist");
+                                                break;
+                                            case StreamStatusInfo.STOPPED_BY_PUBLISHER_STOP:
+                                                mPlayStatus.setText(streamStatus+": Related publisher stopped its stream or lost connection");
+                                                break;
+                                            case StreamStatusInfo.SESSION_NOT_READY:
+                                                mPlayStatus.setText(streamStatus+": Session is not initialized or terminated on play ordinary stream");
+                                                break;
+                                            case StreamStatusInfo.RTSP_STREAM_NOT_FOUND:
+                                                mPlayStatus.setText(streamStatus+": Rtsp stream not found where agent received '404-Not Found'");
+                                                break;
+                                            case StreamStatusInfo.FAILED_TO_CONNECT_TO_RTSP_STREAM:
+                                                mPlayStatus.setText(streamStatus+": Failed to connect to rtsp stream");
+                                                break;
+                                            case StreamStatusInfo.FILE_NOT_FOUND:
+                                                mPlayStatus.setText(streamStatus+": File does not exist, check filename");
+                                                break;
+                                            case StreamStatusInfo.FILE_HAS_WRONG_FORMAT:
+                                                mPlayStatus.setText(streamStatus+": File has wrong format on play vod, this format is not supported");
+                                                break;
+                                            default:{
+                                               mPlayStatus.setText(stream.getInfo());
+                                           }
+                                        }
+                                    } else {
+                                        mPlayStatus.setText(streamStatus.toString());
+                                    }
                                 }
                             });
                         }
@@ -399,7 +429,18 @@ public class StreamingMinActivity extends AppCompatActivity {
                                         mPublishButton.setTag(R.string.action_publish);
                                     }
                                     mPublishButton.setEnabled(true);
-                                    mPublishStatus.setText(streamStatus.toString());
+                                    if (StreamStatus.FAILED.equals(streamStatus)){
+                                        switch (stream.getInfo()){
+                                            case StreamStatusInfo.STREAM_NAME_ALREADY_IN_USE:
+                                                mPublishStatus.setText(streamStatus+": Server already has a publish stream with the same name, try using different one");
+                                                break;
+                                            default:{
+                                                mPlayStatus.setText(stream.getInfo());
+                                            }
+                                        }
+                                    } else {
+                                        mPublishStatus.setText(streamStatus.toString());
+                                    }
                                 }
                             });
                         }
