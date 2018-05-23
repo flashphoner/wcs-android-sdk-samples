@@ -2,6 +2,7 @@ package com.flashphoner.wcsexample.mediadevices;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,11 +13,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -43,7 +46,6 @@ import org.webrtc.RendererCommon;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -94,16 +96,22 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private Button mTestButton;
     private Button mStartButton;
     private Button mSwitchCameraButton;
+    private Button mSwitchRendererButton;
 
     private Session session;
 
     private Stream publishStream;
     private Stream playStream;
 
+    public Stream getPlayStream() {
+        return playStream;
+    }
+
     private FPSurfaceViewRenderer localRender;
     private TextView mLocalResolutionView;
     private FPSurfaceViewRenderer remoteRender;
     private TextView mRemoteResolutionView;
+    private Spinner spinner;
 
     private PercentFrameLayout localRenderLayout;
     private PercentFrameLayout remoteRenderLayout;
@@ -251,6 +259,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     } catch (IllegalStateException e) {
                         //ignore
                     }
+
                     try {
                         remoteRender.init(null, new RendererCommon.RendererEvents() {
                             @Override
@@ -398,6 +407,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                         playStream.play();
                                                         if (mSendVideo.isChecked())
                                                             mSwitchCameraButton.setEnabled(true);
+                                                        mSwitchRendererButton.setEnabled(true);
                                                     } else {
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                     }
@@ -428,6 +438,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     mStartButton.setTag(R.string.action_start);
                                     mStartButton.setEnabled(true);
                                     mSwitchCameraButton.setEnabled(false);
+                                    mSwitchRendererButton.setEnabled(false);
                                     mStatusView.setText(connection.getStatus());
                                     mTestButton.setEnabled(true);
                                 }
@@ -456,15 +467,21 @@ public class MediaDevicesActivity extends AppCompatActivity {
                      * Connection to WCS server is closed with method Session.disconnect().
                      */
                     session.disconnect();
+
+                    Log.w(TAG, "disconnect: 11");
                 }
 
                 View currentFocus = getCurrentFocus();
+                Log.w(TAG, "disconnect: 12");
                 if (currentFocus != null)
 
                 {
+                    Log.w(TAG, "disconnect: 13");
                     InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    Log.w(TAG, "disconnect: 14");
                     inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
+                Log.w(TAG, "disconnect: 15");
             }
         });
 
@@ -490,6 +507,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
 
         mSwitchCameraButton = (Button) findViewById(R.id.switch_camera_button);
+        mSwitchRendererButton = (Button) findViewById(R.id.switch_renderer_button);
 
         /**
          * Connection to server will be established and stream will be published when Start button is clicked.
@@ -524,6 +542,21 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 }
             }
 
+        });
+
+        mSwitchRendererButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaDevicesActivity.this, NewRenderer.class);
+                String streamId = spinner.getSelectedItemId()==0 ? publishStream.getId() : playStream.getId();
+                if (spinner.getSelectedItemId() == 0){
+                    intent.putExtra("id", publishStream.getId());
+                } else {
+                    intent.putExtra("id", playStream.getId());
+                }
+                intent.putExtra("sid", session.getId());
+                startActivity(intent);
+            }
         });
 
         /**
@@ -567,6 +600,12 @@ public class MediaDevicesActivity extends AppCompatActivity {
         localRenderLayout = (PercentFrameLayout) findViewById(R.id.local_video_layout);
         remoteRenderLayout = (PercentFrameLayout) findViewById(R.id.remote_video_layout);
 
+        spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item);
+        spinnerAdapter.add("local");
+        spinnerAdapter.add("remote");
+        spinner.setAdapter(spinnerAdapter);
+
         localRender.setZOrderMediaOverlay(true);
 
         remoteRenderLayout.setPosition(0, 0, 100, 100);
@@ -578,7 +617,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
-
     }
 
     @NonNull
