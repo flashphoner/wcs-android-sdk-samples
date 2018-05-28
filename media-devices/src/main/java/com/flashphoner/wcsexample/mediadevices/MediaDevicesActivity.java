@@ -2,7 +2,6 @@ package com.flashphoner.wcsexample.mediadevices;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -92,7 +92,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private CheckBox mDefaultPlayQuality;
     private EditText mPlayQuality;
 
-
     private Button mTestButton;
     private Button mStartButton;
     private Button mSwitchCameraButton;
@@ -111,11 +110,15 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private TextView mLocalResolutionView;
     private FPSurfaceViewRenderer remoteRender;
     private TextView mRemoteResolutionView;
+    private FPSurfaceViewRenderer newSurfaceRenderer;
     private Spinner spinner;
 
     private PercentFrameLayout localRenderLayout;
     private PercentFrameLayout remoteRenderLayout;
+    private PercentFrameLayout switchRenderLayout;
 
+    private boolean isSwitchRemoteRenderer = false;
+    private boolean isSwitchLocalRenderer = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,6 +277,20 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                         mRemoteResolutionView.setText(i + "x" + i1);
                                     }
                                 });
+                            }
+                        });
+                    } catch (IllegalStateException e) {
+                        //ignore
+                    }
+
+                    try {
+                        newSurfaceRenderer.init(null, new RendererCommon.RendererEvents() {
+                            @Override
+                            public void onFirstFrameRendered() {
+                            }
+
+                            @Override
+                            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
                             }
                         });
                     } catch (IllegalStateException e) {
@@ -468,20 +485,15 @@ public class MediaDevicesActivity extends AppCompatActivity {
                      */
                     session.disconnect();
 
-                    Log.w(TAG, "disconnect: 11");
                 }
 
                 View currentFocus = getCurrentFocus();
-                Log.w(TAG, "disconnect: 12");
                 if (currentFocus != null)
 
                 {
-                    Log.w(TAG, "disconnect: 13");
                     InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    Log.w(TAG, "disconnect: 14");
                     inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
-                Log.w(TAG, "disconnect: 15");
             }
         });
 
@@ -547,15 +559,31 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mSwitchRendererButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MediaDevicesActivity.this, NewRenderer.class);
-                String streamId = spinner.getSelectedItemId()==0 ? publishStream.getId() : playStream.getId();
                 if (spinner.getSelectedItemId() == 0){
-                    intent.putExtra("id", publishStream.getId());
+                    if (isSwitchRemoteRenderer) {
+                        playStream.switchRenderer(remoteRender);
+                        isSwitchRemoteRenderer = false;
+                    }
+                    if (!isSwitchLocalRenderer) {
+                        publishStream.switchRenderer(newSurfaceRenderer);
+                        isSwitchLocalRenderer = true;
+                    } else {
+                        publishStream.switchRenderer(localRender);
+                        isSwitchLocalRenderer = false;
+                    }
                 } else {
-                    intent.putExtra("id", playStream.getId());
+                    if (isSwitchLocalRenderer) {
+                        publishStream.switchRenderer(localRender);
+                        isSwitchLocalRenderer = false;
+                    }
+                    if (!isSwitchRemoteRenderer) {
+                        playStream.switchRenderer(newSurfaceRenderer);
+                        isSwitchRemoteRenderer = true;
+                    } else {
+                        playStream.switchRenderer(remoteRender);
+                        isSwitchRemoteRenderer = false;
+                    }
                 }
-                intent.putExtra("sid", session.getId());
-                startActivity(intent);
             }
         });
 
@@ -598,7 +626,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
         remoteRender = (FPSurfaceViewRenderer) findViewById(R.id.remote_video_view);
         mRemoteResolutionView = (TextView) findViewById(R.id.remote_resolution);
         localRenderLayout = (PercentFrameLayout) findViewById(R.id.local_video_layout);
+        switchRenderLayout = (PercentFrameLayout) findViewById(R.id.switch_video_layout);
         remoteRenderLayout = (PercentFrameLayout) findViewById(R.id.remote_video_layout);
+        newSurfaceRenderer = (FPSurfaceViewRenderer) findViewById(R.id.new_video_view);
 
         spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item);
@@ -617,6 +647,12 @@ public class MediaDevicesActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+
+        switchRenderLayout.setPosition(0, 0, 100, 100);
+        newSurfaceRenderer.setZOrderMediaOverlay(true);
+        newSurfaceRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+        newSurfaceRenderer.setMirror(true);
+        newSurfaceRenderer.requestLayout();
     }
 
     @NonNull

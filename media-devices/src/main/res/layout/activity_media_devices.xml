@@ -441,6 +441,19 @@
 
             </LinearLayout>
 
+            <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
+                android:id="@+id/switch_video_layout"
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:layout_marginTop="5dp">
+
+                <com.flashphoner.fpwcsapi.FPSurfaceViewRenderer
+                    android:id="@+id/new_video_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

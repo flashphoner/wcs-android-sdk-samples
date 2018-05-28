@@ -31,8 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewRenderer"
-            android:parentActivityName=".MediaDevicesActivity"/>
     </application>
 
 </manifest>
