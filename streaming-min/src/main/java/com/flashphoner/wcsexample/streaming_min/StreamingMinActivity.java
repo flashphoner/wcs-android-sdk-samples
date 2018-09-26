@@ -299,6 +299,9 @@ public class StreamingMinActivity extends AppCompatActivity {
                                             case StreamStatusInfo.FILE_HAS_WRONG_FORMAT:
                                                 mPlayStatus.setText(streamStatus+": File has wrong format on play vod, this format is not supported");
                                                 break;
+                                            case StreamStatusInfo.TRANSCODING_REQUIRED_BUT_DISABLED:
+                                                mPlayStatus.setText(streamStatus+": Transcoding required, but disabled in settings");
+                                                break;
                                             default:{
                                                mPlayStatus.setText(stream.getInfo());
                                            }
