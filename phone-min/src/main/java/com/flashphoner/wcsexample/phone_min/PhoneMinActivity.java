@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -101,6 +103,11 @@ public class PhoneMinActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_streaming_min);
+
+        TextView policyTextView = (TextView) findViewById(R.id.privacy_policy);
+        policyTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        String policyLink ="<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
+        policyTextView.setText(Html.fromHtml(policyLink));
 
         /**
          * Initialization of the API.

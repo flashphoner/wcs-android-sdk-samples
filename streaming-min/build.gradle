@@ -4,14 +4,14 @@ apply plugin: 'com.github.triplet.play'
 Properties signingProps = null
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.2'
 
     defaultConfig {
         applicationId "com.flashphoner.wcsexample.two_way_streaming"
         minSdkVersion 17
-        targetSdkVersion 24
-        versionCode 3
+        targetSdkVersion 28
+        versionCode 4
         versionName "1.0"
     }
 
