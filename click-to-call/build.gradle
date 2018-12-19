@@ -11,7 +11,7 @@ android {
         applicationId "com.flashphoner.wcsexample.click_to_call"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 3
+        versionCode 4
         versionName "1.0"
     }
 

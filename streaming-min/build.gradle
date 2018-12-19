@@ -11,7 +11,7 @@ android {
         applicationId "com.flashphoner.wcsexample.two_way_streaming"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 4
+        versionCode 5
         versionName "1.0"
     }
 
