@@ -251,7 +251,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     }
 
                     try {
-                        localRender.init(null, new RendererCommon.RendererEvents() {
+                        localRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
                             @Override
                             public void onFirstFrameRendered() {
                             }
@@ -271,7 +271,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     }
 
                     try {
-                        remoteRender.init(null, new RendererCommon.RendererEvents() {
+                        remoteRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
                             @Override
                             public void onFirstFrameRendered() {
                             }
@@ -291,7 +291,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     }
 
                     try {
-                        newSurfaceRenderer.init(null, new RendererCommon.RendererEvents() {
+                        newSurfaceRenderer.init(Flashphoner.context, new RendererCommon.RendererEvents() {
                             @Override
                             public void onFirstFrameRendered() {
                             }

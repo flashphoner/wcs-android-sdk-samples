@@ -6,15 +6,13 @@ Properties signingProps = null
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.2'
-
     defaultConfig {
         applicationId "com.flashphoner.wcsexample.click_to_call"
-        minSdkVersion 17
+        minSdkVersion 26
         targetSdkVersion 28
         versionCode 4
         versionName "1.0"
     }
-
     def signingPropsFile = System.getenv('SIGNING_PROPERTIES')
     if (signingPropsFile && new File(signingPropsFile).exists()) {
         signingProps = new Properties()
@@ -29,7 +27,6 @@ android {
             }
         }
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -40,10 +37,14 @@ android {
             }
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':fp_wcs_api')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:28.0.0'

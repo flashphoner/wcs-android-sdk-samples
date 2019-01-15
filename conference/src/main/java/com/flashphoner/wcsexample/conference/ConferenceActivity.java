@@ -315,11 +315,11 @@ public class ConferenceActivity extends AppCompatActivity {
                                      * Playback of the stream being published by the other participant is started with method Participant.play().
                                      * SurfaceViewRenderer to be used to display the video stream is passed when the method is called.
                                      */
-                                    participant.play(participantView.surfaceViewRenderer);
                                     runOnUiThread(
                                             new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    participant.play(participantView.surfaceViewRenderer);
                                                     participantView.login.setText(participant.getName());
                                                 }
                                             }

@@ -34,6 +34,25 @@ OUTPUT_DIR=$EXPORT_DIR/output
 function export_samples {
     
     echo "export_samples"
+
+    if [[ $SDK_FILE == *wcs-android-sdk-1.0* ]]; then
+        echo "Detected sdk v1.0"
+        SDK_VERSION="1.0"
+    elif [[ $SDK_FILE == *wcs-android-sdk-1.1* ]]; then
+        echo "Detected sdk v1.1"
+        SDK_VERSION="1.1"
+    else
+        echo "What version of the android sdk do you use? [1.0/1.1]"
+        read sdkVersion
+        if [[ $sdkVersion == "1.0" ]]; then
+            SDK_VERSION="1.0"
+        elif [[ $sdkVersion == "1.1" ]]; then
+            SDK_VERSION="1.1"
+        else
+            echo "Unknown version of android sdk. Aborting export."
+            exit 1
+        fi
+    fi
     
     if [ -d "$OUTPUT_DIR" ]; then
 	rm -Rf $OUTPUT_DIR	
@@ -57,6 +76,12 @@ function export_sample {
     SAMPLE_DIR_NAME=$1    
     echo "export_sample SAMPLE_DIR_NAME: $SAMPLE_DIR_NAME"
     cp -r $WORK_DIR/$SAMPLE_DIR_NAME $OUTPUT_DIR
+    if [[ $SDK_VERSION == "1.0" ]]; then
+        sed -i.bak 's/minSdkVersion 26/minSdkVersion 17/g' $OUTPUT_DIR/$SAMPLE_DIR_NAME/build.gradle
+        sed -i.bak '/compileOptions {/N;N;N;s/.*sourceCompatibility JavaVersion.VERSION_1_8.*targetCompatibility JavaVersion.VERSION_1_8.*}//g' $OUTPUT_DIR/$SAMPLE_DIR_NAME/build.gradle
+        sed -i.bak '/compileOptions {/d' $OUTPUT_DIR/$SAMPLE_DIR_NAME/build.gradle
+        rm -f $OUTPUT_DIR/build.gradle.bak
+    fi
     DEST_DIR=$OUTPUT_DIR/$SAMPLE_DIR_NAME
     echo DEST_DIR: $DEST_DIR
     remove_dependency_from_build_file $DEST_DIR/build.gradle
@@ -84,7 +109,8 @@ function export_build_configs {
     #build.gradle
     cp $EXPORT_DIR/build.gradle $OUTPUT_DIR
     #replace lib filename
-    sed -i.bak s/fp_wcs_api-release/$SDK_FILE_NAME_WO_EXT/g $OUTPUT_DIR/build.gradle   
+    sed -i.bak s/fp_wcs_api-release/$SDK_FILE_NAME_WO_EXT/g $OUTPUT_DIR/build.gradle
+
     rm -f $OUTPUT_DIR/build.gradle.bak
     
     #gradle.properties
