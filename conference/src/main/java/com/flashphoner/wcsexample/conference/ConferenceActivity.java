@@ -394,7 +394,14 @@ public class ConferenceActivity extends AppCompatActivity {
                              */
                             final ParticipantView participantView = busyViews.get(participant.getName());
                             if (participantView != null) {
-                                participant.play(participantView.surfaceViewRenderer);
+                                runOnUiThread(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                participant.play(participantView.surfaceViewRenderer);
+                                            }
+                                        }
+                                );
                             }
                         }
 

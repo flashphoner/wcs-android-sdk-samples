@@ -106,6 +106,18 @@
                 android:layout_height="200dp">
 
                 <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
+                    android:id="@+id/remote_video_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp">
+
+                    <org.webrtc.SurfaceViewRenderer
+                        android:id="@+id/remote_video_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
+
+                <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
                     android:id="@+id/local_video_layout"
                     android:layout_width="120dp"
                     android:layout_height="90dp"
@@ -119,17 +131,6 @@
 
                 </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
 
-                <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
-                    android:id="@+id/remote_video_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp">
-
-                    <org.webrtc.SurfaceViewRenderer
-                        android:id="@+id/remote_video_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
 
             </RelativeLayout>
 
