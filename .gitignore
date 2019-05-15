@@ -7,7 +7,6 @@
 .DS_Store
 /build
 /captures
-/fp_wcs_api
 */build
 gradlew
 gradlew.bat
