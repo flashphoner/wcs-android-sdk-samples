@@ -309,6 +309,9 @@ public class StreamingMinActivity extends AppCompatActivity {
                                             case StreamStatusInfo.TRANSCODING_REQUIRED_BUT_DISABLED:
                                                 mPlayStatus.setText(streamStatus+": Transcoding required, but disabled in settings");
                                                 break;
+                                            case StreamStatusInfo.NO_AVAILABLE_TRANSCODERS:
+                                                mPlayStatus.setText(streamStatus+": No available transcoders for stream");
+                                                break;
                                             default:{
                                                mPlayStatus.setText(stream.getInfo());
                                            }
