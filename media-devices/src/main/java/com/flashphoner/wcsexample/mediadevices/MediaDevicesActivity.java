@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -121,6 +122,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     private boolean isSwitchRemoteRenderer = false;
     private boolean isSwitchLocalRenderer = false;
+
+    private int volumeLevel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -660,6 +663,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
         newSurfaceRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         newSurfaceRenderer.setMirror(true);
         newSurfaceRenderer.requestLayout();
+
+        volumeLevel = Flashphoner.getVolume();
     }
 
     @NonNull
@@ -745,6 +750,26 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int currentVolume = Flashphoner.getVolume();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (currentVolume == 1 && volumeLevel == 1) {
+                    Flashphoner.setVolume(0);
+                    volumeLevel = 0;
+                }
+                break;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (volumeLevel == 0) {
+                    Flashphoner.setVolume(1);
+                    volumeLevel = 1;
+                }
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
