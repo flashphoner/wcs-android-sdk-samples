@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -123,8 +122,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private boolean isSwitchRemoteRenderer = false;
     private boolean isSwitchLocalRenderer = false;
 
-    private int volumeLevel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,7 +190,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mPlayVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                Flashphoner.setVolume(i);
+                if (b) {
+                    Flashphoner.setVolume(i);
+                }
             }
 
             @Override
@@ -421,6 +420,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                                     public void run() {
                                                                         if (!StreamStatus.PLAYING.equals(streamStatus)) {
                                                                             Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
+                                                                        } else {
+                                                                            Flashphoner.setVolume(mPlayVolume.getProgress());
                                                                         }
                                                                         mStatusView.setText(streamStatus.toString());
                                                                     }
@@ -663,8 +664,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
         newSurfaceRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         newSurfaceRenderer.setMirror(true);
         newSurfaceRenderer.requestLayout();
-
-        volumeLevel = Flashphoner.getVolume();
     }
 
     @NonNull
@@ -757,16 +756,16 @@ public class MediaDevicesActivity extends AppCompatActivity {
         int currentVolume = Flashphoner.getVolume();
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                if (currentVolume == 1 && volumeLevel == 1) {
+                if (currentVolume == 1) {
                     Flashphoner.setVolume(0);
-                    volumeLevel = 0;
                 }
+                mPlayVolume.setProgress(currentVolume-1);
                 break;
             case KeyEvent.KEYCODE_VOLUME_UP:
-                if (volumeLevel == 0) {
+                if (currentVolume == 0) {
                     Flashphoner.setVolume(1);
-                    volumeLevel = 1;
                 }
+                mPlayVolume.setProgress(currentVolume+1);
                 break;
         }
         return super.onKeyDown(keyCode, event);
