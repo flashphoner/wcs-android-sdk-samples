@@ -1,0 +1,131 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".ScreenSharingActivity">
+
+    <ScrollView
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/privacy_policy"
+                android:layout_height="wrap_content"
+                android:layout_width = "match_parent"
+                android:gravity="right"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1.0"
+                android:baselineAligned="false">
+
+                <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
+                    android:id="@+id/local_video_layout"
+                    android:layout_width="0dip"
+                    android:layout_height="200dp"
+                    android:layout_weight=".5">
+
+                    <org.webrtc.SurfaceViewRenderer
+                        android:id="@+id/local_video_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
+
+                <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
+                    android:id="@+id/remote_video_layout"
+                    android:layout_width="0dip"
+                    android:layout_height="200dp"
+                    android:layout_weight=".5">
+
+                    <org.webrtc.SurfaceViewRenderer
+                        android:id="@+id/remote_video_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:weightSum="1.0">
+
+                <CheckBox
+                    android:id="@+id/use_mic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/use_mic" />
+
+                <Spinner
+                    android:id="@+id/spinner_mic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:weightSum="1.0">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".7">
+
+                    <EditText
+                        android:id="@+id/wcs_url"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/prompt_wcs_url"
+                        android:inputType="textUri"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:text="@string/wcs_url" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/connect_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight=".3"
+                    android:text="@string/action_start"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </LinearLayout>
+
+
+    </ScrollView>
+</LinearLayout>
