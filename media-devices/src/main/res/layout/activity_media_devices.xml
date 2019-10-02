@@ -369,6 +369,13 @@
 
                     </android.support.design.widget.TextInputLayout>
 
+                    <CheckBox
+                        android:id="@+id/use_speakerphone"
+                        android:checked="false"
+                        android:text="@string/use_speakerphone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                 </LinearLayout>
             </LinearLayout>
 

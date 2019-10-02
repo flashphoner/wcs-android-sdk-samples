@@ -93,6 +93,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mPlayBitrate;
     private CheckBox mDefaultPlayQuality;
     private EditText mPlayQuality;
+    private CheckBox mSpeakerPhone;
 
     private Button mTestButton;
     private Button mStartButton;
@@ -232,6 +233,14 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
         mPlayQuality = (EditText) findViewById(R.id.play_quality);
+        mSpeakerPhone = (CheckBox) findViewById(R.id.use_speakerphone);
+        mSpeakerPhone.setChecked(Flashphoner.getAudioManager().getAudioManager().isSpeakerphoneOn());
+        mSpeakerPhone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Flashphoner.getAudioManager().setUseSpeakerPhone(isChecked);
+            }
+        });
         mStartButton = (Button) findViewById(R.id.connect_button);
 
         /**

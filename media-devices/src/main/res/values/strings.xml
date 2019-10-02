@@ -31,6 +31,7 @@
     <string name="resolution_default">Resolution (default)</string>
     <string name="bitrate_default">Bitrate (default)</string>
     <string name="quality_default">Quality (default)</string>
+    <string name="use_speakerphone">Use speakerphone</string>
     <string name="publish_bitrate">0</string>
     <string name="play_bitrate">0</string>
     <string name="prompt_publish_bitrate">Publish Bitrate</string>
