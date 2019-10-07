@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -190,7 +191,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mPlayVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                Flashphoner.setVolume(i);
+                if (b) {
+                    Flashphoner.setVolume(i);
+                }
             }
 
             @Override
@@ -418,7 +421,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                                     public void run() {
                                                                         if (!StreamStatus.PLAYING.equals(streamStatus)) {
                                                                             Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
+                                                                        } else {
+                                                                            Flashphoner.setVolume(mPlayVolume.getProgress());
                                                                         }
+
                                                                         mStatusView.setText(streamStatus.toString());
                                                                     }
                                                                 });
@@ -745,6 +751,26 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 break;
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        int currentVolume = Flashphoner.getVolume();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (currentVolume == 1) {
+                    Flashphoner.setVolume(0);
+                }
+                mPlayVolume.setProgress(currentVolume-1);
+                break;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (currentVolume == 0) {
+                    Flashphoner.setVolume(1);
+                }
+                mPlayVolume.setProgress(currentVolume+1);
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
