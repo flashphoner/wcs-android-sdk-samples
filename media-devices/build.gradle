@@ -8,9 +8,9 @@ android {
     buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "com.flashphoner.wcsexample.media_devices"
-        minSdkVersion 26
+        minSdkVersion 17
         targetSdkVersion 28
-        versionCode 5
+        versionCode 1700001
         versionName "1.0"
     }
     def signingPropsFile = System.getenv('SIGNING_PROPERTIES')
