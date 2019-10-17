@@ -10,8 +10,8 @@ android {
         applicationId "com.flashphoner.wcsexample.phone_min_video"
         minSdkVersion 26
         targetSdkVersion 28
-        versionCode 5
-        versionName "1.0"
+        versionCode 2600001
+        versionName "1.1"
     }
     def signingPropsFile = System.getenv('SIGNING_PROPERTIES')
     if (signingPropsFile && new File(signingPropsFile).exists()) {
