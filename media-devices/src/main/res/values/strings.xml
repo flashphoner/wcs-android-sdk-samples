@@ -19,7 +19,7 @@
     <string name="action_stop">Stop</string>
     <string name="action_switch_camera">Switch Camera</string>
     <string name="action_switch_renderer">Switch Renderer</string>
-    <string name="wcs_url">ws://192.168.0.1:8080/test/</string>
+    <string name="wcs_url">ws://192.168.0.1:8080/</string>
     <string name="camera_fps">25</string>
     <string name="camera_width">640</string>
     <string name="camera_height">480</string>
@@ -41,5 +41,7 @@
     <string name="use_stereo">Stereo</string>
     <string name="prompt_publish_audio_bitrate">Publish Bitrate</string>
     <string name="publish_audio_bitrate">0</string>
+    <string name="prompt_stream_name">Stream name</string>
+    <string name="stream_name">test</string>
 
 </resources>

@@ -46,8 +46,9 @@ import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.webrtc.RendererCommon;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimerTask;
 
 /**
@@ -63,6 +64,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     // UI references.
     private EditText mWcsUrlView;
+    private EditText mStreamNameView;
     private TextView mStatusView;
     private CheckBox mSendAudio;
     private Switch mMuteAudio;
@@ -141,6 +143,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mWcsUrlView = (EditText) findViewById(R.id.wcs_url);
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         mWcsUrlView.setText(sharedPref.getString("wcs_url", getString(R.string.wcs_url)));
+        mStreamNameView = (EditText) findViewById(R.id.stream_name);
         mStatusView = (TextView) findViewById(R.id.status);
 
         mSendAudio = (CheckBox) findViewById(R.id.send_audio);
@@ -250,16 +253,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mStartButton.getTag() == null || Integer.valueOf(R.string.action_start).equals(mStartButton.getTag())) {
-                    String url;
-                    final String streamName;
-                    try {
-                        URI u = new URI(mWcsUrlView.getText().toString());
-                        url = u.getScheme() + "://" + u.getHost() + ":" + u.getPort();
-                        streamName = u.getPath().replaceAll("/", "");
-                    } catch (URISyntaxException e) {
-                        mStatusView.setText("Wrong uri");
-                        return;
-                    }
+                    String url = mWcsUrlView.getText().toString();
+                    final String streamName = mStreamNameView.getText().toString();
 
                     try {
                         localRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
@@ -489,7 +484,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     /**
                      * Connection to WCS server is established with method Session.connect().
                      */
-                    session.connect(new Connection());
+                    session.connect(new Connection(), getBasicAuthHeader(url));
 
                     SharedPreferences sharedPref = MediaDevicesActivity.this.getPreferences(Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
@@ -673,6 +668,20 @@ public class MediaDevicesActivity extends AppCompatActivity {
         newSurfaceRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         newSurfaceRenderer.setMirror(true);
         newSurfaceRenderer.requestLayout();
+    }
+
+    private Map<String, String> getBasicAuthHeader(String url) {
+        if (url.contains("@")) {
+            String authorization = url.substring(url.indexOf(":")+3, url.indexOf("@"));
+            String base64Auth = Base64.getEncoder().encodeToString(authorization.getBytes());
+            String header = "Basic " + base64Auth;
+            Map<String, String> basicAuthheader = new HashMap<>();
+            basicAuthheader.put("Authorization", header);
+
+            return basicAuthheader;
+        }
+
+        return null;
     }
 
     @NonNull

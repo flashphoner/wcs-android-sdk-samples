@@ -402,6 +402,21 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/stream_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_stream_name"
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:text="@string/stream_name" />
+
+            </android.support.design.widget.TextInputLayout>
+
             <Button
                 android:id="@+id/test_button"
                 style="?android:textAppearanceSmall"
