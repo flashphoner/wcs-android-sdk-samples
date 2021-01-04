@@ -101,15 +101,13 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private Button mStartButton;
     private Button mSwitchCameraButton;
     private Button mSwitchRendererButton;
+    private Button mSwitchFlashlightButton;
 
     private Session session;
 
     private Stream publishStream;
     private Stream playStream;
-
-    public Stream getPlayStream() {
-        return playStream;
-    }
+    private boolean flashlight = false;
 
     private FPSurfaceViewRenderer localRender;
     private TextView mLocalResolutionView;
@@ -252,6 +250,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mStartButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                muteButton();
                 if (mStartButton.getTag() == null || Integer.valueOf(R.string.action_start).equals(mStartButton.getTag())) {
                     String url = mWcsUrlView.getText().toString();
                     final String streamName = mStreamNameView.getText().toString();
@@ -340,10 +339,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStartButton.setText(R.string.action_stop);
-                                    mStartButton.setTag(R.string.action_stop);
-                                    mStartButton.setEnabled(true);
-                                    mTestButton.setEnabled(false);
                                     mStatusView.setText(connection.getStatus());
 
                                     /**
@@ -426,6 +421,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                                             Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
                                                                         } else {
                                                                             Flashphoner.setVolume(mPlayVolume.getProgress());
+                                                                            onStarted();
                                                                         }
                                                                         mStatusView.setText(streamStatus.toString());
                                                                     }
@@ -437,9 +433,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                          * Method Stream.play() is called to start playback of the stream.
                                                          */
                                                         playStream.play();
-                                                        if (mSendVideo.isChecked())
-                                                            mSwitchCameraButton.setEnabled(true);
-                                                        mSwitchRendererButton.setEnabled(true);
                                                     } else {
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                     }
@@ -466,20 +459,12 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStartButton.setText(R.string.action_start);
-                                    mStartButton.setTag(R.string.action_start);
-                                    mStartButton.setEnabled(true);
-                                    mSwitchCameraButton.setEnabled(false);
-                                    mSwitchRendererButton.setEnabled(false);
                                     mStatusView.setText(connection.getStatus());
-                                    mTestButton.setEnabled(true);
+                                    onStopped();
                                 }
                             });
                         }
                     });
-
-                    mStartButton.setEnabled(false);
-                    mTestButton.setEnabled(false);
 
                     /**
                      * Connection to WCS server is established with method Session.connect().
@@ -490,16 +475,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("wcs_url", mWcsUrlView.getText().toString());
                     editor.apply();
-                } else
-
-                {
-                    mStartButton.setEnabled(false);
-
+                } else {
                     /**
                      * Connection to WCS server is closed with method Session.disconnect().
                      */
                     session.disconnect();
-
                 }
 
                 View currentFocus = getCurrentFocus();
@@ -527,7 +507,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     soundMeter.stop();
                     mTestButton.setText(R.string.action_test);
                     mTestButton.setTag(R.string.action_test);
-                    mStartButton.setEnabled(true);
+                    onStopped();
                 }
             }
         });
@@ -535,6 +515,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
         mSwitchCameraButton = (Button) findViewById(R.id.switch_camera_button);
         mSwitchRendererButton = (Button) findViewById(R.id.switch_renderer_button);
+        mSwitchFlashlightButton = (Button) findViewById(R.id.switch_flashlight_button);
 
         /**
          * Connection to server will be established and stream will be published when Start button is clicked.
@@ -543,14 +524,17 @@ public class MediaDevicesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (publishStream != null) {
-                    mSwitchCameraButton.setEnabled(false);
+                    turnOffFlashlight();
+                    muteButton();
                     publishStream.switchCamera(new CameraSwitchHandler() {
                         @Override
                         public void onCameraSwitchDone(boolean var1) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mSwitchCameraButton.setEnabled(true);
+                                    if (mStartButton.getTag() == null || Integer.valueOf(R.string.action_stop).equals(mStartButton.getTag())) {
+                                        unmuteButton();
+                                    }
                                 }
                             });
 
@@ -561,7 +545,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mSwitchCameraButton.setEnabled(true);
+                                    unmuteButton();
                                 }
                             });
                         }
@@ -598,6 +582,17 @@ public class MediaDevicesActivity extends AppCompatActivity {
                         playStream.switchRenderer(remoteRender);
                         isSwitchRemoteRenderer = false;
                     }
+                }
+            }
+        });
+
+        mSwitchFlashlightButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (flashlight) {
+                    turnOffFlashlight();
+                } else {
+                    turnOnFlashlight();
                 }
             }
         });
@@ -670,6 +665,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
         newSurfaceRenderer.requestLayout();
     }
 
+    public Stream getPlayStream() {
+        return playStream;
+    }
+
     private Map<String, String> getBasicAuthHeader(String url) {
         if (url.contains("@")) {
             String authorization = url.substring(url.indexOf(":")+3, url.indexOf("@"));
@@ -682,6 +681,58 @@ public class MediaDevicesActivity extends AppCompatActivity {
         }
 
         return null;
+    }
+
+    private void muteButton() {
+        mStartButton.setEnabled(false);
+        mTestButton.setEnabled(false);
+        mSwitchCameraButton.setEnabled(false);
+        mSwitchFlashlightButton.setEnabled(false);
+        mSwitchRendererButton.setEnabled(false);
+    }
+
+    private void unmuteButton() {
+        mStartButton.setEnabled(true);
+        mSwitchCameraButton.setEnabled(true);
+        mSwitchRendererButton.setEnabled(true);
+        if (mSendVideo.isChecked()) {
+            mSwitchCameraButton.setEnabled(true);
+        }
+        if (Flashphoner.isFlashlightSupport()) {
+            mSwitchFlashlightButton.setEnabled(true);
+        }
+    }
+
+    private void onStarted() {
+        mStartButton.setText(R.string.action_stop);
+        mStartButton.setTag(R.string.action_stop);
+        mTestButton.setEnabled(false);
+        unmuteButton();
+    }
+
+    private void onStopped() {
+        mStartButton.setText(R.string.action_start);
+        mStartButton.setTag(R.string.action_start);
+        mStartButton.setEnabled(true);
+        mTestButton.setEnabled(true);
+        mSwitchCameraButton.setEnabled(false);
+        mSwitchRendererButton.setEnabled(false);
+        mSwitchFlashlightButton.setEnabled(false);
+
+        turnOffFlashlight();
+    }
+
+    private void turnOnFlashlight() {
+        if (Flashphoner.turnOnFlashlight()) {
+            mSwitchFlashlightButton.setText(getResources().getString(R.string.turn_off_flashlight));
+            flashlight = true;
+        }
+    }
+
+    private void turnOffFlashlight() {
+        Flashphoner.turnOffFlashlight();
+        mSwitchFlashlightButton.setText(getResources().getString(R.string.turn_on_flashlight));
+        flashlight = false;
     }
 
     @NonNull
@@ -725,8 +776,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 if (grantResults.length == 0 ||
                         grantResults[0] != PackageManager.PERMISSION_GRANTED ||
                         grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-                    mStartButton.setEnabled(false);
-                    mTestButton.setEnabled(false);
+                    muteButton();
                     session.disconnect();
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
@@ -744,10 +794,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
                         grantResults[1] != PackageManager.PERMISSION_GRANTED) {
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
+                    muteButton();
                     Flashphoner.getLocalMediaAccess(getConstraints(), localRender);
                     mTestButton.setText(R.string.action_release);
                     mTestButton.setTag(R.string.action_release);
-                    mStartButton.setEnabled(false);
                     soundMeter = new SoundMeter();
                     soundMeter.start();
                     soundMeter.getTimer().scheduleAtFixedRate(new TimerTask() {
@@ -762,6 +812,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             });
                         }
                     }, 0, 300);
+                    mTestButton.setEnabled(true);
                     Log.i(TAG, "Permission has been granted by user");
                 }
                 break;
@@ -797,4 +848,3 @@ public class MediaDevicesActivity extends AppCompatActivity {
         }
     }
 }
-
