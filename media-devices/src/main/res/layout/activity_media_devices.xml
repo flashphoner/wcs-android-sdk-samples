@@ -417,6 +417,13 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <CheckBox
+                android:id="@+id/trust_all_certificates_default"
+                android:checked="false"
+                android:text="@string/trust_all_certificates_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <Button
                 android:id="@+id/test_button"
                 style="?android:textAppearanceSmall"

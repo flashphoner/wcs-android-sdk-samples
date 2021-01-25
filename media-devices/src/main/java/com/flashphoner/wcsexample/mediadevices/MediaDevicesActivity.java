@@ -96,6 +96,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private CheckBox mDefaultPlayQuality;
     private EditText mPlayQuality;
     private CheckBox mSpeakerPhone;
+    private CheckBox mTrustAllCer;
 
     private Button mTestButton;
     private Button mStartButton;
@@ -242,6 +243,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 Flashphoner.getAudioManager().setUseSpeakerPhone(isChecked);
             }
         });
+        mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
         mStartButton = (Button) findViewById(R.id.connect_button);
 
         /**
@@ -319,6 +321,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(url);
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
+                    sessionOptions.trustAllCertificates(mTrustAllCer.isChecked());
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
