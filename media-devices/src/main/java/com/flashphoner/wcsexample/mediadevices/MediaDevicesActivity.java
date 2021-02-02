@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -95,7 +96,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mPlayBitrate;
     private CheckBox mDefaultPlayQuality;
     private EditText mPlayQuality;
-    private CheckBox mSpeakerPhone;
+    private LabelledSpinner mAudioOutput;
     private CheckBox mTrustAllCer;
 
     private Button mTestButton;
@@ -235,14 +236,27 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
         mPlayQuality = (EditText) findViewById(R.id.play_quality);
-        mSpeakerPhone = (CheckBox) findViewById(R.id.use_speakerphone);
-        mSpeakerPhone.setChecked(Flashphoner.getAudioManager().getAudioManager().isSpeakerphoneOn());
-        mSpeakerPhone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mAudioOutput = (LabelledSpinner) findViewById(R.id.audio_output);
+        mAudioOutput.setOnItemChosenListener(new LabelledSpinner.OnItemChosenListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Flashphoner.getAudioManager().setUseSpeakerPhone(isChecked);
+            public void onItemChosen(View labelledSpinner, AdapterView<?> adapterView, View itemView, int position, long id) {
+                String audioType = getResources().getStringArray(R.array.audio_output)[position];
+                switch (audioType) {
+                    case "speakerphone": Flashphoner.getAudioManager().setUseSpeakerPhone(true); break;
+                    case "phone":
+                        Flashphoner.getAudioManager().setUseBluetoothSco(false);
+                        Flashphoner.getAudioManager().setUseSpeakerPhone(false);
+                        break;
+                    case "bluetooth": Flashphoner.getAudioManager().setUseBluetoothSco(true); break;
+                }
+            }
+
+            @Override
+            public void onNothingChosen(View labelledSpinner, AdapterView<?> adapterView) {
+
             }
         });
+
         mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
         mStartButton = (Button) findViewById(R.id.connect_button);
 

@@ -369,12 +369,13 @@
 
                     </android.support.design.widget.TextInputLayout>
 
-                    <CheckBox
-                        android:id="@+id/use_speakerphone"
-                        android:checked="false"
-                        android:text="@string/use_speakerphone"
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/audio_output"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="Audio output"
+                        ls:spinnerEntries="@array/audio_output"/>
 
                 </LinearLayout>
             </LinearLayout>

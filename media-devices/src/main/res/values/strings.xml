@@ -33,7 +33,6 @@
     <string name="resolution_default">Resolution (default)</string>
     <string name="bitrate_default">Bitrate (default)</string>
     <string name="quality_default">Quality (default)</string>
-    <string name="use_speakerphone">Use speakerphone</string>
     <string name="publish_bitrate">0</string>
     <string name="play_bitrate">0</string>
     <string name="prompt_publish_bitrate">Publish Bitrate</string>
@@ -46,5 +45,10 @@
     <string name="prompt_stream_name">Stream name</string>
     <string name="stream_name">test</string>
     <string name="trust_all_certificates_default">Trust all ssl-certificates</string>
+    <string-array name="audio_output">
+        <item>speakerphone</item>
+        <item>phone</item>
+        <item>bluetooth</item>
+    </string-array>
 
 </resources>
