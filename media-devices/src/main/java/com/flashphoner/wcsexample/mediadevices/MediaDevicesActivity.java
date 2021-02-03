@@ -94,7 +94,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private CheckBox mDefaultPlayQuality;
     private EditText mPlayQuality;
     private CheckBox mSpeakerPhone;
-
+    private CheckBox mTrustAllCer;
     private Button mTestButton;
     private Button mStartButton;
     private Button mSwitchCameraButton;
@@ -242,6 +242,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
 
+        mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
         mStartButton = (Button) findViewById(R.id.connect_button);
 
         /**
@@ -250,6 +251,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mStartButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                muteButton();
                 if (mStartButton.getTag() == null || Integer.valueOf(R.string.action_start).equals(mStartButton.getTag())) {
                     String url;
                     final String streamName;
@@ -326,6 +328,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(url);
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
+                    sessionOptions.trustAllCertificates(mTrustAllCer.isChecked());
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -346,10 +349,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStartButton.setText(R.string.action_stop);
-                                    mStartButton.setTag(R.string.action_stop);
-                                    mStartButton.setEnabled(true);
-                                    mTestButton.setEnabled(false);
                                     mStatusView.setText(connection.getStatus());
 
                                     /**
@@ -432,6 +431,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                                             Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
                                                                         } else {
                                                                             Flashphoner.setVolume(mPlayVolume.getProgress());
+                                                                            onStarted();
                                                                         }
 
                                                                         mStatusView.setText(streamStatus.toString());
@@ -444,9 +444,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                          * Method Stream.play() is called to start playback of the stream.
                                                          */
                                                         playStream.play();
-                                                        if (mSendVideo.isChecked())
-                                                            mSwitchCameraButton.setEnabled(true);
-                                                        mSwitchRendererButton.setEnabled(true);
                                                     } else {
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                     }
@@ -473,20 +470,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStartButton.setText(R.string.action_start);
-                                    mStartButton.setTag(R.string.action_start);
-                                    mStartButton.setEnabled(true);
-                                    mSwitchCameraButton.setEnabled(false);
-                                    mSwitchRendererButton.setEnabled(false);
-                                    mStatusView.setText(connection.getStatus());
-                                    mTestButton.setEnabled(true);
+                                    onStopped();
                                 }
                             });
                         }
                     });
-
-                    mStartButton.setEnabled(false);
-                    mTestButton.setEnabled(false);
 
                     /**
                      * Connection to WCS server is established with method Session.connect().
@@ -500,7 +488,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 } else
 
                 {
-                    mStartButton.setEnabled(false);
 
                     /**
                      * Connection to WCS server is closed with method Session.disconnect().
@@ -534,7 +521,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     soundMeter.stop();
                     mTestButton.setText(R.string.action_test);
                     mTestButton.setTag(R.string.action_test);
-                    mStartButton.setEnabled(true);
+                    onStopped();
                 }
             }
         });
@@ -550,14 +537,17 @@ public class MediaDevicesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (publishStream != null) {
-                    mSwitchCameraButton.setEnabled(false);
+                    muteButton();
                     publishStream.switchCamera(new CameraSwitchHandler() {
                         @Override
                         public void onCameraSwitchDone(boolean var1) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mSwitchCameraButton.setEnabled(true);
+                                    if (mStartButton.getTag() == null || Integer.valueOf(R.string.action_stop).equals(mStartButton.getTag())) {
+                                        unmuteButton();
+                                    }
+
                                 }
                             });
 
@@ -568,7 +558,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mSwitchCameraButton.setEnabled(true);
+                                    unmuteButton();
                                 }
                             });
                         }
@@ -677,6 +667,39 @@ public class MediaDevicesActivity extends AppCompatActivity {
         newSurfaceRenderer.requestLayout();
     }
 
+    private void muteButton() {
+        mStartButton.setEnabled(false);
+        mTestButton.setEnabled(false);
+        mSwitchCameraButton.setEnabled(false);
+        mSwitchRendererButton.setEnabled(false);
+    }
+
+    private void unmuteButton() {
+        mStartButton.setEnabled(true);
+        mSwitchCameraButton.setEnabled(true);
+        mSwitchRendererButton.setEnabled(true);
+        if (mSendVideo.isChecked()) {
+            mSwitchCameraButton.setEnabled(true);
+        }
+    }
+
+    private void onStarted() {
+        mStartButton.setText(R.string.action_stop);
+        mStartButton.setTag(R.string.action_stop);
+        mTestButton.setEnabled(false);
+        unmuteButton();
+    }
+
+    private void onStopped() {
+        mStartButton.setText(R.string.action_start);
+        mStartButton.setTag(R.string.action_start);
+        mStartButton.setEnabled(true);
+        mTestButton.setEnabled(true);
+        mSwitchCameraButton.setEnabled(false);
+        mSwitchRendererButton.setEnabled(false);
+    }
+
+
     @NonNull
     private Constraints getConstraints() {
         AudioConstraints audioConstraints = null;
@@ -718,8 +741,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 if (grantResults.length == 0 ||
                         grantResults[0] != PackageManager.PERMISSION_GRANTED ||
                         grantResults[1] != PackageManager.PERMISSION_GRANTED) {
-                    mStartButton.setEnabled(false);
-                    mTestButton.setEnabled(false);
                     session.disconnect();
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
@@ -737,10 +758,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
                         grantResults[1] != PackageManager.PERMISSION_GRANTED) {
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
+                    muteButton();
                     Flashphoner.getLocalMediaAccess(getConstraints(), localRender);
                     mTestButton.setText(R.string.action_release);
                     mTestButton.setTag(R.string.action_release);
-                    mStartButton.setEnabled(false);
                     soundMeter = new SoundMeter();
                     soundMeter.start();
                     soundMeter.getTimer().scheduleAtFixedRate(new TimerTask() {
@@ -755,6 +776,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             });
                         }
                     }, 0, 300);
+                    mTestButton.setEnabled(true);
                     Log.i(TAG, "Permission has been granted by user");
                 }
                 break;
