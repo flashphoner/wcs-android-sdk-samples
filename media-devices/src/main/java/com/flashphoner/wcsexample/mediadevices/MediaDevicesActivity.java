@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -43,6 +44,7 @@ import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
+import com.flashphoner.fpwcsapi.ws.ConnectionQuality;
 import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.webrtc.RendererCommon;
@@ -104,6 +106,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private Button mSwitchCameraButton;
     private Button mSwitchRendererButton;
     private Button mSwitchFlashlightButton;
+
+    private TextView mUpdateQualityStatus;
+    private TextView mDownloadQualityStatus;
 
     private Session session;
 
@@ -380,6 +385,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     if (mMuteVideo.isChecked()) {
                                         publishStream.muteVideo();
                                     }
+                                    publishStream.enableConnectionQualityCalculation(true);
+                                    publishStream.setConnectionQualityCallback((quality, clientRate, serverRate) -> {
+                                        updateQualityStatus(quality, mUpdateQualityStatus);
+                                    });
                                     /**
                                      * Callback function for stream status change is added to play the stream when it is published.
                                      */
@@ -424,6 +433,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                          * Stream is created with method Session.createStream().
                                                          */
                                                         playStream = session.createStream(streamOptions);
+
+                                                        playStream.enableConnectionQualityCalculation(true);
+                                                        playStream.setConnectionQualityCallback((quality, clientRate, serverRate) -> {
+                                                            updateQualityStatus(quality, mDownloadQualityStatus);
+                                                        });
 
                                                         /**
                                                          * Callback function for stream status change is added to display the status.
@@ -477,6 +491,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     mStatusView.setText(connection.getStatus());
+                                    updateQualityStatus(ConnectionQuality.UNKNOWN, mUpdateQualityStatus);
+                                    updateQualityStatus(ConnectionQuality.UNKNOWN, mDownloadQualityStatus);
                                     onStopped();
                                 }
                             });
@@ -533,6 +549,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mSwitchCameraButton = (Button) findViewById(R.id.switch_camera_button);
         mSwitchRendererButton = (Button) findViewById(R.id.switch_renderer_button);
         mSwitchFlashlightButton = (Button) findViewById(R.id.switch_flashlight_button);
+
+        mUpdateQualityStatus = (TextView) findViewById(R.id.upload_quality_status);
+        mDownloadQualityStatus = (TextView) findViewById(R.id.download_quality_status);
 
         /**
          * Connection to server will be established and stream will be published when Start button is clicked.
@@ -680,6 +699,22 @@ public class MediaDevicesActivity extends AppCompatActivity {
         newSurfaceRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         newSurfaceRenderer.setMirror(true);
         newSurfaceRenderer.requestLayout();
+    }
+
+    public void updateQualityStatus(ConnectionQuality quality, TextView textView) {
+        int color;
+        switch (quality) {
+            case BAD: color = Color.RED; break;
+            case GOOD: color = Color.YELLOW; break;
+            case PERFECT: color = Color.GREEN; break;
+            case UPDATE:
+            case UNKNOWN:
+            default: color = Color.LTGRAY;
+        }
+        runOnUiThread(() -> {
+            textView.setText(quality.toString());
+            textView.setTextColor(color);
+        });
     }
 
     public Stream getPlayStream() {
