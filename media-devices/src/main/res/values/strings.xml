@@ -42,5 +42,10 @@
     <string name="prompt_publish_audio_bitrate">Publish Bitrate</string>
     <string name="publish_audio_bitrate">0</string>
     <string name="trust_all_certificates_default">Trust all ssl-certificates</string>
+    <string-array name="audio_output">
+        <item>speakerphone</item>
+        <item>phone</item>
+        <item>bluetooth</item>
+    </string-array>
 
 </resources>
