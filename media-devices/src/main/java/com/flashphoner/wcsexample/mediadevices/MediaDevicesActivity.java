@@ -483,6 +483,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    mStatusView.setText(connection.getStatus());
                                     onStopped();
                                 }
                             });
@@ -689,9 +690,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     private void unmuteButton() {
         mStartButton.setEnabled(true);
-        mSwitchCameraButton.setEnabled(true);
-        mSwitchRendererButton.setEnabled(true);
         if (mSendVideo.isChecked()) {
+            mSwitchRendererButton.setEnabled(true);
             mSwitchCameraButton.setEnabled(true);
         }
     }
