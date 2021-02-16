@@ -501,6 +501,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     mStatusView.setText(connection.getStatus());
                                     updateQualityStatus(ConnectionQuality.UNKNOWN, mUpdateQualityStatus);
                                     updateQualityStatus(ConnectionQuality.UNKNOWN, mDownloadQualityStatus);
+                                    mStatusView.setText(connection.getStatus());
                                     onStopped();
                                 }
                             });
@@ -753,9 +754,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     private void unmuteButton() {
         mStartButton.setEnabled(true);
-        mSwitchCameraButton.setEnabled(true);
-        mSwitchRendererButton.setEnabled(true);
         if (mSendVideo.isChecked()) {
+            mSwitchRendererButton.setEnabled(true);
             mSwitchCameraButton.setEnabled(true);
         }
         if (Flashphoner.isFlashlightSupport()) {
