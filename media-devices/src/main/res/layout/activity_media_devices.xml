@@ -223,6 +223,14 @@
                         android:text="@string/mute_video"
                         android:id="@+id/mute_video"/>
 
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/transport_output"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="@string/prompt_transport"
+                        ls:spinnerEntries="@array/transport"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -376,6 +384,14 @@
                         android:layout_gravity="center_horizontal"
                         ls:labelText="Audio output"
                         ls:spinnerEntries="@array/audio_output"/>
+
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/transport_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="@string/prompt_transport"
+                        ls:spinnerEntries="@array/transport"/>
 
                 </LinearLayout>
             </LinearLayout>
