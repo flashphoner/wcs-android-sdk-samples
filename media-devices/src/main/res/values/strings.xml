@@ -47,5 +47,8 @@
         <item>phone</item>
         <item>bluetooth</item>
     </string-array>
+    <string name="upload_quality">Upload quality:&#160;</string>
+    <string name="download_quality">Download quality:&#160;</string>
+    <string name="unknown">UNKNOWN</string>
 
 </resources>
