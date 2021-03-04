@@ -50,5 +50,9 @@
     <string name="upload_quality">Upload quality:&#160;</string>
     <string name="download_quality">Download quality:&#160;</string>
     <string name="unknown">UNKNOWN</string>
-
+    <string name="prompt_transport">Transport</string>
+    <string-array name="transport">
+        <item>UDP</item>
+        <item>TCP</item>
+    </string-array>
 </resources>

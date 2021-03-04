@@ -44,6 +44,7 @@ import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
+import com.flashphoner.fpwcsapi.session.Transport;
 import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
 import com.flashphoner.fpwcsapi.ws.ConnectionQuality;
 import com.satsuware.usefulviews.LabelledSpinner;
@@ -99,6 +100,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mPlayQuality;
     private CheckBox mTrustAllCer;
     private LabelledSpinner mAudioOutput;
+    private LabelledSpinner mTransportOutput;
+    private LabelledSpinner mTransportInput;
+
     private Button mTestButton;
     private Button mStartButton;
     private Button mSwitchCameraButton;
@@ -261,6 +265,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
 
+        mTransportOutput = (LabelledSpinner) findViewById(R.id.transport_output);
+        mTransportInput = (LabelledSpinner) findViewById(R.id.transport_input);
+
         mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
         mStartButton = (Button) findViewById(R.id.connect_button);
 
@@ -381,6 +388,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                     streamOptions.setConstraints(constraints);
                                     String[] stripCodec = {(String) mStripStreamerCodec.getSpinner().getSelectedItem()};
                                     streamOptions.setStripCodecs(stripCodec);
+                                    streamOptions.setTransport(Transport.valueOf(mTransportOutput.getSpinner().getSelectedItem().toString()));
 
                                     /**
                                      * Stream is created with method Session.createStream().
@@ -439,6 +447,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                                         streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
                                                         String[] stripCodec = {(String) mStripPlayerCodec.getSpinner().getSelectedItem()};
                                                         streamOptions.setStripCodecs(stripCodec);
+                                                        streamOptions.setTransport(Transport.valueOf(mTransportInput.getSpinner().getSelectedItem().toString()));
                                                         /**
                                                          * Stream is created with method Session.createStream().
                                                          */
