@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">MCU Client</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="action_start">Start</string>
+    <string name="action_stop">Stop</string>
+    <string name="wcs_url">ws://192.168.0.1:8080/</string>
+    <string name="send_audio">Send Audio</string>
+    <string name="send_video">Send Video</string>
+    <string name="prompt_login">Login</string>
+    <string name="prompt_room">Room</string>
+    <string name="login">test</string>
+    <string name="room">test_room</string>
+    <string name="prompt_transport">Transport</string>
+    <string-array name="transport">
+        <item>UDP</item>
+        <item>TCP</item>
+    </string-array>
+
+</resources>
