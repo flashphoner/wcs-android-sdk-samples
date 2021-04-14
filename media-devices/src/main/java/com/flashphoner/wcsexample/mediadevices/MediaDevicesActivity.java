@@ -32,6 +32,9 @@ import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
+import com.flashphoner.fpwcsapi.camera.CameraCapturerFactory;
+import com.flashphoner.fpwcsapi.camera.CustomCameraCapturerOptions;
+import com.flashphoner.fpwcsapi.camera.CustomCameras;
 import com.flashphoner.fpwcsapi.constraints.AudioConstraints;
 import com.flashphoner.fpwcsapi.constraints.Constraints;
 import com.flashphoner.fpwcsapi.constraints.VideoConstraints;
@@ -48,6 +51,7 @@ import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
 import com.flashphoner.fpwcsapi.ws.ConnectionQuality;
 import com.satsuware.usefulviews.LabelledSpinner;
 
+import org.webrtc.CameraVideoCapturer;
 import org.webrtc.RendererCommon;
 
 import java.util.Base64;
@@ -73,6 +77,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private CheckBox mSendAudio;
     private Switch mMuteAudio;
     private Switch mMuteVideo;
+    private LabelledSpinner mCameraCapturer;
     private LabelledSpinner mMicSpinner;
     private TextView mMicLevel;
     private SoundMeter soundMeter;
@@ -676,6 +681,35 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
 
+        CameraCapturerFactory.getInstance().setCustomCameraCapturerOptions(createCustomCameraCapturerOptions());
+        mCameraCapturer = (LabelledSpinner) findViewById(R.id.camera_capturer);
+        mCameraCapturer.setOnItemChosenListener(new LabelledSpinner.OnItemChosenListener() {
+            @Override
+            public void onItemChosen(View labelledSpinner, AdapterView<?> adapterView, View itemView, int position, long id) {
+                String captureType = getResources().getStringArray(R.array.camera_capturer)[position];
+                switch (captureType) {
+                    case "flashlight":
+                        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.FLASHLIGHT_CAMERA);
+                        break;
+                    case "camera1capturer":
+                        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CAMERA1CAPTURE);
+                        break;
+                    case "camera2capturer":
+                        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CAMERA2CAPTURE);
+                        break;
+                    case "custom":
+                        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM);
+                        break;
+                }
+                mCameraSpinner.setItemsArray(Flashphoner.getMediaDevices().getVideoList());
+            }
+
+            @Override
+            public void onNothingChosen(View labelledSpinner, AdapterView<?> adapterView) {
+
+            }
+        });
+
         localRender = (FPSurfaceViewRenderer) findViewById(R.id.local_video_view);
         mLocalResolutionView = (TextView) findViewById(R.id.local_resolution);
         remoteRender = (FPSurfaceViewRenderer) findViewById(R.id.remote_video_view);
@@ -730,6 +764,62 @@ public class MediaDevicesActivity extends AppCompatActivity {
         return playStream;
     }
 
+    private CustomCameraCapturerOptions createCustomCameraCapturerOptions() {
+        return new CustomCameraCapturerOptions() {
+
+            private String cameraName;
+            private CameraVideoCapturer.CameraEventsHandler eventsHandler;
+            private boolean captureToTexture;
+
+            @Override
+            public Class<?>[] getCameraConstructorArgsTypes() {
+                return new Class<?>[]{String.class, CameraVideoCapturer.CameraEventsHandler.class, boolean.class};
+            }
+
+            @Override
+            public Object[] getCameraConstructorArgs() {
+                return new Object[]{cameraName, eventsHandler, captureToTexture};
+            }
+
+            @Override
+            public void setCameraName(String cameraName) {
+                this.cameraName = cameraName;
+            }
+
+            @Override
+            public void setEventsHandler(CameraVideoCapturer.CameraEventsHandler eventsHandler) {
+                this.eventsHandler = eventsHandler;
+            }
+
+            @Override
+            public void setCaptureToTexture(boolean captureToTexture) {
+                this.captureToTexture = captureToTexture;
+            }
+
+            // Using org.webrtc.FlashlightCameraCapturer to access flashlight hidden controls.
+            @Override
+            public String getCameraClassName() {
+                return CustomCameras.FLASHLIGHT_CAMERA_CAPTURER;
+            }
+
+            @Override
+            public Class<?>[] getEnumeratorConstructorArgsTypes() {
+                return new Class[0];
+            }
+
+            @Override
+            public Object[] getEnumeratorConstructorArgs() {
+                return new Object[0];
+            }
+
+            // Using org.webrtc.FlashlightCameraEnumerator to access flashlight hidden controls.
+            @Override
+            public String getEnumeratorClassName() {
+                return CustomCameras.FLASHLIGHT_CAMERA_ENUMERATOR;
+            }
+        };
+    }
+
     private Map<String, String> getBasicAuthHeader(String url) {
         if (url.contains("@")) {
             String authorization = url.substring(url.indexOf(":")+3, url.indexOf("@"));
@@ -750,6 +840,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mSwitchCameraButton.setEnabled(false);
         mSwitchFlashlightButton.setEnabled(false);
         mSwitchRendererButton.setEnabled(false);
+        mCameraCapturer.getSpinner().setEnabled(false);
     }
 
     private void unmuteButton() {
@@ -775,6 +866,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mStartButton.setTag(R.string.action_start);
         mStartButton.setEnabled(true);
         mTestButton.setEnabled(true);
+        mCameraCapturer.getSpinner().setEnabled(true);
         mSwitchCameraButton.setEnabled(false);
         mSwitchRendererButton.setEnabled(false);
         mSwitchFlashlightButton.setEnabled(false);

@@ -45,18 +45,24 @@
     <string name="prompt_stream_name">Stream name</string>
     <string name="stream_name">test</string>
     <string name="trust_all_certificates_default">Trust all ssl-certificates</string>
+    <string name="upload_quality">Upload quality:&#160;</string>
+    <string name="download_quality">Download quality:&#160;</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="prompt_transport">Transport</string>
     <string-array name="audio_output">
         <item>speakerphone</item>
         <item>phone</item>
         <item>bluetooth</item>
     </string-array>
-    <string name="upload_quality">Upload quality:&#160;</string>
-    <string name="download_quality">Download quality:&#160;</string>
-    <string name="unknown">UNKNOWN</string>
-    <string name="prompt_transport">Transport</string>
     <string-array name="transport">
         <item>UDP</item>
         <item>TCP</item>
+    </string-array>
+    <string-array name="camera_capturer">
+        <item>flashlight</item>
+        <item>camera1capturer</item>
+        <item>camera2capturer</item>
+        <item>custom</item>
     </string-array>
 
 </resources>

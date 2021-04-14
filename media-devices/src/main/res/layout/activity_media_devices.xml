@@ -231,6 +231,14 @@
                         ls:labelText="@string/prompt_transport"
                         ls:spinnerEntries="@array/transport"/>
 
+                    <com.satsuware.usefulviews.LabelledSpinner
+                        android:id="@+id/camera_capturer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ls:labelText="Camera capturer"
+                        ls:spinnerEntries="@array/camera_capturer"/>
+
                 </LinearLayout>
 
                 <LinearLayout
