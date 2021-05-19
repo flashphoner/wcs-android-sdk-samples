@@ -1,0 +1,66 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
+
+Properties signingProps = null
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.2'
+    defaultConfig {
+        applicationId "com.flashphoner.wcsexample.gpu_image"
+        minSdkVersion 26
+        targetSdkVersion 28
+        versionCode 2600001
+        versionName "1.1"
+    }
+    def signingPropsFile = System.getenv('SIGNING_PROPERTIES')
+    if (signingPropsFile && new File(signingPropsFile).exists()) {
+        signingProps = new Properties()
+        signingProps.load(new FileInputStream(file(signingPropsFile)))
+
+        signingConfigs {
+            release {
+                storeFile file(signingProps['keystore'])
+                storePassword signingProps['keystore.password']
+                keyAlias signingProps['key.alias']
+                keyPassword signingProps['key.password']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            if (signingProps) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':fp_wcs_api')
+    implementation 'com.satsuware.lib:usefulviews:+'
+    implementation 'jp.co.cyberagent.android:gpuimage:2.1.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+}
+
+play {
+    if(signingProps) {
+        track = 'production'
+        serviceAccountEmail = signingProps['service.account.email']
+        pk12File = file(signingProps['service.account.pk12file'])
+    }
+}
