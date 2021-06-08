@@ -24,6 +24,7 @@ import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
 import com.flashphoner.fpwcsapi.bean.StreamStatusInfo;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
+import com.flashphoner.fpwcsapi.session.AvailableStreamCallback;
 import com.flashphoner.fpwcsapi.session.Session;
 import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
@@ -31,12 +32,8 @@ import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 
-import org.webrtc.PeerConnection;
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Example with streamer and player.
@@ -59,6 +56,9 @@ public class StreamingMinActivity extends AppCompatActivity {
     private EditText mPlayStreamView;
     private TextView mPlayStatus;
     private Button mPlayButton;
+    private TextView mAvailableStreamStatusView;
+    private TextView mAvailableStreamInfoView;
+    private Button mAvailableButton;
 
     private Session session;
 
@@ -144,6 +144,7 @@ public class StreamingMinActivity extends AppCompatActivity {
                                     mConnectStatus.setText(connection.getStatus());
                                     mPublishButton.setEnabled(true);
                                     mPlayButton.setEnabled(true);
+                                    mAvailableButton.setEnabled(true);
                                 }
                             });
                         }
@@ -167,9 +168,12 @@ public class StreamingMinActivity extends AppCompatActivity {
                                     mPlayButton.setText(R.string.action_play);
                                     mPlayButton.setTag(R.string.action_play);
                                     mPlayButton.setEnabled(false);
+                                    mAvailableButton.setEnabled(false);
                                     mConnectStatus.setText(connection.getStatus());
                                     mPublishStatus.setText("");
                                     mPlayStatus.setText("");
+                                    mAvailableStreamInfoView.setText("");
+                                    mAvailableStreamStatusView.setText("");
                                 }
                             });
                         }
@@ -234,6 +238,30 @@ public class StreamingMinActivity extends AppCompatActivity {
                     InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
+            }
+        });
+
+        mAvailableStreamStatusView = (TextView) findViewById(R.id.available_stream_status);
+        mAvailableStreamInfoView = (TextView) findViewById(R.id.available_stream_info);
+        mAvailableButton = (Button) findViewById(R.id.available_stream_button);
+        mAvailableButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StreamOptions streamOptions = new StreamOptions(mPlayStreamView.getText().toString());
+                Stream stream = session.createStream(streamOptions);
+                stream.setAvailableStreamCallback(new AvailableStreamCallback() {
+                    @Override
+                    public void on(boolean isAvailable,  String info) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAvailableStreamStatusView.setText(String.valueOf(isAvailable));
+                                mAvailableStreamInfoView.setText(info);
+                            }
+                        });
+                    }
+                });
+                stream.availableStream();
             }
         });
 
