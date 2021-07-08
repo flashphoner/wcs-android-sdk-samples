@@ -401,6 +401,18 @@
                         ls:labelText="@string/prompt_transport"
                         ls:spinnerEntries="@array/transport"/>
 
+                    <TextView
+                        android:id="@+id/audio_mute_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/audio_mute_status" />
+
+                    <TextView
+                        android:id="@+id/video_mute_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/video_mute_status" />
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -464,7 +476,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_start"
+                android:text="@string/action_connect"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/publish_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_publish"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/play_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_play"
                 android:textStyle="bold" />
 
             <Button

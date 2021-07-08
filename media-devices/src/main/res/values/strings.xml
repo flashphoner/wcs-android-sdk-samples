@@ -15,8 +15,8 @@
     <string name="prompt_play_quality">Play Quality</string>
     <string name="action_test">Test</string>
     <string name="action_release">Release</string>
-    <string name="action_start">Start</string>
-    <string name="action_stop">Stop</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
     <string name="action_switch_camera">Switch Camera</string>
     <string name="turn_on_flashlight">Turn on flashlight</string>
     <string name="turn_off_flashlight">Turn off flashlight</string>
@@ -49,6 +49,12 @@
     <string name="download_quality">Download quality:&#160;</string>
     <string name="unknown">UNKNOWN</string>
     <string name="prompt_transport">Transport</string>
+    <string name="audio_mute_status">Audio muted: </string>
+    <string name="video_mute_status">Video muted: </string>
+    <string name="action_publish">Publish</string>
+    <string name="action_play">Play</string>
+    <string name="action_unpublish">Unpublish</string>
+    <string name="action_stop_play">Stop play</string>
     <string-array name="audio_output">
         <item>speakerphone</item>
         <item>phone</item>
