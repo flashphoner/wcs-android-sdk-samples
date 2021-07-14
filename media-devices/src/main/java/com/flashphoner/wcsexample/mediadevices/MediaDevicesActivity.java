@@ -1086,7 +1086,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     Flashphoner.getLocalMediaAccess(getConstraints(), localRender);
                     mTestButton.setText(R.string.action_release);
                     mTestButton.setTag(R.string.action_release);
-                    soundMeter = new SoundMeter();
+                    soundMeter = new SoundMeter(this);
                     soundMeter.start();
                     soundMeter.getTimer().scheduleAtFixedRate(new TimerTask() {
                         @Override

@@ -4,6 +4,7 @@ package com.flashphoner.wcsexample.mediadevices;
  * Created by andrey on 28/07/2017.
  */
 
+import android.content.Context;
 import android.media.MediaRecorder;
 
 import java.io.IOException;
@@ -15,8 +16,13 @@ public class SoundMeter {
 
     private MediaRecorder mRecorder = null;
     private double mEMA = 0.0;
+    private Context context;
 
     private Timer timer;
+
+    public SoundMeter(Context context) {
+        this.context = context;
+    }
 
     public void start() {
         if (timer == null) {
@@ -29,7 +35,9 @@ public class SoundMeter {
             mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mRecorder.setOutputFile("/dev/null");
+            String fileName = context.getFilesDir().getAbsolutePath() + "/test.3gp";
+            //Path /dev/null throw exception on Android 11
+            mRecorder.setOutputFile(fileName);
 
             try {
                 mRecorder.prepare();
