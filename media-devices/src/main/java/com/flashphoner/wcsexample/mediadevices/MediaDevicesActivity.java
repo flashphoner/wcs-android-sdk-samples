@@ -141,7 +141,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     private TextView mAudioMuteStatus;
     private TextView mVideoMuteStatus;
-    private TextView mMutedName;
 
     private boolean isSwitchRemoteRenderer = false;
     private boolean isSwitchLocalRenderer = false;
@@ -284,7 +283,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mTransportInput = (LabelledSpinner) findViewById(R.id.transport_input);
         mAudioMuteStatus = (TextView) findViewById(R.id.audio_mute_status);
         mVideoMuteStatus = (TextView) findViewById(R.id.video_mute_status);
-        mMutedName = (TextView) findViewById(R.id.muted_name);
         mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
 
         mConnectButton = (Button) findViewById(R.id.connect_button);
@@ -814,9 +812,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (streamEvent.getPayload() != null) {
-                                mMutedName.setText(getString(R.string.muted_name) + streamEvent.getPayload().getStreamName());
-                            }
                             switch (streamEvent.getType()) {
                                 case audioMuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"true"); break;
                                 case audioUnmuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"false"); break;

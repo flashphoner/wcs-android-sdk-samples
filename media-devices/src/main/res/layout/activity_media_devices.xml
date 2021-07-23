@@ -419,12 +419,6 @@
                         ls:spinnerEntries="@array/transport"/>
 
                     <TextView
-                        android:id="@+id/muted_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/muted_name" />
-
-                    <TextView
                         android:id="@+id/audio_mute_status"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
