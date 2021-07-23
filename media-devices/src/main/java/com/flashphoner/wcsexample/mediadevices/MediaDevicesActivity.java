@@ -90,8 +90,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mHeight;
     private CheckBox mDefaultPublishVideoBitrate;
     private CheckBox mDefaultPublishAudioBitrate;
-    private EditText mPublishVideoMinBitrate;
-    private EditText mPublishVideoMaxBitrate;
+    private EditText mPublishVideoBitrate;
     private EditText mPublishAudioBitrate;
     private CheckBox mUseFEC;
     private CheckBox mUseStereo;
@@ -141,6 +140,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     private TextView mAudioMuteStatus;
     private TextView mVideoMuteStatus;
+    private TextView mMutedName;
 
     private boolean isSwitchRemoteRenderer = false;
     private boolean isSwitchLocalRenderer = false;
@@ -192,8 +192,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mDefaultPublishVideoBitrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mPublishVideoMinBitrate.setEnabled(!b);
-                mPublishVideoMaxBitrate.setEnabled(!b);
+                mPublishVideoBitrate.setEnabled(!b);
             }
         });
         mDefaultPublishAudioBitrate = (CheckBox) findViewById(R.id.publish_audio_bitrate_default);
@@ -203,8 +202,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 mPublishAudioBitrate.setEnabled(!b);
             }
         });
-        mPublishVideoMinBitrate = (EditText) findViewById(R.id.publish_video_min_bitrate);
-        mPublishVideoMaxBitrate = (EditText) findViewById(R.id.publish_video_max_bitrate);
+        mPublishVideoBitrate = (EditText) findViewById(R.id.publish_video_bitrate);
         mPublishAudioBitrate = (EditText) findViewById(R.id.publish_audio_bitrate);
         mSendVideo = (CheckBox) findViewById(R.id.send_video);
         mUseStereo = (CheckBox) findViewById(R.id.use_stereo);
@@ -283,6 +281,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mTransportInput = (LabelledSpinner) findViewById(R.id.transport_input);
         mAudioMuteStatus = (TextView) findViewById(R.id.audio_mute_status);
         mVideoMuteStatus = (TextView) findViewById(R.id.video_mute_status);
+        mMutedName = (TextView) findViewById(R.id.muted_name);
         mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
 
         mConnectButton = (Button) findViewById(R.id.connect_button);
@@ -812,6 +811,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (streamEvent.getPayload() != null) {
+                                mMutedName.setText(getString(R.string.muted_name) + streamEvent.getPayload().getStreamName());
+                            }
                             switch (streamEvent.getType()) {
                                 case audioMuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"true"); break;
                                 case audioUnmuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"false"); break;
@@ -1052,20 +1054,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
                         Integer.parseInt(mHeight.getText().toString()));
             }
-            if (!mDefaultPublishVideoBitrate.isChecked()) {
-                setVideoBitrate(videoConstraints);
+            if (!mDefaultPublishVideoBitrate.isChecked() && mPublishVideoBitrate.getText().length() > 0) {
+                videoConstraints.setBitrate(Integer.parseInt(mPublishVideoBitrate.getText().toString()));
             }
         }
         return new Constraints(audioConstraints, videoConstraints);
-    }
-
-    private void setVideoBitrate(VideoConstraints videoConstraints) {
-        if (mPublishVideoMinBitrate.getText().length() > 0) {
-            videoConstraints.setMinBitrate(Integer.parseInt(mPublishVideoMinBitrate.getText().toString()));
-        }
-        if (mPublishVideoMaxBitrate.getText().length() > 0) {
-            videoConstraints.setMaxBitrate(Integer.parseInt(mPublishVideoMaxBitrate.getText().toString()));
-        }
     }
 
     @Override

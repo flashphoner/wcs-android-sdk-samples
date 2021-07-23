@@ -35,9 +35,7 @@
     <string name="quality_default">Quality (default)</string>
     <string name="publish_bitrate">0</string>
     <string name="play_bitrate">0</string>
-    <string name="prompt_publish_current_bitrate">Publish Current Bitrate</string>
-    <string name="prompt_publish_min_bitrate">Publish Min Bitrate</string>
-    <string name="prompt_publish_max_bitrate">Publish Max Bitrate</string>
+    <string name="prompt_publish_bitrate">Publish Bitrate</string>
     <string name="send_audio">Send Audio</string>
     <string name="send_video">Send Video</string>
     <string name="use_fec">FEC</string>
@@ -53,6 +51,7 @@
     <string name="prompt_transport">Transport</string>
     <string name="audio_mute_status">Audio muted: </string>
     <string name="video_mute_status">Video muted: </string>
+    <string name="muted_name">Stream name: </string>
     <string name="action_publish">Publish</string>
     <string name="action_play">Play</string>
     <string name="action_unpublish">Unpublish</string>
