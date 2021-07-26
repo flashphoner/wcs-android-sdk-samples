@@ -15,11 +15,13 @@
     <string name="prompt_play_quality">Play Quality</string>
     <string name="action_test">Test</string>
     <string name="action_release">Release</string>
-    <string name="action_start">Start</string>
-    <string name="action_stop">Stop</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
     <string name="action_switch_camera">Switch Camera</string>
     <string name="action_switch_renderer">Switch Renderer</string>
-    <string name="wcs_url">ws://192.168.0.1:8080/test/</string>
+    <string name="wcs_url">ws://192.168.0.1:8080/</string>
+    <string name="stream_name">test</string>
+    <string name="prompt_stream_name">Stream name</string>
     <string name="camera_fps">25</string>
     <string name="camera_width">640</string>
     <string name="camera_height">480</string>
@@ -42,15 +44,21 @@
     <string name="prompt_publish_audio_bitrate">Publish Bitrate</string>
     <string name="publish_audio_bitrate">0</string>
     <string name="trust_all_certificates_default">Trust all ssl-certificates</string>
+    <string name="audio_mute_status">Audio muted: </string>
+    <string name="video_mute_status">Video muted: </string>
+    <string name="action_publish">Publish</string>
+    <string name="action_play">Play</string>
+    <string name="action_unpublish">Unpublish</string>
+    <string name="action_stop_play">Stop play</string>
+    <string name="upload_quality">Upload quality:&#160;</string>
+    <string name="download_quality">Download quality:&#160;</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="prompt_transport">Transport</string>
     <string-array name="audio_output">
         <item>speakerphone</item>
         <item>phone</item>
         <item>bluetooth</item>
     </string-array>
-    <string name="upload_quality">Upload quality:&#160;</string>
-    <string name="download_quality">Download quality:&#160;</string>
-    <string name="unknown">UNKNOWN</string>
-    <string name="prompt_transport">Transport</string>
     <string-array name="transport">
         <item>UDP</item>
         <item>TCP</item>
