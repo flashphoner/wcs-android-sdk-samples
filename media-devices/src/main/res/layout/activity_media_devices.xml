@@ -166,10 +166,27 @@
                         android:layout_height="wrap_content">
 
                         <EditText
-                            android:id="@+id/publish_video_bitrate"
+                            android:id="@+id/publish_video_min_bitrate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/prompt_publish_bitrate"
+                            android:hint="@string/prompt_publish_min_bitrate"
+                            android:inputType="number"
+                            android:maxLength="6"
+                            android:maxLines="1"
+                            android:text="@string/publish_bitrate"
+                            android:enabled="false"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/publish_video_max_bitrate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_publish_max_bitrate"
                             android:inputType="number"
                             android:maxLength="6"
                             android:maxLines="1"
