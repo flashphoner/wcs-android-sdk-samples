@@ -46,6 +46,7 @@
     <string name="trust_all_certificates_default">Trust all ssl-certificates</string>
     <string name="audio_mute_status">Audio muted: </string>
     <string name="video_mute_status">Video muted: </string>
+    <string name="muted_name">Stream name: </string>
     <string name="action_publish">Publish</string>
     <string name="action_play">Play</string>
     <string name="action_unpublish">Unpublish</string>
