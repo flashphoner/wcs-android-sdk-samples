@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">GPUImage</string>
     <string name="prompt_wcs_url">WCS Url</string>
-    <string name="wcs_url">ws://192.168.0.1:8080/</string>
+    <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
     <string name="prompt_stream_name">Stream name</string>
     <string name="stream_name">test</string>
     <string name="action_start">Start</string>

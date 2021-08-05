@@ -4,7 +4,7 @@
     <string name="prompt_wcs_url">WCS Url</string>
     <string name="action_connect">Connect</string>
     <string name="action_disconnect">Disconnect</string>
-    <string name="wcs_url">ws://192.168.0.1:8080</string>
+    <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
     <string name="register_required">Register required</string>
     <string name="prompt_callee">Callee</string>
     <string name="default_callee_name">1001</string>

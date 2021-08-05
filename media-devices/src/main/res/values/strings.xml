@@ -21,7 +21,7 @@
     <string name="turn_on_flashlight">Turn on flashlight</string>
     <string name="turn_off_flashlight">Turn off flashlight</string>
     <string name="action_switch_renderer">Switch Renderer</string>
-    <string name="wcs_url">ws://192.168.0.1:8080/</string>
+    <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
     <string name="camera_fps">25</string>
     <string name="camera_width">640</string>
     <string name="camera_height">480</string>

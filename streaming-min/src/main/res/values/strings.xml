@@ -12,6 +12,6 @@
     <string name="action_stop">Stop</string>
     <string name="default_publish_name">test</string>
     <string name="default_play_name">test</string>
-    <string name="wcs_url">ws://192.168.0.1:8080</string>
+    <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
     <string name="available_stream">Available</string>
 </resources>

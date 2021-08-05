@@ -5,5 +5,5 @@
     <string name="prompt_wcs_url">WCS Url</string>
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
-    <string name="wcs_url">ws://192.168.0.1:8080/test/</string>
+    <string name="wcs_url">wss://demo.flashphoner.com:8443/test/</string>
 </resources>
