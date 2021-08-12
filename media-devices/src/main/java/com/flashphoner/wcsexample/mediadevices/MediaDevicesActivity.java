@@ -860,6 +860,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mMuteVideo.setEnabled(false);
         mSwitchRendererButton.setEnabled(false);
         mSwitchCameraButton.setEnabled(false);
+        mMuteAudio.setChecked(false);
+        mMuteVideo.setChecked(false);
     }
 
     private void onPlayed() {
@@ -872,6 +874,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mPlayButton.setText(R.string.action_play);
         mPlayButton.setTag(R.string.action_play);
         mPlayButton.setEnabled(true);
+        mMutedName.setText(getString(R.string.muted_name));
+        mAudioMuteStatus.setText(getString(R.string.audio_mute_status));
+        mVideoMuteStatus.setText(getString(R.string.video_mute_status));
     }
 
     private void onStoppedTest() {
