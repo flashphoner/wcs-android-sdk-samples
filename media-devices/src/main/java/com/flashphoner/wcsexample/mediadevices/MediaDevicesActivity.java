@@ -749,7 +749,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                 onStoppedPlay();
                                 Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
                             } else {
-                                onPlayed();
+                                onPlayed(stream);
                                 Flashphoner.setVolume(mPlayVolume.getProgress());
                             }
                             mStatusView.setText(streamStatus.toString());
@@ -864,10 +864,13 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mMuteVideo.setChecked(false);
     }
 
-    private void onPlayed() {
+    private void onPlayed(Stream stream) {
         mPlayButton.setText(R.string.action_stop_play);
         mPlayButton.setTag(R.string.action_stop_play);
         mPlayButton.setEnabled(true);
+
+        mAudioMuteStatus.setText(getString(R.string.audio_mute_status) + String.valueOf(stream.getAudioState().isMuted()));
+        mVideoMuteStatus.setText(getString(R.string.video_mute_status) + String.valueOf(stream.getVideoState().isMuted()));
     }
 
     private void onStoppedPlay() {
