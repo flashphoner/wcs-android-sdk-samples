@@ -55,6 +55,7 @@
     <string name="download_quality">Download quality:&#160;</string>
     <string name="unknown">UNKNOWN</string>
     <string name="prompt_transport">Transport</string>
+    <string name="mute_stream">Stream: </string>
     <string-array name="audio_output">
         <item>speakerphone</item>
         <item>phone</item>

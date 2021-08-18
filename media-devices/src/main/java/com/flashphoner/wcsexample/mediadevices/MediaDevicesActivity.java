@@ -130,8 +130,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private PercentFrameLayout switchRenderLayout;
 
     private TextView mAudioMuteStatus;
+    private TextView mAudioMuteStream;
     private TextView mVideoMuteStatus;
-    private TextView mMutedName;
+    private TextView mVideoMuteStream;
 
     private boolean isSwitchRemoteRenderer = false;
     private boolean isSwitchLocalRenderer = false;
@@ -272,7 +273,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mTransportInput = (LabelledSpinner) findViewById(R.id.transport_input);
         mAudioMuteStatus = (TextView) findViewById(R.id.audio_mute_status);
         mVideoMuteStatus = (TextView) findViewById(R.id.video_mute_status);
-        mMutedName = (TextView) findViewById(R.id.muted_name);
+        mAudioMuteStream = (TextView) findViewById(R.id.audio_mute_stream);
+        mVideoMuteStream = (TextView) findViewById(R.id.video_mute_stream);
         mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
 
         mConnectButton = (Button) findViewById(R.id.connect_button);
@@ -762,14 +764,34 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (streamEvent.getPayload() != null) {
-                                mMutedName.setText(getString(R.string.muted_name) + streamEvent.getPayload().getStreamName());
-                            }
                             switch (streamEvent.getType()) {
-                                case audioMuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"true"); break;
-                                case audioUnmuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"false"); break;
-                                case videoMuted: mVideoMuteStatus.setText(getString(R.string.video_mute_status)+"true"); break;
-                                case videoUnmuted: mVideoMuteStatus.setText(getString(R.string.video_mute_status)+"false");
+                                case audioMuted: {
+                                    mAudioMuteStatus.setText(getString(R.string.audio_mute_status) + "true");
+                                    if (streamEvent.getPayload() != null) {
+                                        mAudioMuteStream.setText(getString(R.string.mute_stream) + streamEvent.getPayload().getStreamName());
+                                    }
+                                    break;
+                                }
+                                case audioUnmuted: {
+                                    mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"false");
+                                    if (streamEvent.getPayload() != null) {
+                                        mAudioMuteStream.setText(getString(R.string.mute_stream) + streamEvent.getPayload().getStreamName());
+                                    }
+                                    break;
+                                }
+                                case videoMuted: {
+                                    mVideoMuteStatus.setText(getString(R.string.video_mute_status)+"true");
+                                    if (streamEvent.getPayload() != null) {
+                                        mVideoMuteStream.setText(getString(R.string.mute_stream) + streamEvent.getPayload().getStreamName());
+                                    }
+                                    break;
+                                }
+                                case videoUnmuted: {
+                                    mVideoMuteStatus.setText(getString(R.string.video_mute_status)+"false");
+                                    if (streamEvent.getPayload() != null) {
+                                        mVideoMuteStream.setText(getString(R.string.mute_stream) + streamEvent.getPayload().getStreamName());
+                                    }
+                                }
                             }
                         }
                     });
@@ -877,7 +899,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mPlayButton.setText(R.string.action_play);
         mPlayButton.setTag(R.string.action_play);
         mPlayButton.setEnabled(true);
-        mMutedName.setText(getString(R.string.muted_name));
+        mAudioMuteStream.setText(getString(R.string.mute_stream));
+        mVideoMuteStream.setText(getString(R.string.mute_stream));
         mAudioMuteStatus.setText(getString(R.string.audio_mute_status));
         mVideoMuteStatus.setText(getString(R.string.video_mute_status));
     }
