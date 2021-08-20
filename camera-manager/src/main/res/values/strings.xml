@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">CameraManager</string>
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="wcs_url">ws://192.168.0.1:8080/</string>
+    <string name="prompt_stream_name">Stream name</string>
+    <string name="stream_name">test</string>
+    <string name="action_start">Start</string>
+    <string name="action_stop">Stop</string>
+    <string name="use_filter">Use filter</string>
+    <string name="zoom">Zoom</string>
+    <string name="turn_on_flashlight">Turn on flashlight</string>
+    <string name="turn_off_flashlight">Turn off flashlight</string>
+    <string name="use_png_overlay">Use PNG overlay</string>
+    <string name="prompt_png_y_position">Y position</string>
+    <string name="png_y_position">10</string>
+    <string name="prompt_png_x_position">X Position</string>
+    <string name="png_x_position">10</string>
+    <string name="prompt_png_width">Png width</string>
+    <string name="png_width">50</string>
+    <string name="prompt_png_height">Png height</string>
+    <string name="png_height">50</string>
+    <string name="select_png">Select png...</string>
+    <string name="dialog_message">Select the png!</string>
+    <string name="dialog_title">Error</string>
+    <string-array name="camera_capturer">
+        <item>Flashlight</item>
+        <item>Zoom</item>
+        <item>GPUImage</item>
+        <item>PNG overlay</item>
+    </string-array>
+</resources>
