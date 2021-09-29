@@ -54,6 +54,8 @@ public class PngOverlayCameraCapturer extends Camera1Capturer {
     }
 
     public void setUsedPngOverlay(boolean usedPngOverlay) {
-        cameraSession.setUsedPngOverlay(usedPngOverlay);
+        if (cameraSession != null) {
+            cameraSession.setUsedPngOverlay(usedPngOverlay);
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -135,9 +136,7 @@ public class StreamRecordingActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStartButton.setText(R.string.action_stop);
-                                    mStartButton.setTag(R.string.action_stop);
-                                    mStartButton.setEnabled(true);
+                                    onStarted();
                                     mStatusView.setText(connection.getStatus());
 
                                     /**
@@ -164,15 +163,20 @@ public class StreamRecordingActivity extends AppCompatActivity {
                                                 public void run() {
                                                     if (StreamStatus.PUBLISHING.equals(streamStatus)) {
                                                         mStatusView.setText("RECORDING");
-
-                                                        /**
-                                                         * Filename of the recording is determined.
-                                                         */
-                                                        recordFilename = stream.getRecordName();
                                                         return;
                                                     } else if (StreamStatus.FAILED.equals(streamStatus)) {
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                         recordFilename = null;
+                                                        onStopped();
+                                                    } else if (StreamStatus.UNPUBLISHED.equals(streamStatus)) {
+                                                        /**
+                                                         * Filename of the recording is determined.
+                                                         */
+                                                        recordFilename = stream.getRecordName();
+                                                        /**
+                                                         * Connection to WCS server is closed with method Session.disconnect().
+                                                         */
+                                                        session.disconnect();
                                                     }
                                                     mStatusView.setText(streamStatus.toString());
                                                 }
@@ -197,33 +201,13 @@ public class StreamRecordingActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStartButton.setText(R.string.action_start);
-                                    mStartButton.setTag(R.string.action_start);
-                                    mStartButton.setEnabled(true);
+                                    onStopped();
                                     mStatusView.setText(connection.getStatus());
 
                                     /**
                                      * After disconnection, download link for the recording of the published stream is displayed, and the recording can be played in the media player of the application.
                                      */
-                                    if (recordFilename != null) {
-                                        /**
-                                         * Download link is formed.
-                                         * Stream recordings are saved to directory WCS_HOME/client/records on the server.
-                                         */
-                                        String url = "http://" + uri.getHost() +":9091/client/records/" + recordFilename;
-                                        mRecordedLink.setText(url);
-                                        Linkify.addLinks(mRecordedLink, Linkify.WEB_URLS);
-
-                                        MediaController mediaController = new MediaController(StreamRecordingActivity.this);
-                                        mediaController.setAnchorView(mRecordedVideoView);
-                                        mRecordedVideoView.setMediaController(mediaController);
-                                        mRecordedVideoView.setVideoURI(Uri.parse(url));
-
-                                        /**
-                                         * Playback of the recording in the media player is started.
-                                         */
-                                        mRecordedVideoView.start();
-                                    }
+                                    createRecordLink();
                                 }
                             });
                         }
@@ -243,9 +227,9 @@ public class StreamRecordingActivity extends AppCompatActivity {
                     mStartButton.setEnabled(false);
 
                     /**
-                     * Connection to WCS server is closed with method Session.disconnect().
+                     * Stop publish stream.
                      */
-                    session.disconnect();
+                    publishStream.stop();
                 }
 
                 View currentFocus = getCurrentFocus();
@@ -289,6 +273,50 @@ public class StreamRecordingActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void createRecordLink() {
+        if (recordFilename != null) {
+            /**
+             * Download link is formed.
+             * Stream recordings are saved to directory WCS_HOME/client/records on the server.
+             */
+            String urlScheme;
+            String urlPort;
+            if (uri.getScheme().contains("ss")) {
+                urlScheme = "https://";
+                urlPort = ":8888";
+            } else {
+                urlScheme = "http://";
+                urlPort = ":8081";
+            }
+            String url = urlScheme + uri.getHost() + urlPort + "/client/records/" + recordFilename;
+            mRecordedLink.setText(url);
+            Linkify.addLinks(mRecordedLink, Linkify.WEB_URLS);
+
+            MediaController mediaController = new MediaController(StreamRecordingActivity.this);
+            mediaController.setAnchorView(mRecordedVideoView);
+            mRecordedVideoView.setMediaController(mediaController);
+            mRecordedVideoView.setVideoURI(Uri.parse(url));
+
+            /**
+             * Playback of the recording in the media player is started.
+             */
+            mRecordedVideoView.start();
+        }
+    }
+
+    private void onStarted() {
+        mStartButton.setText(R.string.action_stop);
+        mStartButton.setTag(R.string.action_stop);
+        mStartButton.setEnabled(true);
+        mRecordedLink.setText("");
+    }
+
+    private void onStopped() {
+        mStartButton.setText(R.string.action_start);
+        mStartButton.setTag(R.string.action_start);
+        mStartButton.setEnabled(true);
     }
 
     @Override

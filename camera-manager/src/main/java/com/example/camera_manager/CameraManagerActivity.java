@@ -675,15 +675,27 @@ public class CameraManagerActivity extends AppCompatActivity {
         checkingSelectedPng();
         ((PngOverlayCameraCapturer) cameraVideoCapturer).setUsedPngOverlay(mUsePngOverlay.isChecked());
         ((PngOverlayCameraCapturer) cameraVideoCapturer).setPicture(picture);
-        ((PngOverlayCameraCapturer) cameraVideoCapturer).setStartX(Integer.parseInt(mPngXPosition.getText().toString()));
-        ((PngOverlayCameraCapturer) cameraVideoCapturer).setStartY(Integer.parseInt(mPngYPosition.getText().toString()));
-        ((PngOverlayCameraCapturer) cameraVideoCapturer).setPngWidth(Integer.parseInt(mPngWidth.getText().toString()));
-        ((PngOverlayCameraCapturer) cameraVideoCapturer).setPngHeight(Integer.parseInt(mPngHeight.getText().toString()));
+        int startX = parseInt(mPngXPosition.getText().toString());
+        int startY = parseInt(mPngYPosition.getText().toString());
+        int width = parseInt(mPngWidth.getText().toString());
+        int height = parseInt(mPngHeight.getText().toString());
+        ((PngOverlayCameraCapturer) cameraVideoCapturer).setStartX(startX);
+        ((PngOverlayCameraCapturer) cameraVideoCapturer).setStartY(startY);
+        if (width > 0) {
+            ((PngOverlayCameraCapturer) cameraVideoCapturer).setPngWidth(width);
+        }
+        if (height > 0) {
+            ((PngOverlayCameraCapturer) cameraVideoCapturer).setPngHeight(height);
+        }
 
         mSwitchFlashlightButton.setEnabled(false);
         mUseFilter.setEnabled(false);
         mZoomSeekBar.setEnabled(false);
         mUsePngOverlay.setEnabled(true);
+    }
+
+    private int parseInt(String str) {
+        return (str == null || str.isEmpty()) ? 0 : Integer.parseInt(str);
     }
 
     private void checkingSelectedPng() {

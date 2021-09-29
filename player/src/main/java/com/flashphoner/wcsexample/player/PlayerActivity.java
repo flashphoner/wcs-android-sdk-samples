@@ -136,7 +136,7 @@ public class PlayerActivity extends AppCompatActivity {
                                                 public void run() {
                                                     if (!StreamStatus.PLAYING.equals(streamStatus)) {
                                                         Log.e(TAG, "Can not play stream " + stream.getName() + " " + streamStatus);
-                                                        mStatusView.setText(streamStatus.toString());
+                                                        onStopped(streamStatus.toString());
                                                     } else if (StreamStatus.NOT_ENOUGH_BANDWIDTH.equals(streamStatus)) {
                                                         Log.w(TAG, "Not enough bandwidth stream " + stream.getName() + ", consider using lower video resolution or bitrate. " +
                                                                 "Bandwidth " + (Math.round(stream.getNetworkBandwidth() / 1000)) + " " +
@@ -172,10 +172,8 @@ public class PlayerActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mStartButton.setText(R.string.action_start);
-                                    mStartButton.setTag(R.string.action_start);
+                                    onStopped(connection.getStatus());
                                     mStartButton.setEnabled(true);
-                                    mStatusView.setText(connection.getStatus());
                                 }
                             });
                         }
@@ -216,6 +214,12 @@ public class PlayerActivity extends AppCompatActivity {
         remoteRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         remoteRender.setMirror(false);
         remoteRender.requestLayout();
+    }
+
+    private void onStopped(String streamStatus) {
+        mStatusView.setText(streamStatus);
+        mStartButton.setText(R.string.action_start);
+        mStartButton.setTag(R.string.action_start);
     }
 
     @Override
