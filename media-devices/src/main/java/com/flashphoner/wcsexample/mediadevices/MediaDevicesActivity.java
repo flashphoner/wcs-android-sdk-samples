@@ -815,7 +815,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (streamEvent.getPayload() != null) {
-                                mMutedName.setText(getString(R.string.muted_name) + streamEvent.getPayload().getStreamName());
+                                mMutedName.setText(getString(R.string.muted_name) + streamEvent.getPayload().get("streamName"));
                             }
                             switch (streamEvent.getType()) {
                                 case audioMuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"true"); break;

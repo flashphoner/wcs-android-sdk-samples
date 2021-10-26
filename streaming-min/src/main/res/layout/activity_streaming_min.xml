@@ -90,6 +90,47 @@
                 android:text="@string/action_publish"
                 android:textStyle="bold" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5">
+
+                    <EditText
+                        android:id="@+id/stream_data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:hint="@string/prompt_stream_data"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:text="@string/stream_data" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/send_data_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:enabled="false"
+                    android:text="@string/action_send"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/json_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/red"
+                android:visibility="invisible"
+                android:text="@string/not_valid_json"/>
+
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -163,6 +204,20 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_received_data"
+                android:textColor="@color/gray"
+                />
+
+            <TextView
+                android:id="@+id/received_data"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

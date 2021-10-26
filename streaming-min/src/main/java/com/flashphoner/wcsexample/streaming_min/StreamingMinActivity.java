@@ -18,9 +18,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
+import com.flashphoner.fpwcsapi.bean.StreamEvent;
+import com.flashphoner.fpwcsapi.bean.StreamEventType;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
 import com.flashphoner.fpwcsapi.bean.StreamStatusInfo;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
@@ -29,11 +33,18 @@ import com.flashphoner.fpwcsapi.session.Session;
 import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
+import com.flashphoner.fpwcsapi.session.StreamEventHandler;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Example with streamer and player.
@@ -59,6 +70,10 @@ public class StreamingMinActivity extends AppCompatActivity {
     private TextView mAvailableStreamStatusView;
     private TextView mAvailableStreamInfoView;
     private Button mAvailableButton;
+    private TextView mReceivedDataTextView;
+    private EditText mDataEditText;
+    private Button mSendDataButton;
+    private TextView mJsonErrorTextView;
 
     private Session session;
 
@@ -165,6 +180,7 @@ public class StreamingMinActivity extends AppCompatActivity {
                                     mPublishButton.setText(R.string.action_publish);
                                     mPublishButton.setTag(R.string.action_publish);
                                     mPublishButton.setEnabled(false);
+                                    mSendDataButton.setEnabled(false);
                                     mPlayButton.setText(R.string.action_play);
                                     mPlayButton.setTag(R.string.action_play);
                                     mPlayButton.setEnabled(false);
@@ -227,6 +243,7 @@ public class StreamingMinActivity extends AppCompatActivity {
                     editor.apply();
                 } else {
                     mPublishButton.setEnabled(false);
+                    mSendDataButton.setEnabled(false);
                     /**
                      * Method Stream.stop() is called to unpublish the stream.
                      */
@@ -264,6 +281,30 @@ public class StreamingMinActivity extends AppCompatActivity {
                 stream.availableStream();
             }
         });
+        mReceivedDataTextView = (TextView) findViewById(R.id.received_data);
+        mDataEditText = (EditText) findViewById(R.id.stream_data);
+        mSendDataButton = (Button) findViewById(R.id.send_data_button);
+        mSendDataButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (publishStream == null) {
+                    return;
+                }
+                mJsonErrorTextView.setVisibility(View.INVISIBLE);
+                String dataStr =  mDataEditText.getText().toString();
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> data = null;
+                try {
+                    data = objectMapper.readValue(dataStr, HashMap.class);
+                } catch (IOException e) {
+                    Log.w(TAG, "Not valid json string");
+                    mJsonErrorTextView.setVisibility(View.VISIBLE);
+                    return;
+                }
+                publishStream.sendData(data);
+            }
+        });
+        mJsonErrorTextView = (TextView) findViewById(R.id.json_error);
 
         mPlayStreamView = (EditText) findViewById(R.id.play_stream);
         mPlayStreamView.setText(sharedPref.getString("play_stream", getString(R.string.default_play_name)));
@@ -292,13 +333,12 @@ public class StreamingMinActivity extends AppCompatActivity {
                     /**
                      * Callback function for stream status change is added to make appropriate changes in controls of the interface when playing.
                      */
-                    playStream.on(new StreamStatusEvent() {
+                    playStream.on(new StreamEventHandler() {
                         @Override
-                        public void onStreamStatus(final Stream stream, final StreamStatus streamStatus) {
+                        public void onStreamStatus(Stream stream, StreamStatus streamStatus) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-
                                     if (StreamStatus.PLAYING.equals(streamStatus)) {
                                         mPlayButton.setText(R.string.action_stop);
                                         mPlayButton.setTag(R.string.action_stop);
@@ -341,14 +381,21 @@ public class StreamingMinActivity extends AppCompatActivity {
                                                 mPlayStatus.setText(streamStatus+": No available transcoders for stream");
                                                 break;
                                             default:{
-                                               mPlayStatus.setText(stream.getInfo());
-                                           }
+                                                mPlayStatus.setText(stream.getInfo());
+                                            }
                                         }
                                     } else {
                                         mPlayStatus.setText(streamStatus.toString());
                                     }
                                 }
                             });
+                        }
+
+                        @Override
+                        public void onStreamEvent(StreamEvent streamEvent) {
+                            if (StreamEventType.data.equals(streamEvent.getType())) {
+                                parseReceivedData(streamEvent.getPayload());
+                            }
                         }
                     });
 
@@ -465,9 +512,11 @@ public class StreamingMinActivity extends AppCompatActivity {
                                     if (StreamStatus.PUBLISHING.equals(streamStatus)) {
                                         mPublishButton.setText(R.string.action_unpublish);
                                         mPublishButton.setTag(R.string.action_unpublish);
+                                        mSendDataButton.setEnabled(true);
                                     } else {
                                         mPublishButton.setText(R.string.action_publish);
                                         mPublishButton.setTag(R.string.action_publish);
+                                        mSendDataButton.setEnabled(false);
                                     }
                                     mPublishButton.setEnabled(true);
                                     if (StreamStatus.FAILED.equals(streamStatus)){
@@ -496,6 +545,20 @@ public class StreamingMinActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void parseReceivedData(Map<String, Object> data) {
+        runOnUiThread(() -> {
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+            StringBuilder stringBuilder = new StringBuilder(formatter.format(date) + " - ");
+            for (Map.Entry<String, Object> obj : data.entrySet()) {
+                stringBuilder.append(obj.getKey()).append("=").append(obj.getValue()).append(", ");
+            }
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+
+            mReceivedDataTextView.setText(stringBuilder);
+        });
     }
 }
 

@@ -14,4 +14,9 @@
     <string name="default_play_name">test</string>
     <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
     <string name="available_stream">Available</string>
+    <string name="stream_data">{\"count\":{\"test\":123}}</string>
+    <string name="prompt_stream_data">Data</string>
+    <string name="action_send">Send Data</string>
+    <string name="not_valid_json">Not valid json string</string>
+    <string name="prompt_received_data">Received data:</string>
 </resources>
