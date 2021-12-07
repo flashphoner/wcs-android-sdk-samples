@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,10 +55,13 @@ import org.webrtc.FlashlightCameraCapturer;
 import org.webrtc.GPUImageCameraCapturer;
 import org.webrtc.PngOverlayCameraCapturer;
 import org.webrtc.RendererCommon;
+import org.webrtc.ResolutionCameraCapturer;
+import org.webrtc.VideoCapturer;
 import org.webrtc.ZoomCameraCapturer;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 public class CameraManagerActivity extends AppCompatActivity {
@@ -76,6 +80,7 @@ public class CameraManagerActivity extends AppCompatActivity {
     private SeekBar mZoomSeekBar;
     private Button mSwitchFlashlightButton;
     private LabelledSpinner mCameraCapturer;
+    private LabelledSpinner mCameraResolutionSpinner;
     private EditText mPngYPosition;
     private EditText mPngXPosition;
     private EditText mPngWidth;
@@ -138,6 +143,9 @@ public class CameraManagerActivity extends AppCompatActivity {
                     case "PNG overlay":
                         changePngOverlayCamera();
                         break;
+                    case "Resolution":
+                        changeResolutionCamera();
+                        break;
                 }
             }
 
@@ -148,6 +156,23 @@ public class CameraManagerActivity extends AppCompatActivity {
         });
         mWidth = (EditText) findViewById(R.id.camera_width);
         mHeight = (EditText) findViewById(R.id.camera_height);
+        mCameraResolutionSpinner = (LabelledSpinner) findViewById(R.id.camera_resolution_spinner);
+        mCameraResolutionSpinner.setOnItemChosenListener(new LabelledSpinner.OnItemChosenListener() {
+
+            @Override
+            public void onItemChosen(View labelledSpinner, AdapterView<?> adapterView, View itemView, int position, long id) {
+                String resolution = adapterView.getSelectedItem().toString();
+                if (resolution.isEmpty()) {
+                    return;
+                }
+                setResolutions(resolution);
+            }
+
+            @Override
+            public void onNothingChosen(View labelledSpinner, AdapterView<?> adapterView) {
+
+            }
+        });
 
         mUseFilter = (CheckBox) findViewById(R.id.use_filter);
         mUseFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -603,6 +628,9 @@ public class CameraManagerActivity extends AppCompatActivity {
         mPngXPosition.setEnabled(false);
         mPngYPosition.setEnabled(false);
         mSelectPngButton.setEnabled(false);
+        mWidth.setEnabled(true);
+        mHeight.setEnabled(true);
+        mCameraResolutionSpinner.getSpinner().setEnabled(false);
     }
 
     private void changeZoomCamera() {
@@ -615,6 +643,9 @@ public class CameraManagerActivity extends AppCompatActivity {
         mPngXPosition.setEnabled(false);
         mPngYPosition.setEnabled(false);
         mSelectPngButton.setEnabled(false);
+        mWidth.setEnabled(true);
+        mHeight.setEnabled(true);
+        mCameraResolutionSpinner.getSpinner().setEnabled(false);
     }
 
     private void changePngOverlayCamera() {
@@ -627,6 +658,9 @@ public class CameraManagerActivity extends AppCompatActivity {
         mPngXPosition.setEnabled(true);
         mPngYPosition.setEnabled(true);
         mSelectPngButton.setEnabled(true);
+        mWidth.setEnabled(true);
+        mHeight.setEnabled(true);
+        mCameraResolutionSpinner.getSpinner().setEnabled(false);
     }
 
     private void changeGpuImageCamera() {
@@ -639,6 +673,40 @@ public class CameraManagerActivity extends AppCompatActivity {
         mPngXPosition.setEnabled(false);
         mPngYPosition.setEnabled(false);
         mSelectPngButton.setEnabled(false);
+        mWidth.setEnabled(true);
+        mHeight.setEnabled(true);
+        mCameraResolutionSpinner.getSpinner().setEnabled(false);
+    }
+
+    private void changeResolutionCamera() {
+        CameraCapturerFactory.getInstance().setCustomCameraCapturerOptions(resolutionCameraCapturerOptions);
+        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM);
+
+        String deviceName = Flashphoner.getMediaDevices().getVideoList().get(0).getLabel();
+        VideoCapturer videoCapturer = CameraCapturerFactory.getInstance().createCameraVideoCapturer(deviceName, null, false);
+        List<Camera.Size> cameraResolutions = ((ResolutionCameraCapturer)videoCapturer).getSupportedResolutions();
+        List<String> resolutionStrings = new LinkedList<>();
+        for (Camera.Size size : cameraResolutions) {
+            resolutionStrings.add(size.width+"x"+size.height);
+        }
+        mCameraResolutionSpinner.setItemsArray(resolutionStrings);
+
+        mUseFilter.setEnabled(false);
+        mUsePngOverlay.setEnabled(false);
+        mPngHeight.setEnabled(false);
+        mPngWidth.setEnabled(false);
+        mPngXPosition.setEnabled(false);
+        mPngYPosition.setEnabled(false);
+        mSelectPngButton.setEnabled(false);
+        mWidth.setEnabled(false);
+        mHeight.setEnabled(false);
+        mCameraResolutionSpinner.getSpinner().setEnabled(true);
+    }
+
+    private void setResolutions(String resolutionStr) {
+        String[] resolution = resolutionStr.split("x");
+        mWidth.setText(resolution[0]);
+        mHeight.setText(resolution[1]);
     }
 
     private void prepareFlashlight() {
@@ -700,6 +768,16 @@ public class CameraManagerActivity extends AppCompatActivity {
         mUseFilter.setEnabled(false);
         mZoomSeekBar.setEnabled(false);
         mUsePngOverlay.setEnabled(true);
+    }
+
+    private void prepareResolution() {
+        CameraVideoCapturer cameraVideoCapturer = CameraCapturerFactory.getInstance().getCameraVideoCapturer();
+        if (cameraVideoCapturer instanceof ResolutionCameraCapturer) {
+            mCameraResolutionSpinner.getSpinner().setEnabled(true);
+        } else {
+            mWidth.setEnabled(true);
+            mHeight.setEnabled(true);
+        }
     }
 
     private int parseInt(String str) {
@@ -913,11 +991,64 @@ public class CameraManagerActivity extends AppCompatActivity {
         }
     };
 
+    private CustomCameraCapturerOptions resolutionCameraCapturerOptions = new CustomCameraCapturerOptions() {
 
+        private String cameraName;
+        private CameraVideoCapturer.CameraEventsHandler eventsHandler;
+        private boolean captureToTexture;
+
+        @Override
+        public Class<?>[] getCameraConstructorArgsTypes() {
+            return new Class<?>[]{String.class, CameraVideoCapturer.CameraEventsHandler.class, boolean.class};
+        }
+
+        @Override
+        public Object[] getCameraConstructorArgs() {
+            return new Object[]{cameraName, eventsHandler, captureToTexture};
+        }
+
+        @Override
+        public void setCameraName(String cameraName) {
+            this.cameraName = cameraName;
+        }
+
+        @Override
+        public void setEventsHandler(CameraVideoCapturer.CameraEventsHandler eventsHandler) {
+            this.eventsHandler = eventsHandler;
+        }
+
+        @Override
+        public void setCaptureToTexture(boolean captureToTexture) {
+            this.captureToTexture = captureToTexture;
+        }
+
+        @Override
+        public String getCameraClassName() {
+            return "org.webrtc.ResolutionCameraCapturer";
+        }
+
+        @Override
+        public Class<?>[] getEnumeratorConstructorArgsTypes() {
+            return new Class[0];
+        }
+
+        @Override
+        public Object[] getEnumeratorConstructorArgs() {
+            return new Object[0];
+        }
+
+        @Override
+        public String getEnumeratorClassName() {
+            return "org.webrtc.ResolutionCameraEnumerator";
+        }
+    };
 
     private void muteButton() {
         mStartButton.setEnabled(false);
         mCameraCapturer.getSpinner().setEnabled(false);
+        mCameraResolutionSpinner.getSpinner().setEnabled(false);
+        mWidth.setEnabled(false);
+        mHeight.setEnabled(false);
     }
 
     private void onStarted() {
@@ -931,6 +1062,7 @@ public class CameraManagerActivity extends AppCompatActivity {
         mStartButton.setText(R.string.action_start);
         mStartButton.setTag(R.string.action_start);
         turnOffFlashlight();
+        prepareResolution();
         mCameraCapturer.getSpinner().setEnabled(true);
         mStartButton.setEnabled(true);
         mCameraCapturer.setEnabled(true);

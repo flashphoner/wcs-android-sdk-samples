@@ -32,6 +32,7 @@
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
+                    android:layout_margin="5px"
                     android:orientation="vertical">
 
                     <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
@@ -60,6 +61,7 @@
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
+                    android:layout_margin="5px"
                     android:orientation="vertical">
 
                     <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
@@ -163,6 +165,14 @@
                     android:text="@string/camera_height" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <com.satsuware.usefulviews.LabelledSpinner
+                android:id="@+id/camera_resolution_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                ls:labelText="Camera resolution"
+                android:enabled="false"/>
 
             <SeekBar
                 android:id="@+id/zoom_seekBar"
