@@ -22,6 +22,10 @@
     <string name="select_png">Select png...</string>
     <string name="dialog_message">Select the png!</string>
     <string name="dialog_title">Error</string>
+    <string name="prompt_camera_width">Width</string>
+    <string name="prompt_camera_height">Height</string>
+    <string name="camera_width">640</string>
+    <string name="camera_height">480</string>
     <string-array name="camera_capturer">
         <item>Flashlight</item>
         <item>Zoom</item>

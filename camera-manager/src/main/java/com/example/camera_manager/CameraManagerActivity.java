@@ -81,6 +81,8 @@ public class CameraManagerActivity extends AppCompatActivity {
     private EditText mPngWidth;
     private EditText mPngHeight;
     private Button mSelectPngButton;
+    private EditText mWidth;
+    private EditText mHeight;
 
     private FPSurfaceViewRenderer localRender;
     private TextView mLocalResolutionView;
@@ -144,6 +146,8 @@ public class CameraManagerActivity extends AppCompatActivity {
 
             }
         });
+        mWidth = (EditText) findViewById(R.id.camera_width);
+        mHeight = (EditText) findViewById(R.id.camera_height);
 
         mUseFilter = (CheckBox) findViewById(R.id.use_filter);
         mUseFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -406,6 +410,10 @@ public class CameraManagerActivity extends AppCompatActivity {
                                     StreamOptions streamOptions = new StreamOptions(streamName);
                                     VideoConstraints videoConstraints = new VideoConstraints();
                                     videoConstraints.setVideoFps(25);
+                                    if (mWidth.getText().length() > 0 && mHeight.getText().length() > 0) {
+                                        videoConstraints.setResolution(Integer.parseInt(mWidth.getText().toString()),
+                                                Integer.parseInt(mHeight.getText().toString()));
+                                    }
                                     videoConstraints.setCameraId(cameraId);
                                     Constraints constraints = new Constraints(true, true);
                                     constraints.setVideoConstraints(videoConstraints);

@@ -31,6 +31,8 @@ public class GPUImageCameraCapturer extends Camera1Capturer {
     }
 
     public void setUsedFilter(boolean usesFiler) {
-        cameraSession.setUsedFilter(usesFiler);
+        if (cameraSession != null) {
+            cameraSession.setUsedFilter(usesFiler);
+        }
     }
 }
