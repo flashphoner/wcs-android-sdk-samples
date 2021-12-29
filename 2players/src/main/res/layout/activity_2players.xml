@@ -51,7 +51,7 @@
 
                     </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -65,7 +65,7 @@
                             android:singleLine="true"
                             android:text="@string/default_play1_name" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:id="@+id/play1_status"
@@ -107,7 +107,7 @@
 
                     </com.flashphoner.fpwcsapi.layout.PercentFrameLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -121,7 +121,7 @@
                             android:singleLine="true"
                             android:text="@string/default_play2_name" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:id="@+id/play2_status"
@@ -146,7 +146,7 @@
 
             </LinearLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -160,7 +160,7 @@
                     android:singleLine="true"
                     android:text="@string/wcs_url" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/connect_status"

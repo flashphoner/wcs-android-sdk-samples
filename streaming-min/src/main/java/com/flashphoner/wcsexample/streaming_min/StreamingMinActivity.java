@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -18,7 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
@@ -476,6 +476,7 @@ public class StreamingMinActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case PUBLISH_REQUEST_CODE: {
                 if (grantResults.length == 0 ||
@@ -519,12 +520,12 @@ public class StreamingMinActivity extends AppCompatActivity {
                                         mSendDataButton.setEnabled(false);
                                     }
                                     mPublishButton.setEnabled(true);
-                                    if (StreamStatus.FAILED.equals(streamStatus)){
-                                        switch (stream.getInfo()){
+                                    if (StreamStatus.FAILED.equals(streamStatus)) {
+                                        switch (stream.getInfo()) {
                                             case StreamStatusInfo.STREAM_NAME_ALREADY_IN_USE:
-                                                mPublishStatus.setText(streamStatus+": Server already has a publish stream with the same name, try using different one");
+                                                mPublishStatus.setText(streamStatus + ": Server already has a publish stream with the same name, try using different one");
                                                 break;
-                                            default:{
+                                            default: {
                                                 mPlayStatus.setText(stream.getInfo());
                                             }
                                         }

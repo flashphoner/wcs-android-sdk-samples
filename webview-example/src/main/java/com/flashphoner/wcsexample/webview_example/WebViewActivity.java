@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
@@ -17,6 +16,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.Nullable;
 
 import com.flashphoner.wcsexample.R;
 

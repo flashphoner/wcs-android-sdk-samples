@@ -6,10 +6,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -21,6 +17,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
@@ -54,9 +55,11 @@ public class PhoneMinActivity extends AppCompatActivity {
     private EditText mSipPasswordView;
     private EditText mSipDomainView;
     private EditText mSipPortView;
+    private EditText mAuthTokenView;
     private CheckBox mSipRegisterRequiredView;
     private TextView mConnectStatus;
     private Button mConnectButton;
+    private Button mConnectTokenButton;
     private EditText mCalleeView;
     private EditText mInviteParametersView;
 
@@ -98,6 +101,8 @@ public class PhoneMinActivity extends AppCompatActivity {
      */
     private AlertDialog incomingCallAlert;
 
+    private boolean connectWithToken = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +135,7 @@ public class PhoneMinActivity extends AppCompatActivity {
         mSipPortView.setText(sharedPref.getString("sip_port", getString(R.string.sip_port)));
         mSipRegisterRequiredView = (CheckBox) findViewById(R.id.register_required);
         mSipRegisterRequiredView.setChecked(sharedPref.getBoolean("sip_register_required", true));
+        mAuthTokenView = (EditText) findViewById(R.id.auth_token);
 
         callStatusEvent = new CallStatusEvent() {
             /**
@@ -262,117 +268,10 @@ public class PhoneMinActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (mConnectButton.getTag() == null || Integer.valueOf(R.string.action_connect).equals(mConnectButton.getTag())) {
-                    SessionOptions sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
-                    session = Flashphoner.createSession(sessionOptions);
-                    session.on(new SessionEvent() {
-                        @Override
-                        public void onAppData(Data data) {
-
-                        }
-
-                        /**
-                         * Connection established
-                         * @param connection Current connection state
-                         */
-                        @Override
-                        public void onConnected(final Connection connection) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mConnectButton.setText(R.string.action_disconnect);
-                                    mConnectButton.setTag(R.string.action_disconnect);
-                                    mConnectButton.setEnabled(true);
-                                    if (!mSipRegisterRequiredView.isChecked()) {
-                                        mConnectStatus.setText(connection.getStatus());
-                                        mCallButton.setEnabled(true);
-                                    } else {
-                                        mConnectStatus.setText(connection.getStatus() + ". Registering...");
-                                    }
-                                }
-                            });
-                        }
-
-                        /**
-                         * Phone registered
-                         * @param connection Current connection state
-                         */
-                        @Override
-                        public void onRegistered(final Connection connection) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mConnectStatus.setText(connection.getStatus());
-                                    mCallButton.setEnabled(true);
-                                }
-                            });
-                        }
-
-                        /**
-                         * Phone disconnected
-                         * @param connection Current connection state
-                         */
-                        @Override
-                        public void onDisconnection(final Connection connection) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mConnectButton.setText(R.string.action_connect);
-                                    mConnectButton.setTag(R.string.action_connect);
-                                    mConnectButton.setEnabled(true);
-                                    mConnectStatus.setText(connection.getStatus());
-                                    mCallButton.setText(R.string.action_call);
-                                    mCallButton.setTag(R.string.action_call);
-                                    mCallButton.setEnabled(false);
-                                    mCallStatus.setText("");
-                                    mHoldButton.setText(R.string.action_hold);
-                                    mHoldButton.setTag(R.string.action_hold);
-                                    mHoldButton.setEnabled(false);
-                                    mDTMFButton.setEnabled(false);
-                                }
-                            });
-                        }
-                    });
-
-                    /**
-                     * Add handler for incoming call
-                     */
-                    session.on(new IncomingCallEvent() {
-                        @Override
-                        public void onCall(final Call call) {
-                            call.on(callStatusEvent);
-                            /**
-                             * Display UI alert for the new incoming call
-                             */
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(PhoneMinActivity.this);
-
-                                    builder.setTitle("Incoming call");
-
-                                    builder.setMessage("Incoming call from '" + call.getCaller() + "'");
-                                    builder.setPositiveButton("Answer", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            PhoneMinActivity.this.call = call;
-                                            ActivityCompat.requestPermissions(PhoneMinActivity.this,
-                                                    new String[]{Manifest.permission.RECORD_AUDIO},
-                                                    INCOMING_CALL_REQUEST_CODE);
-                                        }
-                                    });
-                                    builder.setNegativeButton("Hangup", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            call.hangup();
-                                            incomingCallAlert = null;
-                                        }
-                                    });
-                                    incomingCallAlert = builder.show();
-                                }
-                            });
-                        }
-                    });
+                    connectWithToken = false;
                     mConnectButton.setEnabled(false);
+                    mConnectTokenButton.setEnabled(false);
+                    createSession();
                     /**
                      * Connection containing SIP details
                      */
@@ -383,6 +282,7 @@ public class PhoneMinActivity extends AppCompatActivity {
                     connection.setSipOutboundProxy(mSipDomainView.getText().toString());
                     connection.setSipPort(Integer.parseInt(mSipPortView.getText().toString()));
                     connection.setSipRegisterRequired(mSipRegisterRequiredView.isChecked());
+                    connection.setKeepAlive(true);
                     session.connect(connection);
 
                     SharedPreferences sharedPref = PhoneMinActivity.this.getPreferences(Context.MODE_PRIVATE);
@@ -396,6 +296,7 @@ public class PhoneMinActivity extends AppCompatActivity {
                     editor.apply();
                 } else {
                     mConnectButton.setEnabled(false);
+                    mConnectTokenButton.setEnabled(false);
                     session.disconnect();
                 }
                 View currentFocus = getCurrentFocus();
@@ -405,6 +306,32 @@ public class PhoneMinActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mConnectTokenButton = (Button) findViewById(R.id.connect_token_button);
+        mConnectTokenButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mConnectTokenButton.getTag() == null || Integer.valueOf(R.string.action_connect_token).equals(mConnectTokenButton.getTag())) {
+                    connectWithToken = true;
+                    String authToken = mAuthTokenView.getText().toString();
+                    if (authToken.isEmpty()) {
+                        return;
+                    }
+                    mConnectButton.setEnabled(false);
+                    mConnectTokenButton.setEnabled(false);
+                    createSession();
+                    Connection connection = new Connection();
+                    connection.setAuthToken(authToken);
+                    connection.setKeepAlive(true);
+                    session.connect(connection);
+                } else {
+                    mConnectButton.setEnabled(false);
+                    mConnectTokenButton.setEnabled(false);
+                    session.disconnect();
+                }
+            }
+        });
+        mConnectTokenButton.setEnabled(false);
 
         mCalleeView = (EditText) findViewById(R.id.callee);
         mCalleeView.setText(sharedPref.getString("callee", getString(R.string.default_callee_name)));
@@ -501,9 +428,134 @@ public class PhoneMinActivity extends AppCompatActivity {
         });
     }
 
+    private void createSession() {
+        SessionOptions sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
+        session = Flashphoner.createSession(sessionOptions);
+        session.on(new SessionEvent() {
+            @Override
+            public void onAppData(Data data) {
+
+            }
+
+            /**
+             * Connection established
+             * @param connection Current connection state
+             */
+            @Override
+            public void onConnected(final Connection connection) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mConnectButton.setText(R.string.action_disconnect);
+                        mConnectButton.setTag(R.string.action_disconnect);
+                        mConnectButton.setEnabled(true);
+                        mConnectTokenButton.setText(R.string.action_disconnect);
+                        mConnectTokenButton.setTag(R.string.action_disconnect);
+                        mConnectTokenButton.setEnabled(true);
+                        if (!mSipRegisterRequiredView.isChecked() || connectWithToken) {
+                            mConnectStatus.setText(connection.getStatus());
+                            mCallButton.setEnabled(true);
+                        } else {
+                            mConnectStatus.setText(connection.getStatus() + ". Registering...");
+                        }
+                        String token = connection.getAuthToken();
+                        if (token != null && !token.isEmpty()) {
+                            mAuthTokenView.setText(token);
+                            mConnectTokenButton.setEnabled(true);
+                        }
+                    }
+                });
+            }
+
+            /**
+             * Phone registered
+             * @param connection Current connection state
+             */
+            @Override
+            public void onRegistered(final Connection connection) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mConnectStatus.setText(connection.getStatus());
+                        mCallButton.setEnabled(true);
+                    }
+                });
+            }
+
+            /**
+             * Phone disconnected
+             * @param connection Current connection state
+             */
+            @Override
+            public void onDisconnection(final Connection connection) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mConnectButton.setText(R.string.action_connect);
+                        mConnectButton.setTag(R.string.action_connect);
+                        mConnectButton.setEnabled(true);
+                        mConnectTokenButton.setText(R.string.action_connect_token);
+                        mConnectTokenButton.setTag(R.string.action_connect_token);
+                        mConnectTokenButton.setEnabled(true);
+                        mConnectStatus.setText(connection.getStatus());
+                        mCallButton.setText(R.string.action_call);
+                        mCallButton.setTag(R.string.action_call);
+                        mCallButton.setEnabled(false);
+                        mCallStatus.setText("");
+                        mHoldButton.setText(R.string.action_hold);
+                        mHoldButton.setTag(R.string.action_hold);
+                        mHoldButton.setEnabled(false);
+                        mDTMFButton.setEnabled(false);
+                    }
+                });
+            }
+        });
+
+        /**
+         * Add handler for incoming call
+         */
+        session.on(new IncomingCallEvent() {
+            @Override
+            public void onCall(final Call call) {
+                call.on(callStatusEvent);
+                /**
+                 * Display UI alert for the new incoming call
+                 */
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(PhoneMinActivity.this);
+
+                        builder.setTitle("Incoming call");
+
+                        builder.setMessage("Incoming call from '" + call.getCaller() + "'");
+                        builder.setPositiveButton("Answer", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                PhoneMinActivity.this.call = call;
+                                ActivityCompat.requestPermissions(PhoneMinActivity.this,
+                                        new String[]{Manifest.permission.RECORD_AUDIO},
+                                        INCOMING_CALL_REQUEST_CODE);
+                            }
+                        });
+                        builder.setNegativeButton("Hangup", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                call.hangup();
+                                incomingCallAlert = null;
+                            }
+                        });
+                        incomingCallAlert = builder.show();
+                    }
+                });
+            }
+        });
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case CALL_REQUEST_CODE: {
                 if (grantResults.length == 0 ||

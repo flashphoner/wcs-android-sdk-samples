@@ -32,7 +32,6 @@
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
-                    android:layout_margin="5px"
                     android:orientation="vertical">
 
                     <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
@@ -61,7 +60,6 @@
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight=".5"
-                    android:layout_margin="5px"
                     android:orientation="vertical">
 
                     <com.flashphoner.fpwcsapi.layout.PercentFrameLayout
@@ -96,7 +94,7 @@
                 android:text=""
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -109,9 +107,9 @@
                     android:maxLines="1"
                     android:text="@string/wcs_url" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -124,7 +122,7 @@
                     android:maxLines="1"
                     android:text="@string/stream_name" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.satsuware.usefulviews.LabelledSpinner
                 android:id="@+id/camera_capturer"
@@ -133,46 +131,6 @@
                 android:layout_gravity="center_horizontal"
                 ls:labelText="Camera capturer"
                 ls:spinnerEntries="@array/camera_capturer"/>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/camera_width"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_camera_width"
-                    android:inputType="number"
-                    android:maxLength="4"
-                    android:maxLines="1"
-                    android:text="@string/camera_width" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/camera_height"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_camera_height"
-                    android:inputType="number"
-                    android:maxLength="4"
-                    android:maxLines="1"
-                    android:text="@string/camera_height" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <com.satsuware.usefulviews.LabelledSpinner
-                android:id="@+id/camera_resolution_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                ls:labelText="Camera resolution"
-                android:enabled="false"/>
 
             <SeekBar
                 android:id="@+id/zoom_seekBar"
@@ -194,7 +152,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -208,9 +166,9 @@
                     android:text="@string/png_x_position"
                     android:inputType="number" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -224,9 +182,9 @@
                     android:text="@string/png_y_position"
                     android:inputType="number" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -240,9 +198,9 @@
                     android:text="@string/png_width"
                     android:inputType="number" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -256,7 +214,7 @@
                     android:text="@string/png_height"
                     android:inputType="number" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/select_png_button"

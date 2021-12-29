@@ -101,7 +101,7 @@
                         android:layout_height="wrap_content" />
 
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -116,7 +116,7 @@
                             android:text="@string/publish_bitrate"
                             android:enabled="false"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <Switch
                         android:layout_width="match_parent"
@@ -138,7 +138,7 @@
                         android:layout_gravity="center_horizontal"
                         ls:labelText="@string/prompt_camera" />
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -152,7 +152,7 @@
                             android:maxLines="1"
                             android:text="@string/camera_fps" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <CheckBox
                         android:id="@+id/publish_video_bitrate_default"
@@ -161,7 +161,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -176,9 +176,9 @@
                             android:text="@string/publish_bitrate"
                             android:enabled="false"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -193,9 +193,9 @@
                             android:text="@string/publish_bitrate"
                             android:enabled="false"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -209,9 +209,9 @@
                             android:maxLines="1"
                             android:text="@string/camera_width" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -225,7 +225,7 @@
                             android:maxLines="1"
                             android:text="@string/camera_height" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.satsuware.usefulviews.LabelledSpinner
                         android:id="@+id/strip_streamer_codec"
@@ -313,7 +313,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -328,9 +328,9 @@
                             android:text="@string/camera_width"
                             android:enabled="false"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -345,7 +345,7 @@
                             android:text="@string/camera_height"
                             android:enabled="false"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.satsuware.usefulviews.LabelledSpinner
                         android:id="@+id/strip_player_codec"
@@ -361,7 +361,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -376,7 +376,7 @@
                             android:text="@string/play_bitrate"
                             android:enabled="false"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <CheckBox
                         android:id="@+id/play_quality_default"
@@ -385,7 +385,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -400,7 +400,7 @@
                             android:text="@string/play_quality"
                             android:enabled="false"/>
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.satsuware.usefulviews.LabelledSpinner
                         android:id="@+id/audio_output"
@@ -447,7 +447,7 @@
                 android:text=""
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -460,9 +460,9 @@
                     android:maxLines="1"
                     android:text="@string/wcs_url" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -475,7 +475,7 @@
                     android:maxLines="1"
                     android:text="@string/stream_name" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
                 android:id="@+id/trust_all_certificates_default"

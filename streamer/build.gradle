@@ -4,12 +4,12 @@ apply plugin: 'com.github.triplet.play'
 Properties signingProps = null
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.2'
+    compileSdkVersion 31
+    buildToolsVersion '31.0.0'
     defaultConfig {
         applicationId "com.flashphoner.wcsexample.streamer"
         minSdkVersion 26
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 2600001
         versionName "1.1"
     }
@@ -47,8 +47,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':fp_wcs_api')
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:design:28.0.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
 }
 
 play {

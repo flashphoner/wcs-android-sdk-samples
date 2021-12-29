@@ -40,7 +40,7 @@
                 android:orientation="horizontal"
                 android:weightSum="1.0">
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight=".7">
@@ -55,7 +55,7 @@
                         android:singleLine="true"
                         android:text="@string/wcs_url" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
                     android:id="@+id/connect_button"

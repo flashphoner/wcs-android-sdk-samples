@@ -7,10 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -24,6 +20,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
@@ -74,6 +75,8 @@ public class ScreenSharingActivity extends AppCompatActivity {
 
     private PercentFrameLayout localRenderLayout;
     private PercentFrameLayout remoteRenderLayout;
+
+    private Intent serviceIntent;
 
 
     @Override
@@ -227,6 +230,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
                                                          */
                                                         playStream.play();
                                                     } else {
+                                                        stopService(serviceIntent);
                                                         Log.e(TAG, "Can not publish stream " + stream.getName() + " " + streamStatus);
                                                     }
                                                     mStatusView.setText(streamStatus.toString());
@@ -253,6 +257,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
                                     mStartButton.setTag(R.string.action_start);
                                     mStartButton.setEnabled(true);
                                     mStatusView.setText(connection.getStatus());
+                                    stopService(serviceIntent);
                                 }
                             });
                         }
@@ -275,6 +280,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
                      * Connection to WCS server is closed with method Session.disconnect().
                      */
                     session.disconnect();
+                    stopService(serviceIntent);
                 }
 
                 View currentFocus = getCurrentFocus();
@@ -305,6 +311,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case PUBLISH_REQUEST_CODE: {
                 if (grantResults.length == 0 ||
@@ -327,7 +334,10 @@ public class ScreenSharingActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (REQUEST_CODE_CAPTURE_PERM == requestCode && resultCode == RESULT_OK) {
+            serviceIntent = new Intent(this, ScreenSharingService.class);
+            startService(serviceIntent);
             videoCapturer = new ScreenCapturerAndroid(data, new MediaProjection.Callback() {
                 @Override
                 public void onStop() {

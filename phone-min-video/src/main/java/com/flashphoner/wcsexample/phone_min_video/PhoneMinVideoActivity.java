@@ -6,10 +6,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -22,6 +18,11 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
@@ -532,11 +533,12 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case CALL_REQUEST_CODE: {
                 if (grantResults.length == 0 ||
                         grantResults[0] != PackageManager.PERMISSION_GRANTED ||
-                        grantResults[1] != PackageManager.PERMISSION_GRANTED ) {
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED) {
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
                     mCallButton.setEnabled(false);
@@ -558,7 +560,7 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
             case INCOMING_CALL_REQUEST_CODE: {
                 if (grantResults.length == 0 ||
                         grantResults[0] != PackageManager.PERMISSION_GRANTED ||
-                        grantResults[1] != PackageManager.PERMISSION_GRANTED ) {
+                        grantResults[1] != PackageManager.PERMISSION_GRANTED) {
                     call.hangup();
                     incomingCallAlert = null;
                     Log.i(TAG, "Permission has been denied by user");

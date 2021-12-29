@@ -4,12 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -23,13 +19,17 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
-import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
 import com.flashphoner.fpwcsapi.session.Session;
+import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
@@ -256,6 +256,7 @@ public class StreamRecordingActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case PUBLISH_REQUEST_CODE: {
                 if (grantResults.length == 0 ||

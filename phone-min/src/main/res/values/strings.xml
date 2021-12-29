@@ -3,6 +3,7 @@
 
     <string name="prompt_wcs_url">WCS Url</string>
     <string name="action_connect">Connect</string>
+    <string name="action_connect_token">Connect with token</string>
     <string name="action_disconnect">Disconnect</string>
     <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
     <string name="register_required">Register required</string>
@@ -33,5 +34,6 @@
     <string name="prompt_dtmf">dtmf</string>
     <string name="invite_parameters">{"header":"value"}</string>
     <string name="prompt_invite_parameters">Invite Parameters</string>
+    <string name="prompt_auth_token">Auth Token</string>
 
 </resources>

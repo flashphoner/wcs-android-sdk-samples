@@ -3,7 +3,6 @@ package com.flashphoner.wcsexample.player;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -14,13 +13,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.flashphoner.fpwcsapi.Flashphoner;
 import com.flashphoner.fpwcsapi.bean.Connection;
 import com.flashphoner.fpwcsapi.bean.Data;
 import com.flashphoner.fpwcsapi.bean.StreamStatus;
-import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.layout.PercentFrameLayout;
 import com.flashphoner.fpwcsapi.session.Session;
+import com.flashphoner.fpwcsapi.session.SessionEvent;
 import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;

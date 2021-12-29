@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CameraManager</string>
     <string name="prompt_wcs_url">WCS Url</string>
-    <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
+    <string name="wcs_url">ws://192.168.0.1:8080/</string>
     <string name="prompt_stream_name">Stream name</string>
     <string name="stream_name">test</string>
     <string name="action_start">Start</string>
@@ -22,15 +22,10 @@
     <string name="select_png">Select png...</string>
     <string name="dialog_message">Select the png!</string>
     <string name="dialog_title">Error</string>
-    <string name="prompt_camera_width">Width</string>
-    <string name="prompt_camera_height">Height</string>
-    <string name="camera_width">640</string>
-    <string name="camera_height">480</string>
     <string-array name="camera_capturer">
         <item>Flashlight</item>
         <item>Zoom</item>
         <item>GPUImage</item>
         <item>PNG overlay</item>
-        <item>Resolution</item>
     </string-array>
 </resources>

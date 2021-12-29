@@ -42,9 +42,6 @@ public class GPUImageCameraSession implements CameraSession {
     private boolean cameraReleased = true;
 
     private boolean isUsedFilter = false;
-    GPUImageMonochromeFilter filter;
-    GPUImageRenderer renderer;
-    PixelBuffer buffer;
 
     public static void create(CreateSessionCallback callback, Events events, boolean captureToTexture, Context applicationContext, SurfaceTextureHelper surfaceTextureHelper, int cameraId, int width, int height, int framerate) {
         long constructionTimeNs = System.nanoTime();
@@ -150,7 +147,6 @@ public class GPUImageCameraSession implements CameraSession {
         this.constructionTimeNs = constructionTimeNs;
         surfaceTextureHelper.setTextureSize(captureFormat.width, captureFormat.height);
         this.startCapturing();
-        initFilter(captureFormat.width, captureFormat.height);
     }
 
     public void stop() {
@@ -215,7 +211,6 @@ public class GPUImageCameraSession implements CameraSession {
             this.camera.release();
             setCameraReleased(true);
             this.events.onCameraClosed(this);
-            destroyFilter();
             Logging.d(TAG, STOP_DONE);
         }
     }
@@ -282,32 +277,27 @@ public class GPUImageCameraSession implements CameraSession {
         });
     }
 
-    private void initFilter(int width, int height) {
-        filter = new GPUImageMonochromeFilter();
-        filter.setColor(0,0,0);
-
-        renderer = new GPUImageRenderer(filter);
-        renderer.setRotation(Rotation.NORMAL, false, false);
-        renderer.setScaleType(GPUImage.ScaleType.CENTER_INSIDE);
-
-        buffer = new PixelBuffer(width, height);
-        buffer.setRenderer(renderer);
-    }
-
-    private void destroyFilter() {
-        filter.destroy();
-        buffer.destroy();
-    }
-
     private void applyFilter(byte[] data, int width, int height) {
         if (!isUsedFilter) {
             return;
         }
+        GPUImageMonochromeFilter filter = new GPUImageMonochromeFilter();
+        filter.setColor(0,0,0);
+
+        GPUImageRenderer renderer = new GPUImageRenderer(filter);
+        renderer.setRotation(Rotation.NORMAL, false, false);
+        renderer.setScaleType(GPUImage.ScaleType.CENTER_INSIDE);
+
+        PixelBuffer buffer = new PixelBuffer(width, height);
+        buffer.setRenderer(renderer);
 
         renderer.onPreviewFrame(data, width, height);
         Bitmap newBitmapRgb = buffer.getBitmap();
         byte[] dataYuv = Utils.getNV21(width, height, newBitmapRgb);
         System.arraycopy(dataYuv, 0, data, 0, dataYuv.length);
+
+        filter.destroy();
+        buffer.destroy();
     }
 
     public boolean isUsedFilter() {
