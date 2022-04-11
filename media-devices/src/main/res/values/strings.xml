@@ -46,7 +46,6 @@
     <string name="publish_audio_bitrate">0</string>
     <string name="prompt_stream_name">Stream name</string>
     <string name="stream_name">test</string>
-    <string name="trust_all_certificates_default">Trust all ssl-certificates</string>
     <string name="upload_quality">Upload quality:&#160;</string>
     <string name="download_quality">Download quality:&#160;</string>
     <string name="unknown">UNKNOWN</string>

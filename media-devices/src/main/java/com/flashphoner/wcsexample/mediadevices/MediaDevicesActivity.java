@@ -110,7 +110,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private LabelledSpinner mAudioOutput;
     private LabelledSpinner mTransportOutput;
     private LabelledSpinner mTransportInput;
-    private CheckBox mTrustAllCer;
 
     private Button mTestButton;
     private Button mConnectButton;
@@ -286,7 +285,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mAudioMuteStatus = (TextView) findViewById(R.id.audio_mute_status);
         mVideoMuteStatus = (TextView) findViewById(R.id.video_mute_status);
         mMutedName = (TextView) findViewById(R.id.muted_name);
-        mTrustAllCer = (CheckBox) findViewById(R.id.trust_all_certificates_default);
 
         mConnectButton = (Button) findViewById(R.id.connect_button);
         mConnectButton.setOnClickListener(new OnClickListener() {
@@ -630,7 +628,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
         SessionOptions sessionOptions = new SessionOptions(url);
         sessionOptions.setLocalRenderer(localRender);
         sessionOptions.setRemoteRenderer(remoteRender);
-        sessionOptions.trustAllCertificates(mTrustAllCer.isChecked());
 
         return sessionOptions;
     }
