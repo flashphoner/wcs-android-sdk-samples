@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">2 Sessions</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="prompt_play_stream">Play Stream</string>
+    <string name="prompt_publish_stream">Publish Stream</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_play">Play</string>
+    <string name="action_publish">Publish</string>
+    <string name="action_stop">Stop</string>
+    <string name="default_stream1_name">test_1</string>
+    <string name="default_stream2_name">test_2</string>
+    <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
+
+</resources>
