@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Audio-Chat</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_wcs_url">WCS Url</string>
+    <string name="prompt_login">Login</string>
+    <string name="prompt_join_room">Room</string>
+    <string name="prompt_message">Message</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_join">Join</string>
+    <string name="action_leave">Leave</string>
+    <string name="action_publish">Publish</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_send">Send</string>
+    <string name="wcs_url">wss://demo.flashphoner.com:8443</string>
+    <string name="mute_audio">Mute Audio</string>
+
+</resources>

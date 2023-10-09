@@ -1,2 +1,2 @@
 include ':fp_wcs_api', ':streaming-min', ':streamer', ':player', ':2players', ':2sessions', ':media-devices', ":stream-recording", ":conference", ":phone-min",
-        ":phone-min-video", ":click-to-call", ":video-chat", ':webview-example', ':screen-sharing', 'mcu-client', ':gpu-image', ':camera-manager'
+        ":phone-min-video", ":click-to-call", ":video-chat", ":audio-chat", ':webview-example', ':screen-sharing', 'mcu-client', ':gpu-image', ':camera-manager'
