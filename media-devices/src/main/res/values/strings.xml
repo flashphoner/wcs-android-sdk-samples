@@ -48,6 +48,8 @@
     <string name="stream_name">test</string>
     <string name="upload_quality">Upload quality:&#160;</string>
     <string name="download_quality">Download quality:&#160;</string>
+    <string name="current_bps">Current Bps:&#160;</string>
+    <string name="available_bps">Available Bps:&#160;</string>
     <string name="unknown">UNKNOWN</string>
     <string name="prompt_transport">Transport</string>
     <string name="audio_mute_status">Audio muted: </string>

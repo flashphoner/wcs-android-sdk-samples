@@ -48,6 +48,8 @@ import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamEventHandler;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
+import com.flashphoner.fpwcsapi.session.StreamStats;
+import com.flashphoner.fpwcsapi.session.StreamStatsCallback;
 import com.flashphoner.fpwcsapi.session.Transport;
 import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
 import com.flashphoner.fpwcsapi.ws.ConnectionQuality;
@@ -59,6 +61,7 @@ import org.webrtc.RendererCommon;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -122,6 +125,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private TextView mUpdateQualityStatus;
     private TextView mDownloadQualityStatus;
 
+    private TextView mCurrentBps;
+    private TextView mAvailableBps;
+
     private Session session;
 
     private Stream publishStream;
@@ -146,6 +152,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private boolean isSwitchRemoteRenderer = false;
     private boolean isSwitchLocalRenderer = false;
 
+    private Timer statTimer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,7 +161,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
         TextView policyTextView = (TextView) findViewById(R.id.privacy_policy);
         policyTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        String policyLink ="<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
+        String policyLink = "<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
         policyTextView.setText(Html.fromHtml(policyLink));
 
         /**
@@ -265,12 +273,16 @@ public class MediaDevicesActivity extends AppCompatActivity {
             public void onItemChosen(View labelledSpinner, AdapterView<?> adapterView, View itemView, int position, long id) {
                 String audioType = getResources().getStringArray(R.array.audio_output)[position];
                 switch (audioType) {
-                    case "speakerphone": Flashphoner.getAudioManager().setUseSpeakerPhone(true); break;
+                    case "speakerphone":
+                        Flashphoner.getAudioManager().setUseSpeakerPhone(true);
+                        break;
                     case "phone":
                         Flashphoner.getAudioManager().setUseBluetoothSco(false);
                         Flashphoner.getAudioManager().setUseSpeakerPhone(false);
                         break;
-                    case "bluetooth": Flashphoner.getAudioManager().setUseBluetoothSco(true); break;
+                    case "bluetooth":
+                        Flashphoner.getAudioManager().setUseBluetoothSco(true);
+                        break;
                 }
             }
 
@@ -336,6 +348,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
         mUpdateQualityStatus = (TextView) findViewById(R.id.upload_quality_status);
         mDownloadQualityStatus = (TextView) findViewById(R.id.download_quality_status);
+
+        mCurrentBps = (TextView) findViewById(R.id.current_bps);
+        mAvailableBps = (TextView) findViewById(R.id.available_bps);
 
         /**
          * Connection to server will be established and stream will be published when Start button is clicked.
@@ -470,7 +485,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
     }
 
     private void switchRender() {
-        if (spinner.getSelectedItemId() == 0){
+        if (spinner.getSelectedItemId() == 0) {
             if (isSwitchRemoteRenderer) {
                 playStream.switchRenderer(remoteRender);
                 isSwitchRemoteRenderer = false;
@@ -610,9 +625,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         }
 
         View currentFocus = getCurrentFocus();
-        if (currentFocus != null)
-
-        {
+        if (currentFocus != null) {
             InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
@@ -741,6 +754,23 @@ public class MediaDevicesActivity extends AppCompatActivity {
         }
     }
 
+    private TimerTask getStatsTimerTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                if (publishStream != null) {
+                    publishStream.getStats(streamStats -> {
+                        runOnUiThread(() -> {
+                                    mCurrentBps.setText(String.valueOf(streamStats.getCurrentVideoBitrate()));
+                                    mAvailableBps.setText(String.valueOf(streamStats.getAvailableOutgoingBitrate()));
+                                }
+                        );
+                    });
+                }
+            }
+        };
+    }
+
     private void playStream() {
         mPlayButton.setEnabled(false);
         if (mPlayButton.getTag() == null || Integer.valueOf(R.string.action_play).equals(mPlayButton.getTag())) {
@@ -816,10 +846,17 @@ public class MediaDevicesActivity extends AppCompatActivity {
                                 mMutedName.setText(getString(R.string.muted_name) + streamEvent.getPayload().get("streamName"));
                             }
                             switch (streamEvent.getType()) {
-                                case audioMuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"true"); break;
-                                case audioUnmuted: mAudioMuteStatus.setText(getString(R.string.audio_mute_status)+"false"); break;
-                                case videoMuted: mVideoMuteStatus.setText(getString(R.string.video_mute_status)+"true"); break;
-                                case videoUnmuted: mVideoMuteStatus.setText(getString(R.string.video_mute_status)+"false");
+                                case audioMuted:
+                                    mAudioMuteStatus.setText(getString(R.string.audio_mute_status) + "true");
+                                    break;
+                                case audioUnmuted:
+                                    mAudioMuteStatus.setText(getString(R.string.audio_mute_status) + "false");
+                                    break;
+                                case videoMuted:
+                                    mVideoMuteStatus.setText(getString(R.string.video_mute_status) + "true");
+                                    break;
+                                case videoUnmuted:
+                                    mVideoMuteStatus.setText(getString(R.string.video_mute_status) + "false");
                             }
                         }
                     });
@@ -842,12 +879,19 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private void updateQualityStatus(ConnectionQuality quality, TextView textView) {
         int color;
         switch (quality) {
-            case BAD: color = Color.RED; break;
-            case GOOD: color = Color.YELLOW; break;
-            case PERFECT: color = Color.GREEN; break;
+            case BAD:
+                color = Color.RED;
+                break;
+            case GOOD:
+                color = Color.YELLOW;
+                break;
+            case PERFECT:
+                color = Color.GREEN;
+                break;
             case UPDATE:
             case UNKNOWN:
-            default: color = Color.LTGRAY;
+            default:
+                color = Color.LTGRAY;
         }
         runOnUiThread(() -> {
             textView.setText(quality.toString());
@@ -917,7 +961,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     private Map<String, String> getBasicAuthHeader(String url) {
         if (url.contains("@")) {
-            String authorization = url.substring(url.indexOf(":")+3, url.indexOf("@"));
+            String authorization = url.substring(url.indexOf(":") + 3, url.indexOf("@"));
             String base64Auth = Base64.getEncoder().encodeToString(authorization.getBytes());
             String header = "Basic " + base64Auth;
             Map<String, String> basicAuthheader = new HashMap<>();
@@ -973,6 +1017,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
         if (Flashphoner.isFlashlightSupport()) {
             mSwitchFlashlightButton.setEnabled(true);
         }
+
+        if (statTimer == null) {
+            statTimer = new Timer();
+            statTimer.scheduleAtFixedRate(getStatsTimerTask(), 0, 1000);
+        }
     }
 
     private void onUnpublished() {
@@ -987,6 +1036,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mMuteAudio.setChecked(false);
         mMuteVideo.setChecked(false);
         turnOffFlashlight();
+
+        if (statTimer != null) {
+            statTimer.cancel();
+            statTimer = null;
+        }
     }
 
     private void onPlayed(Stream stream) {
@@ -1140,13 +1194,13 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 if (currentVolume == 1) {
                     Flashphoner.setVolume(0);
                 }
-                mPlayVolume.setProgress(currentVolume-1);
+                mPlayVolume.setProgress(currentVolume - 1);
                 break;
             case KeyEvent.KEYCODE_VOLUME_UP:
                 if (currentVolume == 0) {
                     Flashphoner.setVolume(1);
                 }
-                mPlayVolume.setProgress(currentVolume+1);
+                mPlayVolume.setProgress(currentVolume + 1);
                 break;
         }
         return super.onKeyDown(keyCode, event);

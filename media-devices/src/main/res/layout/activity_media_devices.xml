@@ -572,14 +572,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:baselineAligned="false"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:weightSum="1.0">
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:baselineAligned="false"
                     android:orientation="horizontal"
-                    android:weightSum="1.0">
+                    android:layout_marginRight="10dp"
+                    android:weightSum="0.5">
                     <TextView
                         android:id="@+id/upload_quality_label"
                         android:layout_width="wrap_content"
@@ -597,11 +598,12 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"/>
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="0dp"
                     android:baselineAligned="false"
                     android:orientation="horizontal"
-                    android:weightSum="1.0">
+                    android:weightSum="0.5">
                     <TextView
                         android:id="@+id/download_quality_label"
                         android:layout_width="wrap_content"
@@ -609,14 +611,57 @@
                         android:layout_gravity="left"
                         android:text="@string/download_quality"
                         android:textAppearance="?android:attr/textAppearanceSmall"/>
+
                     <TextView
                         android:id="@+id/download_quality_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:text="@string/unknown"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/grey" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/current_bps"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+                    <TextView
+                        android:id="@+id/current_bps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/unknown"
                         android:textColor="@color/grey"
                         android:textAppearance="?android:attr/textAppearanceSmall"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/available_bps"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <TextView
+                        android:id="@+id/available_bps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/unknown"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/grey" />
                 </LinearLayout>
             </LinearLayout>
 
