@@ -6,5 +6,8 @@
     <string name="action_start">Start</string>
     <string name="action_stop">Stop</string>
     <string name="wcs_url">wss://demo.flashphoner.com:8443/test/</string>
+    <string name="use_audio">Use Audio</string>
     <string name="use_mic">Use Mic</string>
+    <string name="use_system_audio">Use System Audio</string>
+
 </resources>

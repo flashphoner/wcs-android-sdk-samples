@@ -4,12 +4,13 @@ apply plugin: 'com.github.triplet.play'
 Properties signingProps = null
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion '31.0.0'
+    ndkVersion "26.2.11394342"
+
     defaultConfig {
         applicationId "com.flashphoner.wcsexample.phone_min_video"
         minSdkVersion 26
-        targetSdkVersion 31
+        compileSdk 33
+        targetSdkVersion 33
         versionCode 2600001
         versionName "1.1"
     }
@@ -41,6 +42,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'com.flashphoner.wcsexample.phone_min_video'
 }
 
 dependencies {
