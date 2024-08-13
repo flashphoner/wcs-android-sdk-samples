@@ -72,7 +72,7 @@ public class GPUImageActivity extends AppCompatActivity {
 
         TextView policyTextView = (TextView) findViewById(R.id.privacy_policy);
         policyTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        String policyLink ="<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
+        String policyLink = "<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
         policyTextView.setText(Html.fromHtml(policyLink));
 
         /**
@@ -95,7 +95,7 @@ public class GPUImageActivity extends AppCompatActivity {
         GPUImageCameraSession.setUsedFilter(mUseFilter.isChecked());
 
         CameraCapturerFactory.getInstance().setCustomCameraCapturerOptions(createCustomCameraCapturerOptions());
-        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM);
+        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM, this);
 
         mStartButton = (Button) findViewById(R.id.connect_button);
 
@@ -107,47 +107,6 @@ public class GPUImageActivity extends AppCompatActivity {
                     String url = mWcsUrlView.getText().toString();
                     final String streamName = mStreamNameView.getText().toString();
 
-                    try {
-                        localRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
-                            @Override
-                            public void onFirstFrameRendered() {
-                            }
-
-                            @Override
-                            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mLocalResolutionView.setText(i + "x" + i1);
-                                    }
-                                });
-                            }
-                        });
-                    } catch (IllegalStateException e) {
-                        //ignore
-                    }
-
-                    try {
-                        remoteRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
-                            @Override
-                            public void onFirstFrameRendered() {
-                            }
-
-                            @Override
-                            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mRemoteResolutionView.setText(i + "x" + i1);
-                                    }
-                                });
-                            }
-                        });
-                    } catch (IllegalStateException e) {
-                        //ignore
-                    }
-
-
                     /**
                      * The options for connection session are set.
                      * WCS server URL is passed when SessionOptions object is created.
@@ -157,6 +116,7 @@ public class GPUImageActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(url);
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
+                    sessionOptions.setAutoInitRenderers(false);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -294,9 +254,7 @@ public class GPUImageActivity extends AppCompatActivity {
                 }
 
                 View currentFocus = getCurrentFocus();
-                if (currentFocus != null)
-
-                {
+                if (currentFocus != null) {
                     InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
@@ -321,6 +279,38 @@ public class GPUImageActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+
+        localRender.init(Flashphoner.eglBaseContext, new RendererCommon.RendererEvents() {
+            @Override
+            public void onFirstFrameRendered() {
+            }
+
+            @Override
+            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLocalResolutionView.setText(i + "x" + i1);
+                    }
+                });
+            }
+        });
+
+        remoteRender.init(Flashphoner.eglBaseContext, new RendererCommon.RendererEvents() {
+            @Override
+            public void onFirstFrameRendered() {
+            }
+
+            @Override
+            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRemoteResolutionView.setText(i + "x" + i1);
+                    }
+                });
+            }
+        });
     }
 
     @Override

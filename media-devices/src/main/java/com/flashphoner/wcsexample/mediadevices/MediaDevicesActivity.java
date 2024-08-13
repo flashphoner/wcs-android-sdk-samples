@@ -48,9 +48,8 @@ import com.flashphoner.fpwcsapi.session.SessionOptions;
 import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamEventHandler;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
-import com.flashphoner.fpwcsapi.session.StreamStats;
-import com.flashphoner.fpwcsapi.session.StreamStatsCallback;
 import com.flashphoner.fpwcsapi.session.Transport;
+import com.flashphoner.fpwcsapi.webrtc.MediaConnectionOptions;
 import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
 import com.flashphoner.fpwcsapi.ws.ConnectionQuality;
 import com.satsuware.usefulviews.LabelledSpinner;
@@ -153,6 +152,8 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private boolean isSwitchLocalRenderer = false;
 
     private Timer statTimer;
+
+    private MediaConnectionOptions testMediaConnectionOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -333,7 +334,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
                             new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA},
                             TEST_REQUEST_CODE);
                 } else {
-                    Flashphoner.releaseLocalMediaAccess();
+                    if (testMediaConnectionOptions != null) {
+                        Flashphoner.releaseLocalMediaAccess(testMediaConnectionOptions);
+                    }
                     soundMeter.stop();
                     mTestButton.setText(R.string.action_test);
                     mTestButton.setTag(R.string.action_test);
@@ -463,22 +466,24 @@ public class MediaDevicesActivity extends AppCompatActivity {
         newSurfaceRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         newSurfaceRenderer.setMirror(true);
         newSurfaceRenderer.requestLayout();
+
+        initRenderers();
     }
 
     private void chooseCameraCapturer(int position) {
         String captureType = getResources().getStringArray(R.array.camera_capturer)[position];
         switch (captureType) {
             case "flashlight":
-                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.FLASHLIGHT_CAMERA);
+                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.FLASHLIGHT_CAMERA, this);
                 break;
             case "camera1capturer":
-                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CAMERA1CAPTURE);
+                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CAMERA1CAPTURE, this);
                 break;
             case "camera2capturer":
-                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CAMERA2CAPTURE);
+                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CAMERA2CAPTURE, this);
                 break;
             case "custom":
-                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM);
+                CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM, this);
                 break;
         }
         mCameraSpinner.setItemsArray(Flashphoner.getMediaDevices().getVideoList());
@@ -552,7 +557,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mConnectButton.setEnabled(false);
         mTestButton.setEnabled(false);
         if (mConnectButton.getTag() == null || Integer.valueOf(R.string.action_connect).equals(mConnectButton.getTag())) {
-            initRenderers();
 
             String url = mWcsUrlView.getText().toString();
             SessionOptions sessionOptions = createSessionOptions(url);
@@ -641,13 +645,13 @@ public class MediaDevicesActivity extends AppCompatActivity {
         SessionOptions sessionOptions = new SessionOptions(url);
         sessionOptions.setLocalRenderer(localRender);
         sessionOptions.setRemoteRenderer(remoteRender);
+        sessionOptions.setAutoInitRenderers(false);
 
         return sessionOptions;
     }
 
     private void initRenderers() {
-        try {
-            localRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
+            localRender.init(Flashphoner.eglBaseContext, new RendererCommon.RendererEvents() {
                 @Override
                 public void onFirstFrameRendered() {
                 }
@@ -662,7 +666,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     });
                 }
             });
-            remoteRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
+            remoteRender.init(Flashphoner.eglBaseContext, new RendererCommon.RendererEvents() {
                 @Override
                 public void onFirstFrameRendered() {
                 }
@@ -677,7 +681,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     });
                 }
             });
-            newSurfaceRenderer.init(Flashphoner.context, new RendererCommon.RendererEvents() {
+            newSurfaceRenderer.init(Flashphoner.eglBaseContext, new RendererCommon.RendererEvents() {
                 @Override
                 public void onFirstFrameRendered() {
                 }
@@ -686,9 +690,6 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 public void onFrameResolutionChanged(final int i, final int i1, int i2) {
                 }
             });
-        } catch (IllegalStateException e) {
-            //ignore
-        }
     }
 
     private void publishStream() {
@@ -1161,7 +1162,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     Log.i(TAG, "Permission has been denied by user");
                 } else {
                     muteButton();
-                    Flashphoner.getLocalMediaAccess(getConstraints(), localRender);
+                    testMediaConnectionOptions = Flashphoner.getLocalMediaAccess(getConstraints(), this, localRender);
                     mTestButton.setText(R.string.action_release);
                     mTestButton.setTag(R.string.action_release);
                     soundMeter = new SoundMeter(this);

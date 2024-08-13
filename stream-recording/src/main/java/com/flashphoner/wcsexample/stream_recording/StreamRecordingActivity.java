@@ -116,6 +116,7 @@ public class StreamRecordingActivity extends AppCompatActivity {
                      */
                     SessionOptions sessionOptions = new SessionOptions(url);
                     sessionOptions.setLocalRenderer(localRender);
+                    sessionOptions.setAutoInitRenderers(false);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -248,6 +249,9 @@ public class StreamRecordingActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+
+        localRender.init(Flashphoner.eglBaseContext, null);
+
 
         mRecordedLink = (TextView) findViewById(R.id.recorded_link);
         mRecordedVideoView = (VideoView) findViewById(R.id.recorded_video_view);

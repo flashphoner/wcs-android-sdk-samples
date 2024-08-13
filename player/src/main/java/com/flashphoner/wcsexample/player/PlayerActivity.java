@@ -90,6 +90,7 @@ public class PlayerActivity extends AppCompatActivity {
                      */
                     SessionOptions sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
                     sessionOptions.setRemoteRenderer(remoteRender);
+                    sessionOptions.setAutoInitRenderers(false);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -215,6 +216,8 @@ public class PlayerActivity extends AppCompatActivity {
         remoteRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         remoteRender.setMirror(false);
         remoteRender.requestLayout();
+
+        remoteRender.init(Flashphoner.eglBaseContext, null);
     }
 
     private void onStopped(String streamStatus) {

@@ -157,7 +157,7 @@ public class TwoSessionsActivity extends AppCompatActivity {
                                     } else {
                                         mPublish1Button.setText(R.string.action_publish);
                                         mPublish1Button.setTag(R.string.action_publish);
-                                        if (mConnect2Button.getTag() == null || Integer.valueOf(R.string.action_disconnect).equals(mConnect2Button.getTag())) {
+                                        if (Integer.valueOf(R.string.action_disconnect).equals(mConnect2Button.getTag())) {
                                             mPublish2Button.setEnabled(true);
                                         }
                                     }
@@ -441,6 +441,13 @@ public class TwoSessionsActivity extends AppCompatActivity {
 
         local1RenderLayout.setPosition(0, 0, 100, 100);
         local2RenderLayout.setPosition(0, 0, 100, 100);
+
+        remote1Render.init(Flashphoner.eglBaseContext, null);
+        local1Render.init(Flashphoner.eglBaseContext, null);
+
+        remote2Render.init(Flashphoner.eglBaseContext, null);
+        local2Render.init(Flashphoner.eglBaseContext, null);
+
     }
 
     private void initSecondConnectionButton() {
@@ -455,6 +462,7 @@ public class TwoSessionsActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(mWcsUrl2View.getText().toString());
                     sessionOptions.setRemoteRenderer(remote2Render);
                     sessionOptions.setLocalRenderer(local2Render);
+                    sessionOptions.setAutoInitRenderers(false);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -561,6 +569,7 @@ public class TwoSessionsActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(mWcsUrl1View.getText().toString());
                     sessionOptions.setRemoteRenderer(remote1Render);
                     sessionOptions.setLocalRenderer(local1Render);
+                    sessionOptions.setAutoInitRenderers(false);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -618,7 +627,7 @@ public class TwoSessionsActivity extends AppCompatActivity {
                                     mPublish1Button.setTag(R.string.action_publish);
                                     mConnect1Status.setText(connection.getStatus());
                                     mPlay1Status.setText("");
-                                    if (mConnect2Button.getTag() == null || Integer.valueOf(R.string.action_disconnect).equals(mConnect2Button.getTag())) {
+                                    if (Integer.valueOf(R.string.action_disconnect).equals(mConnect2Button.getTag())) {
                                         mPublish2Button.setEnabled(true);
                                     }
                                 }

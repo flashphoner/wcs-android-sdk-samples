@@ -153,6 +153,7 @@ public class VideoChatActivity extends AppCompatActivity {
                      * WCS server URL and user name are passed when RoomManagerOptions object is created.
                      */
                     RoomManagerOptions roomManagerOptions = new RoomManagerOptions(mWcsUrlView.getText().toString(), mLoginView.getText().toString());
+                    roomManagerOptions.setAutoInitRenderers(false);
 
                     /**
                      * RoomManager object is created with method createRoomManager().
@@ -203,7 +204,6 @@ public class VideoChatActivity extends AppCompatActivity {
                                     while (i.hasNext()) {
                                         Map.Entry<String, ParticipantView> e = i.next();
                                         e.getValue().login.setText("NONE");
-                                        e.getValue().surfaceViewRenderer.release();
                                         i.remove();
                                         freeViews.add(e.getValue());
                                     }
@@ -374,7 +374,6 @@ public class VideoChatActivity extends AppCompatActivity {
                                             public void run() {
                                                 participantView.login.setText("NONE");
                                                 addMessageHistory(participant.getName(), "left");
-                                                participantView.surfaceViewRenderer.release();
                                             }
                                         }
                                 );
@@ -449,7 +448,6 @@ public class VideoChatActivity extends AppCompatActivity {
                             while (i.hasNext()) {
                                 Map.Entry<String, ParticipantView> e = i.next();
                                 e.getValue().login.setText("NONE");
-                                e.getValue().surfaceViewRenderer.release();
                                 i.remove();
                                 freeViews.add(e.getValue());
                             }
@@ -544,6 +542,8 @@ public class VideoChatActivity extends AppCompatActivity {
         localRenderer.setMirror(true);
         localRenderer.requestLayout();
 
+        localRenderer.init(Flashphoner.eglBaseContext, null);
+
 
         SurfaceViewRenderer remote1Render = (SurfaceViewRenderer) findViewById(R.id.remote_video_view);
         PercentFrameLayout remote1RenderLayout = (PercentFrameLayout) findViewById(R.id.remote_video_layout);
@@ -551,6 +551,9 @@ public class VideoChatActivity extends AppCompatActivity {
         remote1Render.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         remote1Render.setMirror(false);
         remote1Render.requestLayout();
+
+        remote1Render.init(Flashphoner.eglBaseContext, null);
+
 
         mParticipantName = (TextView) findViewById(R.id.participant_name);
         freeViews.add(new ParticipantView(remote1Render, mParticipantName));

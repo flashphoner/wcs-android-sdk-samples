@@ -51,7 +51,6 @@ import com.flashphoner.fpwcsapi.webrtc.WebRTCMediaProvider;
 import org.webrtc.RendererCommon;
 import org.webrtc.ScreenCapturerAndroid;
 import org.webrtc.SurfaceViewRenderer;
-import org.webrtc.VideoCapturer;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -74,19 +73,18 @@ public class ScreenSharingActivity extends AppCompatActivity {
     private Session session;
 
     private Stream publishStream;
-    private Stream playStream;
 
     private SurfaceViewRenderer localRender;
     private SurfaceViewRenderer remoteRender;
     private Intent serviceIntent;
 
-    private VideoCapturer videoCapturer;
-
     private Intent mediaProjectionData;
 
     public MediaProjectionManager mediaProjectionManager;
 
-    private Handler handler = new Handler();
+    private MediaProjection mediaProjection;
+
+    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +129,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
         mUseMicRadioButton = findViewById(R.id.use_mic);
 
         Spinner mMicSpinner = findViewById(R.id.spinner_mic);
-        ArrayAdapter<MediaDevice> arrayAdapter = new ArrayAdapter<MediaDevice>(this, android.R.layout.simple_spinner_item, Flashphoner.getMediaDevices().getAudioList());
+        ArrayAdapter<MediaDevice> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Flashphoner.getMediaDevices().getAudioList());
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mMicSpinner.setAdapter(arrayAdapter);
 
@@ -153,21 +151,10 @@ public class ScreenSharingActivity extends AppCompatActivity {
                     url = u.getScheme() + "://" + u.getHost() + ":" + u.getPort();
                     streamName = u.getPath().replaceAll("/", "");
                 } catch (URISyntaxException e) {
-                    mStatusView.setText("Wrong uri");
+                    runOnUiThread(() -> mStatusView.setText("Wrong uri"));
                     return;
                 }
                 mStartButton.setEnabled(false);
-
-                try {
-                    localRender.init(Flashphoner.context, null);
-                } catch (IllegalStateException e) {
-                    //ignore
-                }
-                try {
-                    remoteRender.init(Flashphoner.context, null);
-                } catch (IllegalStateException e) {
-                    //ignore
-                }
 
                 handler.post(() -> start(url, streamName));
             } else {
@@ -182,20 +169,24 @@ public class ScreenSharingActivity extends AppCompatActivity {
         });
 
         localRender = findViewById(R.id.local_video_view);
-        remoteRender = findViewById(R.id.remote_video_view);
+        localRender.setZOrderMediaOverlay(true);
+        localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
 
         PercentFrameLayout localRenderLayout = findViewById(R.id.local_video_layout);
-        PercentFrameLayout remoteRenderLayout = findViewById(R.id.remote_video_layout);
+        localRenderLayout.setPosition(0, 0, 100, 100);
 
-        localRender.setZOrderMediaOverlay(true);
+        localRender.requestLayout();
 
-        remoteRenderLayout.setPosition(0, 0, 100, 100);
+        remoteRender = findViewById(R.id.remote_video_view);
         remoteRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+
+        PercentFrameLayout remoteRenderLayout = findViewById(R.id.remote_video_layout);
+        remoteRenderLayout.setPosition(0, 0, 100, 100);
+
         remoteRender.requestLayout();
 
-        localRenderLayout.setPosition(0, 0, 100, 100);
-        localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
-        localRender.requestLayout();
+        localRender.init(Flashphoner.eglBaseContext, null);
+        remoteRender.init(Flashphoner.eglBaseContext, null);
     }
 
     private void start(String url, String streamName) {
@@ -208,7 +199,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
         SessionOptions sessionOptions = new SessionOptions(url);
         sessionOptions.setLocalRenderer(localRender);
         sessionOptions.setRemoteRenderer(remoteRender);
-
+        sessionOptions.setAutoInitRenderers(false);
         /*
          * Session for connection to WCS server is created with method createSession().
          */
@@ -263,7 +254,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
                         /*
                          * Stream is created with method Session.createStream().
                          */
-                        playStream = session.createStream(streamOptions1);
+                        Stream playStream = session.createStream(streamOptions1);
 
                         /*
                          * Callback function for stream status change is added to display the status.
@@ -296,6 +287,7 @@ public class ScreenSharingActivity extends AppCompatActivity {
 
             @Override
             public void onDisconnection(final Connection connection) {
+                runOnUiThread(() -> mStatusView.setText(connection.getStatus()));
                 handler.post(() -> stop());
             }
         });
@@ -316,24 +308,24 @@ public class ScreenSharingActivity extends AppCompatActivity {
             session.disconnect();
             session = null;
         }
-
-        WebRTCMediaProvider.getInstance().releaseLocalMediaAccess();
+        publishStream = null;
 
         if (serviceIntent != null) {
             stopService(serviceIntent);
             this.serviceIntent = null;
         }
 
-        runOnUiThread(() -> {
-            this.localRender.release();
-            this.localRender.clearImage();
-            this.remoteRender.release();
-            this.remoteRender.clearImage();
+        if (mediaProjection != null) {
+            mediaProjection.stop();
+            mediaProjection = null;
+        }
 
+        WebRTCMediaProvider.getInstance().resetCustomVideoCapturer();
+
+        runOnUiThread(() -> {
             mStartButton.setText(R.string.action_start);
             mStartButton.setTag(R.string.action_start);
             mStartButton.setEnabled(true);
-            mStatusView.setText("");
         });
     }
 
@@ -364,22 +356,25 @@ public class ScreenSharingActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
                 if (ScreenSharingService.ACTION_START.equals(intent.getAction())) {
-                    MediaProjection mediaProjection = null;
-                    if (mUseAudioCheckBox.isChecked() && !mUseMicRadioButton.isChecked() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        mediaProjection = mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, mediaProjectionData);
-                    }
+                    synchronized (ScreenSharingActivity.this) {
+                        if (publishStream != null) {
+                            if (mUseAudioCheckBox.isChecked() && !mUseMicRadioButton.isChecked() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                mediaProjection = mediaProjectionManager.getMediaProjection(Activity.RESULT_OK, mediaProjectionData);
+                            }
 
-                    WebRTCMediaProvider.getInstance().setMediaProjection(mediaProjection);
-                    videoCapturer = new ScreenCapturerAndroid(mediaProjection, mediaProjectionData, new MediaProjection.Callback() {
-                        @Override
-                        public void onStop() {
-                            super.onStop();
+                            WebRTCMediaProvider.getInstance().setMediaProjection(mediaProjection);
+                            WebRTCMediaProvider.getInstance().setCustomVideoCapturer(new ScreenCapturerAndroid(mediaProjection, mediaProjectionData, new MediaProjection.Callback() {
+                                @Override
+                                public void onStop() {
+                                    super.onStop();
+                                    handler.post(ScreenSharingActivity.this::stop);
+                                }
+                            }));
+                            publishStream.publish();
+                        } else {
                             handler.post(ScreenSharingActivity.this::stop);
                         }
-                    });
-                    WebRTCMediaProvider.getInstance().setVideoCapturer(videoCapturer);
-
-                    publishStream.publish();
+                    }
                 } else if (ScreenSharingService.ACTION_STOP.equals(intent.getAction())) {
                     handler.post(ScreenSharingActivity.this::stop);
                 }

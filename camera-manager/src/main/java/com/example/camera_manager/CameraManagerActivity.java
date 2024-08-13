@@ -106,7 +106,7 @@ public class CameraManagerActivity extends AppCompatActivity {
 
         TextView policyTextView = (TextView) findViewById(R.id.privacy_policy);
         policyTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        String policyLink ="<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
+        String policyLink = "<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
         policyTextView.setText(Html.fromHtml(policyLink));
 
         /**
@@ -316,46 +316,6 @@ public class CameraManagerActivity extends AppCompatActivity {
                     String url = mWcsUrlView.getText().toString();
                     final String streamName = mStreamNameView.getText().toString();
 
-                    try {
-                        localRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
-                            @Override
-                            public void onFirstFrameRendered() {
-                            }
-
-                            @Override
-                            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mLocalResolutionView.setText(i + "x" + i1);
-                                    }
-                                });
-                            }
-                        });
-                    } catch (IllegalStateException e) {
-                        //ignore
-                    }
-
-                    try {
-                        remoteRender.init(Flashphoner.context, new RendererCommon.RendererEvents() {
-                            @Override
-                            public void onFirstFrameRendered() {
-                            }
-
-                            @Override
-                            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mRemoteResolutionView.setText(i + "x" + i1);
-                                    }
-                                });
-                            }
-                        });
-                    } catch (IllegalStateException e) {
-                        //ignore
-                    }
-
 
                     /**
                      * The options for connection session are set.
@@ -366,7 +326,7 @@ public class CameraManagerActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(url);
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
-
+                    sessionOptions.setAutoInitRenderers(false);
                     /**
                      * Session for connection to WCS server is created with method createSession().
                      */
@@ -399,7 +359,7 @@ public class CameraManagerActivity extends AppCompatActivity {
                                     List<MediaDevice> videoList = Flashphoner.getMediaDevices().getVideoList();
                                     for (MediaDevice videoDevice : videoList) {
                                         String videoDeviceName = videoDevice.getLabel();
-                                        if (Flashphoner.getCameraEnumerator().isBackFacing(videoDeviceName)) {
+                                        if (Flashphoner.getCameraEnumerator(CameraManagerActivity.this).isBackFacing(videoDeviceName)) {
                                             cameraId = videoDevice.getId();
                                             break;
                                         }
@@ -521,9 +481,7 @@ public class CameraManagerActivity extends AppCompatActivity {
                 }
 
                 View currentFocus = getCurrentFocus();
-                if (currentFocus != null)
-
-                {
+                if (currentFocus != null) {
                     InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
@@ -548,6 +506,38 @@ public class CameraManagerActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+
+        localRender.init(Flashphoner.eglBaseContext, new RendererCommon.RendererEvents() {
+            @Override
+            public void onFirstFrameRendered() {
+            }
+
+            @Override
+            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLocalResolutionView.setText(i + "x" + i1);
+                    }
+                });
+            }
+        });
+
+        remoteRender.init(Flashphoner.eglBaseContext, new RendererCommon.RendererEvents() {
+            @Override
+            public void onFirstFrameRendered() {
+            }
+
+            @Override
+            public void onFrameResolutionChanged(final int i, final int i1, int i2) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRemoteResolutionView.setText(i + "x" + i1);
+                    }
+                });
+            }
+        });
     }
 
     public void selectPng() {
@@ -589,7 +579,7 @@ public class CameraManagerActivity extends AppCompatActivity {
     }
 
     private void changeFlashlightCamera() {
-        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.FLASHLIGHT_CAMERA);
+        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.FLASHLIGHT_CAMERA, this);
         mUseFilter.setEnabled(false);
         mUsePngOverlay.setEnabled(false);
         mPngHeight.setEnabled(false);
@@ -601,7 +591,7 @@ public class CameraManagerActivity extends AppCompatActivity {
 
     private void changeZoomCamera() {
         CameraCapturerFactory.getInstance().setCustomCameraCapturerOptions(zoomCameraCapturerOptions);
-        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM);
+        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM, this);
         mUseFilter.setEnabled(false);
         mUsePngOverlay.setEnabled(false);
         mPngHeight.setEnabled(false);
@@ -613,7 +603,7 @@ public class CameraManagerActivity extends AppCompatActivity {
 
     private void changePngOverlayCamera() {
         CameraCapturerFactory.getInstance().setCustomCameraCapturerOptions(pngOverlayCameraCapturerOptions);
-        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM);
+        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM, this);
         mUseFilter.setEnabled(false);
         mUsePngOverlay.setEnabled(true);
         mPngHeight.setEnabled(true);
@@ -625,7 +615,7 @@ public class CameraManagerActivity extends AppCompatActivity {
 
     private void changeGpuImageCamera() {
         CameraCapturerFactory.getInstance().setCustomCameraCapturerOptions(gpuImageCameraCapturerOptions);
-        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM);
+        CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM, this);
         mUseFilter.setEnabled(true);
         mUsePngOverlay.setEnabled(false);
         mPngHeight.setEnabled(false);
@@ -753,54 +743,54 @@ public class CameraManagerActivity extends AppCompatActivity {
 
     private CustomCameraCapturerOptions zoomCameraCapturerOptions = new CustomCameraCapturerOptions() {
 
-            private String cameraName;
-            private CameraVideoCapturer.CameraEventsHandler eventsHandler;
-            private boolean captureToTexture;
+        private String cameraName;
+        private CameraVideoCapturer.CameraEventsHandler eventsHandler;
+        private boolean captureToTexture;
 
-            @Override
-            public Class<?>[] getCameraConstructorArgsTypes() {
-                return new Class<?>[]{String.class, CameraVideoCapturer.CameraEventsHandler.class, boolean.class};
-            }
+        @Override
+        public Class<?>[] getCameraConstructorArgsTypes() {
+            return new Class<?>[]{String.class, CameraVideoCapturer.CameraEventsHandler.class, boolean.class};
+        }
 
-            @Override
-            public Object[] getCameraConstructorArgs() {
-                return new Object[]{cameraName, eventsHandler, captureToTexture};
-            }
+        @Override
+        public Object[] getCameraConstructorArgs() {
+            return new Object[]{cameraName, eventsHandler, captureToTexture};
+        }
 
-            @Override
-            public void setCameraName(String cameraName) {
-                this.cameraName = cameraName;
-            }
+        @Override
+        public void setCameraName(String cameraName) {
+            this.cameraName = cameraName;
+        }
 
-            @Override
-            public void setEventsHandler(CameraVideoCapturer.CameraEventsHandler eventsHandler) {
-                this.eventsHandler = eventsHandler;
-            }
+        @Override
+        public void setEventsHandler(CameraVideoCapturer.CameraEventsHandler eventsHandler) {
+            this.eventsHandler = eventsHandler;
+        }
 
-            @Override
-            public void setCaptureToTexture(boolean captureToTexture) {
-                this.captureToTexture = captureToTexture;
-            }
+        @Override
+        public void setCaptureToTexture(boolean captureToTexture) {
+            this.captureToTexture = captureToTexture;
+        }
 
-            @Override
-            public String getCameraClassName() {
-                return "org.webrtc.ZoomCameraCapturer";
-            }
+        @Override
+        public String getCameraClassName() {
+            return "org.webrtc.ZoomCameraCapturer";
+        }
 
-            @Override
-            public Class<?>[] getEnumeratorConstructorArgsTypes() {
-                return new Class[0];
-            }
+        @Override
+        public Class<?>[] getEnumeratorConstructorArgsTypes() {
+            return new Class[0];
+        }
 
-            @Override
-            public Object[] getEnumeratorConstructorArgs() {
-                return new Object[0];
-            }
+        @Override
+        public Object[] getEnumeratorConstructorArgs() {
+            return new Object[0];
+        }
 
-            @Override
-            public String getEnumeratorClassName() {
-                return "org.webrtc.ZoomCameraEnumerator";
-            }
+        @Override
+        public String getEnumeratorClassName() {
+            return "org.webrtc.ZoomCameraEnumerator";
+        }
     };
 
     private CustomCameraCapturerOptions pngOverlayCameraCapturerOptions = new CustomCameraCapturerOptions() {
@@ -906,7 +896,6 @@ public class CameraManagerActivity extends AppCompatActivity {
             return "org.webrtc.GPUImageCameraEnumerator";
         }
     };
-
 
 
     private void muteButton() {

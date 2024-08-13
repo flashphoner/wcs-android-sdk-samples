@@ -95,7 +95,7 @@ public class StreamingMinActivity extends AppCompatActivity {
 
         TextView policyTextView = (TextView) findViewById(R.id.privacy_policy);
         policyTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        String policyLink ="<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
+        String policyLink = "<a href=https://flashphoner.com/flashphoner-privacy-policy-for-android-tools/>Privacy Policy</a>";
         policyTextView.setText(Html.fromHtml(policyLink));
 
         /**
@@ -125,7 +125,7 @@ public class StreamingMinActivity extends AppCompatActivity {
                     sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
-
+                    sessionOptions.setAutoInitRenderers(false);
                     /**
                      * Uncomment this code to use your own RTCConfiguration. For example, you can use custom TURN server
                      */
@@ -268,7 +268,7 @@ public class StreamingMinActivity extends AppCompatActivity {
                 Stream stream = session.createStream(streamOptions);
                 stream.setAvailableStreamCallback(new AvailableStreamCallback() {
                     @Override
-                    public void on(boolean isAvailable,  String info) {
+                    public void on(boolean isAvailable, String info) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -291,7 +291,7 @@ public class StreamingMinActivity extends AppCompatActivity {
                     return;
                 }
                 mJsonErrorTextView.setVisibility(View.INVISIBLE);
-                String dataStr =  mDataEditText.getText().toString();
+                String dataStr = mDataEditText.getText().toString();
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, Object> data = null;
                 try {
@@ -351,36 +351,36 @@ public class StreamingMinActivity extends AppCompatActivity {
                                         mPlayButton.setTag(R.string.action_play);
                                     }
                                     mPlayButton.setEnabled(true);
-                                    if (StreamStatus.FAILED.equals(streamStatus)){
-                                        switch (stream.getInfo()){
+                                    if (StreamStatus.FAILED.equals(streamStatus)) {
+                                        switch (stream.getInfo()) {
                                             case StreamStatusInfo.SESSION_DOES_NOT_EXIST:
-                                                mPlayStatus.setText(streamStatus+": Actual session does not exist");
+                                                mPlayStatus.setText(streamStatus + ": Actual session does not exist");
                                                 break;
                                             case StreamStatusInfo.STOPPED_BY_PUBLISHER_STOP:
-                                                mPlayStatus.setText(streamStatus+": Related publisher stopped its stream or lost connection");
+                                                mPlayStatus.setText(streamStatus + ": Related publisher stopped its stream or lost connection");
                                                 break;
                                             case StreamStatusInfo.SESSION_NOT_READY:
-                                                mPlayStatus.setText(streamStatus+": Session is not initialized or terminated on play ordinary stream");
+                                                mPlayStatus.setText(streamStatus + ": Session is not initialized or terminated on play ordinary stream");
                                                 break;
                                             case StreamStatusInfo.RTSP_STREAM_NOT_FOUND:
-                                                mPlayStatus.setText(streamStatus+": Rtsp stream not found where agent received '404-Not Found'");
+                                                mPlayStatus.setText(streamStatus + ": Rtsp stream not found where agent received '404-Not Found'");
                                                 break;
                                             case StreamStatusInfo.FAILED_TO_CONNECT_TO_RTSP_STREAM:
-                                                mPlayStatus.setText(streamStatus+": Failed to connect to rtsp stream");
+                                                mPlayStatus.setText(streamStatus + ": Failed to connect to rtsp stream");
                                                 break;
                                             case StreamStatusInfo.FILE_NOT_FOUND:
-                                                mPlayStatus.setText(streamStatus+": File does not exist, check filename");
+                                                mPlayStatus.setText(streamStatus + ": File does not exist, check filename");
                                                 break;
                                             case StreamStatusInfo.FILE_HAS_WRONG_FORMAT:
-                                                mPlayStatus.setText(streamStatus+": File has wrong format on play vod, this format is not supported");
+                                                mPlayStatus.setText(streamStatus + ": File has wrong format on play vod, this format is not supported");
                                                 break;
                                             case StreamStatusInfo.TRANSCODING_REQUIRED_BUT_DISABLED:
-                                                mPlayStatus.setText(streamStatus+": Transcoding required, but disabled in settings");
+                                                mPlayStatus.setText(streamStatus + ": Transcoding required, but disabled in settings");
                                                 break;
                                             case StreamStatusInfo.NO_AVAILABLE_TRANSCODERS:
-                                                mPlayStatus.setText(streamStatus+": No available transcoders for stream");
+                                                mPlayStatus.setText(streamStatus + ": No available transcoders for stream");
                                                 break;
-                                            default:{
+                                            default: {
                                                 mPlayStatus.setText(stream.getInfo());
                                             }
                                         }
@@ -440,29 +440,19 @@ public class StreamingMinActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+
+        localRender.init(Flashphoner.eglBaseContext, null);
+        remoteRender.init(Flashphoner.eglBaseContext, null);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        try {
-            localRender.init(Flashphoner.context, null);
-        } catch (IllegalStateException e) {
-            //ignore
-        }
-        try {
-            remoteRender.init(Flashphoner.context, null);
-        } catch (IllegalStateException e) {
-            //ignore
-        }
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        localRender.release();
-        remoteRender.release();
     }
 
     @Override

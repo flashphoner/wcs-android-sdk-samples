@@ -268,6 +268,7 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
+                    sessionOptions.setAutoInitRenderers(false);
                     session = Flashphoner.createSession(sessionOptions);
                     session.on(new SessionEvent() {
                         @Override
@@ -528,6 +529,10 @@ public class PhoneMinVideoActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+
+        remoteRender.init(Flashphoner.eglBaseContext, null);
+        localRender.init(Flashphoner.eglBaseContext, null);
+
     }
 
     @Override

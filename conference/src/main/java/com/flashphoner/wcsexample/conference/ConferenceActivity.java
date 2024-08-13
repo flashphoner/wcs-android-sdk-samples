@@ -159,6 +159,7 @@ public class ConferenceActivity extends AppCompatActivity {
                      * WCS server URL and user name are passed when RoomManagerOptions object is created.
                      */
                     RoomManagerOptions roomManagerOptions = new RoomManagerOptions(mWcsUrlView.getText().toString(), mLoginView.getText().toString());
+                    roomManagerOptions.setAutoInitRenderers(false);
 
                     /**
                      * RoomManager object is created with method createRoomManager().
@@ -209,7 +210,6 @@ public class ConferenceActivity extends AppCompatActivity {
                                     while (i.hasNext()) {
                                         Map.Entry<String, ParticipantView> e = i.next();
                                         e.getValue().login.setText("NONE");
-                                        e.getValue().surfaceViewRenderer.release();
                                         i.remove();
                                         freeViews.add(e.getValue());
                                     }
@@ -380,7 +380,6 @@ public class ConferenceActivity extends AppCompatActivity {
                                             public void run() {
                                                 participantView.login.setText("NONE");
                                                 addMessageHistory(participant.getName(), "left");
-                                                participantView.surfaceViewRenderer.release();
                                             }
                                         }
                                 );
@@ -455,7 +454,6 @@ public class ConferenceActivity extends AppCompatActivity {
                             while (i.hasNext()) {
                                 Map.Entry<String, ParticipantView> e = i.next();
                                 e.getValue().login.setText("NONE");
-                                e.getValue().surfaceViewRenderer.release();
                                 i.remove();
                                 freeViews.add(e.getValue());
                             }
@@ -551,6 +549,8 @@ public class ConferenceActivity extends AppCompatActivity {
         localRenderer.setMirror(true);
         localRenderer.requestLayout();
 
+        localRenderer.init(Flashphoner.eglBaseContext, null);
+
 
         SurfaceViewRenderer remote1Render = (SurfaceViewRenderer) findViewById(R.id.remote1_video_view);
         PercentFrameLayout remote1RenderLayout = (PercentFrameLayout) findViewById(R.id.remove1_video_layout);
@@ -559,12 +559,18 @@ public class ConferenceActivity extends AppCompatActivity {
         remote1Render.setMirror(false);
         remote1Render.requestLayout();
 
+        remote1Render.init(Flashphoner.eglBaseContext, null);
+
+
         SurfaceViewRenderer remote2Render = (SurfaceViewRenderer) findViewById(R.id.remote2_video_view);
         PercentFrameLayout remote2RenderLayout = (PercentFrameLayout) findViewById(R.id.remote2_video_layout);
         remote2RenderLayout.setPosition(0, 0, 100, 100);
         remote2Render.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         remote2Render.setMirror(false);
         remote2Render.requestLayout();
+
+        remote2Render.init(Flashphoner.eglBaseContext, null);
+
 
 
         mParticipant1Name = (TextView) findViewById(R.id.participant1_name);

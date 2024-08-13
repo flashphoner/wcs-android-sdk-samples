@@ -95,6 +95,7 @@ public class TwoPlayersActivity extends AppCompatActivity {
                      */
                     SessionOptions sessionOptions = new SessionOptions(mWcsUrlView.getText().toString());
                     sessionOptions.setRemoteRenderer(remote2Render);
+                    sessionOptions.setAutoInitRenderers(false);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -352,6 +353,10 @@ public class TwoPlayersActivity extends AppCompatActivity {
         remote1Render.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         remote1Render.setMirror(false);
         remote1Render.requestLayout();
+
+        remote1Render.init(Flashphoner.eglBaseContext, null);
+        remote2Render.init(Flashphoner.eglBaseContext, null);
+
     }
 
     @Override

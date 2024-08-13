@@ -113,6 +113,7 @@ public class StreamerActivity extends AppCompatActivity {
                     SessionOptions sessionOptions = new SessionOptions(url);
                     sessionOptions.setLocalRenderer(localRender);
                     sessionOptions.setRemoteRenderer(remoteRender);
+                    sessionOptions.setAutoInitRenderers(false);
 
                     /**
                      * Session for connection to WCS server is created with method createSession().
@@ -272,6 +273,10 @@ public class StreamerActivity extends AppCompatActivity {
         localRender.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
         localRender.setMirror(true);
         localRender.requestLayout();
+
+        localRender.init(Flashphoner.eglBaseContext, null);
+        remoteRender.init(Flashphoner.eglBaseContext, null);
+
     }
 
     @Override
