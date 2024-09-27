@@ -448,6 +448,21 @@ public class MediaDevicesActivity extends AppCompatActivity {
         spinnerAdapter.add("local");
         spinnerAdapter.add("remote");
         spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (id == 0) {
+                    mSwitchRendererButton.setEnabled(mSendVideo.isChecked() && publishStream != null && publishStream.isPublished());
+                } else {
+                    mSwitchRendererButton.setEnabled(mReceiveVideo.isChecked() && playStream != null && !playStream.isPublished());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         localRender.setZOrderMediaOverlay(true);
 
@@ -491,28 +506,20 @@ public class MediaDevicesActivity extends AppCompatActivity {
 
     private void switchRender() {
         if (spinner.getSelectedItemId() == 0) {
-            if (isSwitchRemoteRenderer) {
-                playStream.switchRenderer(remoteRender);
-                isSwitchRemoteRenderer = false;
-            }
-            if (!isSwitchLocalRenderer) {
-                publishStream.switchRenderer(newSurfaceRenderer);
-                isSwitchLocalRenderer = true;
-            } else {
-                publishStream.switchRenderer(localRender);
-                isSwitchLocalRenderer = false;
-            }
-        } else {
             if (isSwitchLocalRenderer) {
                 publishStream.switchRenderer(localRender);
                 isSwitchLocalRenderer = false;
-            }
-            if (!isSwitchRemoteRenderer) {
-                playStream.switchRenderer(newSurfaceRenderer);
-                isSwitchRemoteRenderer = true;
             } else {
+                publishStream.switchRenderer(newSurfaceRenderer);
+                isSwitchLocalRenderer = true;
+            }
+        } else {
+            if (isSwitchRemoteRenderer) {
                 playStream.switchRenderer(remoteRender);
                 isSwitchRemoteRenderer = false;
+            } else {
+                playStream.switchRenderer(newSurfaceRenderer);
+                isSwitchRemoteRenderer = true;
             }
         }
     }
@@ -1012,7 +1019,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mMuteAudio.setEnabled(true);
         mMuteVideo.setEnabled(true);
         if (mSendVideo.isChecked()) {
-            mSwitchRendererButton.setEnabled(true);
+            if (spinner.getSelectedItemId() == 0) {
+                mSwitchRendererButton.setEnabled(true);
+            }
+
             mSwitchCameraButton.setEnabled(true);
         }
         if (Flashphoner.isFlashlightSupport()) {
@@ -1031,17 +1041,21 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mPublishButton.setEnabled(true);
         mMuteAudio.setEnabled(false);
         mMuteVideo.setEnabled(false);
-        mSwitchRendererButton.setEnabled(false);
         mSwitchCameraButton.setEnabled(false);
         mSwitchFlashlightButton.setEnabled(false);
         mMuteAudio.setChecked(false);
         mMuteVideo.setChecked(false);
         turnOffFlashlight();
 
+        if (spinner.getSelectedItemId() == 0) {
+            mSwitchRendererButton.setEnabled(false);
+        }
+
         if (statTimer != null) {
             statTimer.cancel();
             statTimer = null;
         }
+        this.publishStream = null;
     }
 
     private void onPlayed(Stream stream) {
@@ -1049,17 +1063,27 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mPlayButton.setTag(R.string.action_stop_play);
         mPlayButton.setEnabled(true);
 
+        if (mReceiveVideo.isChecked() && spinner.getSelectedItemId() == 1) {
+            mSwitchRendererButton.setEnabled(true);
+        }
+
         mAudioMuteStatus.setText(getString(R.string.audio_mute_status) + String.valueOf(stream.getAudioState().isMuted()));
         mVideoMuteStatus.setText(getString(R.string.video_mute_status) + String.valueOf(stream.getVideoState().isMuted()));
     }
 
     private void onStoppedPlay() {
+        if (spinner.getSelectedItemId() == 1) {
+            mSwitchRendererButton.setEnabled(false);
+        }
+
         mPlayButton.setText(R.string.action_play);
         mPlayButton.setTag(R.string.action_play);
         mPlayButton.setEnabled(true);
         mMutedName.setText(getString(R.string.muted_name));
         mAudioMuteStatus.setText(getString(R.string.audio_mute_status));
         mVideoMuteStatus.setText(getString(R.string.video_mute_status));
+
+        this.playStream = null;
     }
 
     private void onStoppedTest() {
