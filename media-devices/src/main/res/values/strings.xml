@@ -18,6 +18,7 @@
     <string name="action_connect">Connect</string>
     <string name="action_disconnect">Disconnect</string>
     <string name="action_switch_camera">Switch Camera</string>
+    <string name="action_switch_to_camera">Switch to Camera</string>
     <string name="turn_on_flashlight">Turn on flashlight</string>
     <string name="turn_off_flashlight">Turn off flashlight</string>
     <string name="action_switch_renderer">Switch Renderer</string>

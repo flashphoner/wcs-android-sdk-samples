@@ -52,7 +52,6 @@ import com.flashphoner.fpwcsapi.session.Transport;
 import com.flashphoner.fpwcsapi.webrtc.MediaConnectionOptions;
 import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
 import com.flashphoner.fpwcsapi.ws.ConnectionQuality;
-import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.RendererCommon;
@@ -81,13 +80,15 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private CheckBox mSendAudio;
     private Switch mMuteAudio;
     private Switch mMuteVideo;
-    private LabelledSpinner mCameraCapturer;
-    private LabelledSpinner mMicSpinner;
+    private Spinner mCameraCapturer;
+    private Spinner mMicSpinner;
     private TextView mMicLevel;
     private SoundMeter soundMeter;
-    private LabelledSpinner mCameraSpinner;
-    private LabelledSpinner mStripStreamerCodec;
-    private LabelledSpinner mStripPlayerCodec;
+    private Spinner mCameraSpinner;
+    private Spinner mSwitchToCameraSpinner;
+    private Button mSwitchCameraButton;
+    private Spinner mStripStreamerCodec;
+    private Spinner mStripPlayerCodec;
     private EditText mCameraFPS;
     private EditText mWidth;
     private EditText mHeight;
@@ -109,15 +110,15 @@ public class MediaDevicesActivity extends AppCompatActivity {
     private EditText mPlayBitrate;
     private CheckBox mDefaultPlayQuality;
     private EditText mPlayQuality;
-    private LabelledSpinner mAudioOutput;
-    private LabelledSpinner mTransportOutput;
-    private LabelledSpinner mTransportInput;
+    private Spinner mAudioOutput;
+    private Spinner mTransportOutput;
+    private Spinner mTransportInput;
 
     private Button mTestButton;
     private Button mConnectButton;
     private Button mPublishButton;
     private Button mPlayButton;
-    private Button mSwitchCameraButton;
+    private Button mSwitchCameraLoopButton;
     private Button mSwitchRendererButton;
     private Button mSwitchFlashlightButton;
 
@@ -181,19 +182,60 @@ public class MediaDevicesActivity extends AppCompatActivity {
          * Method getMediaDevices(), which returns MediaDeviceList object, is used to request list of all available media devices.
          * Then methods MediaDeviceList.getAudioList() and MediaDeviceList.getVideoList() are used to list available microphones and cameras.
          */
-        mMicSpinner = (LabelledSpinner) findViewById(R.id.microphone);
-        mMicSpinner.setItemsArray(Flashphoner.getMediaDevices().getAudioList());
+        mMicSpinner = (Spinner) findViewById(R.id.microphone);
+        ArrayAdapter<MediaDevice> micAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                Flashphoner.getMediaDevices().getAudioList()
+        );
+        micAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mMicSpinner.setAdapter(micAdapter);
 
         mMicLevel = (TextView) findViewById(R.id.microphone_level);
 
-        mCameraSpinner = (LabelledSpinner) findViewById(R.id.camera);
-        mCameraSpinner.setItemsArray(Flashphoner.getMediaDevices().getVideoList());
+        mCameraSpinner = (Spinner) findViewById(R.id.camera);
+        ArrayAdapter<MediaDevice> camAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                Flashphoner.getMediaDevices().getVideoList()
+        );
+        camAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCameraSpinner.setAdapter(camAdapter);
 
-        mStripStreamerCodec = (LabelledSpinner) findViewById(R.id.strip_streamer_codec);
-        mStripStreamerCodec.setItemsArray(new String[]{"", "H264", "VP8"});
+        mSwitchCameraButton = findViewById(R.id.switch_camera_button);
+        mSwitchCameraButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchToCamera( ((MediaDevice) mSwitchToCameraSpinner.getSelectedItem()).getLabel() );
+            }
 
-        mStripPlayerCodec = (LabelledSpinner) findViewById(R.id.strip_player_codec);
-        mStripPlayerCodec.setItemsArray(new String[]{"", "H264", "VP8"});
+        });
+        mSwitchToCameraSpinner = findViewById(R.id.spinner_switch_camera);
+        ArrayAdapter<MediaDevice> switchCamAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                Flashphoner.getMediaDevices().getVideoList()
+        );
+        switchCamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSwitchToCameraSpinner.setAdapter(switchCamAdapter);
+
+        mStripStreamerCodec = (Spinner) findViewById(R.id.strip_streamer_codec);
+        ArrayAdapter<String> streamerCodecAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"", "H264", "VP8"}
+        );
+        streamerCodecAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mStripStreamerCodec.setAdapter(streamerCodecAdapter);
+
+        mStripPlayerCodec = (Spinner) findViewById(R.id.strip_player_codec);
+        ArrayAdapter<String> playerCodecAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"", "H264", "VP8"}
+        );
+        playerCodecAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mStripPlayerCodec.setAdapter(playerCodecAdapter);
 
         mCameraFPS = (EditText) findViewById(R.id.camera_fps);
         mWidth = (EditText) findViewById(R.id.camera_width);
@@ -268,11 +310,11 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
         mPlayQuality = (EditText) findViewById(R.id.play_quality);
-        mAudioOutput = (LabelledSpinner) findViewById(R.id.audio_output);
-        mAudioOutput.setOnItemChosenListener(new LabelledSpinner.OnItemChosenListener() {
+        mAudioOutput = (Spinner) findViewById(R.id.audio_output);
+        mAudioOutput.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemChosen(View labelledSpinner, AdapterView<?> adapterView, View itemView, int position, long id) {
-                String audioType = getResources().getStringArray(R.array.audio_output)[position];
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String audioType = (String) adapterView.getItemAtPosition(i);
                 switch (audioType) {
                     case "speakerphone":
                         Flashphoner.getAudioManager().setUseSpeakerPhone(true);
@@ -288,13 +330,13 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingChosen(View labelledSpinner, AdapterView<?> adapterView) {
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
 
-        mTransportOutput = (LabelledSpinner) findViewById(R.id.transport_output);
-        mTransportInput = (LabelledSpinner) findViewById(R.id.transport_input);
+        mTransportOutput = (Spinner) findViewById(R.id.transport_output);
+        mTransportInput = (Spinner) findViewById(R.id.transport_input);
         mAudioMuteStatus = (TextView) findViewById(R.id.audio_mute_status);
         mVideoMuteStatus = (TextView) findViewById(R.id.video_mute_status);
         mMutedName = (TextView) findViewById(R.id.muted_name);
@@ -345,7 +387,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
         });
 
-        mSwitchCameraButton = (Button) findViewById(R.id.switch_camera_button);
+        mSwitchCameraLoopButton = (Button) findViewById(R.id.switch_camera_loop_button);
         mSwitchRendererButton = (Button) findViewById(R.id.switch_renderer_button);
         mSwitchFlashlightButton = (Button) findViewById(R.id.switch_flashlight_button);
 
@@ -358,10 +400,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
         /**
          * Connection to server will be established and stream will be published when Start button is clicked.
          */
-        mSwitchCameraButton.setOnClickListener(new OnClickListener() {
+        mSwitchCameraLoopButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                switchCamera();
+                switchToCamera();
             }
 
         });
@@ -421,15 +463,15 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mMuteVideo.setEnabled(false);
 
         CameraCapturerFactory.getInstance().setCustomCameraCapturerOptions(createCustomCameraCapturerOptions());
-        mCameraCapturer = (LabelledSpinner) findViewById(R.id.camera_capturer);
-        mCameraCapturer.setOnItemChosenListener(new LabelledSpinner.OnItemChosenListener() {
+        mCameraCapturer = (Spinner) findViewById(R.id.camera_capturer);
+        mCameraCapturer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemChosen(View labelledSpinner, AdapterView<?> adapterView, View itemView, int position, long id) {
-                chooseCameraCapturer(position);
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                chooseCameraCapturer(i);
             }
 
             @Override
-            public void onNothingChosen(View labelledSpinner, AdapterView<?> adapterView) {
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
@@ -501,7 +543,13 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 CameraCapturerFactory.getInstance().setCameraType(CameraCapturerFactory.CameraType.CUSTOM, this);
                 break;
         }
-        mCameraSpinner.setItemsArray(Flashphoner.getMediaDevices().getVideoList());
+        ArrayAdapter<MediaDevice> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                Flashphoner.getMediaDevices().getVideoList()
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCameraSpinner.setAdapter(adapter);
     }
 
     private void switchRender() {
@@ -524,7 +572,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         }
     }
 
-    private void switchCamera() {
+    private void switchToCamera() {
         if (publishStream != null) {
             turnOffFlashlight();
             muteButton();
@@ -554,6 +602,38 @@ public class MediaDevicesActivity extends AppCompatActivity {
                     });
                 }
             });
+        }
+    }
+
+    private void switchToCamera(String name) {
+        if (publishStream != null) {
+            turnOffFlashlight();
+            muteButton();
+            publishStream.switchCamera(new CameraSwitchHandler() {
+                @Override
+                public void onCameraSwitchDone(boolean var1) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mConnectButton.getTag() == null || Integer.valueOf(R.string.action_disconnect).equals(mConnectButton.getTag())) {
+                                onConnected();
+                                onPublished();
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onCameraSwitchError(String var1) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            onConnected();
+                            onPublished();
+                        }
+                    });
+                }
+            }, name);
         }
     }
 
@@ -712,9 +792,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
             StreamOptions streamOptions = new StreamOptions(streamName);
             Constraints constraints = getConstraints();
             streamOptions.setConstraints(constraints);
-            String[] stripCodec = {(String) mStripStreamerCodec.getSpinner().getSelectedItem()};
+            String[] stripCodec = {(String) mStripStreamerCodec.getSelectedItem()};
             streamOptions.setStripCodecs(stripCodec);
-            streamOptions.setTransport(Transport.valueOf(mTransportOutput.getSpinner().getSelectedItem().toString()));
+            streamOptions.setTransport(Transport.valueOf(mTransportOutput.getSelectedItem().toString()));
 
             /**
              * Stream is created with method Session.createStream().
@@ -811,9 +891,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
                 audioConstraints = new AudioConstraints();
             }
             streamOptions.setConstraints(new Constraints(audioConstraints, videoConstraints));
-            String[] stripCodec = {(String) mStripPlayerCodec.getSpinner().getSelectedItem()};
+            String[] stripCodec = {(String) mStripPlayerCodec.getSelectedItem()};
             streamOptions.setStripCodecs(stripCodec);
-            streamOptions.setTransport(Transport.valueOf(mTransportInput.getSpinner().getSelectedItem().toString()));
+            streamOptions.setTransport(Transport.valueOf(mTransportInput.getSelectedItem().toString()));
             /**
              * Stream is created with method Session.createStream().
              */
@@ -987,9 +1067,10 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mPlayButton.setEnabled(false);
         mTestButton.setEnabled(false);
         mSwitchCameraButton.setEnabled(false);
+        mSwitchCameraLoopButton.setEnabled(false);
         mSwitchFlashlightButton.setEnabled(false);
         mSwitchRendererButton.setEnabled(false);
-        mCameraCapturer.getSpinner().setEnabled(false);
+        mCameraCapturer.setEnabled(false);
     }
 
     private void onConnected() {
@@ -1009,7 +1090,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         onStoppedPlay();
         mPublishButton.setEnabled(false);
         mPlayButton.setEnabled(false);
-        mCameraCapturer.getSpinner().setEnabled(true);
+        mCameraCapturer.setEnabled(true);
     }
 
     private void onPublished() {
@@ -1024,6 +1105,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
             }
 
             mSwitchCameraButton.setEnabled(true);
+            mSwitchCameraLoopButton.setEnabled(true);
         }
         if (Flashphoner.isFlashlightSupport()) {
             mSwitchFlashlightButton.setEnabled(true);
@@ -1042,6 +1124,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mMuteAudio.setEnabled(false);
         mMuteVideo.setEnabled(false);
         mSwitchCameraButton.setEnabled(false);
+        mSwitchCameraLoopButton.setEnabled(false);
         mSwitchFlashlightButton.setEnabled(false);
         mMuteAudio.setChecked(false);
         mMuteVideo.setChecked(false);
@@ -1091,8 +1174,9 @@ public class MediaDevicesActivity extends AppCompatActivity {
         mConnectButton.setTag(R.string.action_connect);
         mConnectButton.setEnabled(true);
         mTestButton.setEnabled(true);
-        mCameraCapturer.getSpinner().setEnabled(true);
+        mCameraCapturer.setEnabled(true);
         mSwitchCameraButton.setEnabled(false);
+        mSwitchCameraLoopButton.setEnabled(false);
         mSwitchRendererButton.setEnabled(false);
         mSwitchFlashlightButton.setEnabled(false);
         mMuteAudio.setEnabled(false);
@@ -1134,7 +1218,7 @@ public class MediaDevicesActivity extends AppCompatActivity {
         VideoConstraints videoConstraints = null;
         if (mSendVideo.isChecked()) {
             videoConstraints = new VideoConstraints();
-            videoConstraints.setCameraId(((MediaDevice) mCameraSpinner.getSpinner().getSelectedItem()).getId());
+            videoConstraints.setCameraId(((MediaDevice) mCameraSpinner.getSelectedItem()).getId());
             if (mCameraFPS.getText().length() > 0) {
                 videoConstraints.setVideoFps(Integer.parseInt(mCameraFPS.getText().toString()));
             }

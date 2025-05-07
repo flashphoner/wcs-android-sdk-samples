@@ -63,12 +63,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/microphone"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="@string/prompt_microphone" />
+                        android:hint="@string/prompt_microphone">
+
+                        <Spinner
+                            android:id="@+id/microphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:id="@+id/microphone_level"
@@ -131,12 +136,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/camera"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="@string/prompt_camera" />
+                        android:hint="@string/prompt_camera">
+
+                        <Spinner
+                            android:id="@+id/camera"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
@@ -227,12 +237,17 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/strip_streamer_codec"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="@string/prompt_codec" />
+                        android:hint="@string/prompt_codec">
+
+                        <Spinner
+                            android:id="@+id/strip_streamer_codec"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <Switch
                         android:layout_width="match_parent"
@@ -240,21 +255,31 @@
                         android:text="@string/mute_video"
                         android:id="@+id/mute_video"/>
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/transport_output"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="@string/prompt_transport"
-                        ls:spinnerEntries="@array/transport"/>
+                        android:hint="@string/prompt_transport">
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/camera_capturer"
+                        <Spinner
+                            android:id="@+id/transport_output"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/transport"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="Camera capturer"
-                        ls:spinnerEntries="@array/camera_capturer"/>
+                        android:hint="Camera capturer">
+
+                        <Spinner
+                            android:id="@+id/camera_capturer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/camera_capturer"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
@@ -347,12 +372,17 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/strip_player_codec"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="@string/prompt_codec" />
+                        android:hint="@string/prompt_codec">
+
+                        <Spinner
+                            android:id="@+id/strip_player_codec"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <CheckBox
                         android:id="@+id/play_bitrate_default"
@@ -402,21 +432,31 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/audio_output"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="Audio output"
-                        ls:spinnerEntries="@array/audio_output"/>
+                        android:hint="Audio output">
 
-                    <com.satsuware.usefulviews.LabelledSpinner
-                        android:id="@+id/transport_input"
+                        <Spinner
+                            android:id="@+id/audio_output"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/audio_output"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        ls:labelText="@string/prompt_transport"
-                        ls:spinnerEntries="@array/transport"/>
+                        android:hint="@string/prompt_transport">
+
+                        <Spinner
+                            android:id="@+id/transport_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/transport"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:id="@+id/muted_name"
@@ -514,7 +554,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/switch_camera_button"
+                android:id="@+id/switch_camera_loop_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -522,6 +562,29 @@
                 android:text="@string/action_switch_camera"
                 android:enabled="false"
                 android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/switch_camera_button"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/action_switch_to_camera"
+                    android:enabled="false"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/spinner_switch_camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="16dp"></Spinner>
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/switch_flashlight_button"
