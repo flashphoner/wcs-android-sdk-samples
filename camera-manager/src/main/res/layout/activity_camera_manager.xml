@@ -124,13 +124,18 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.satsuware.usefulviews.LabelledSpinner
-                android:id="@+id/camera_capturer"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                ls:labelText="Camera capturer"
-                ls:spinnerEntries="@array/camera_capturer"/>
+                android:hint="Camera capturer">
+
+                <Spinner
+                    android:id="@+id/camera_capturer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/camera_capturer"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <SeekBar
                 android:id="@+id/zoom_seekBar"

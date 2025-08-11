@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,7 +37,6 @@ import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 import com.flashphoner.fpwcsapi.session.Transport;
-import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.webrtc.RendererCommon;
 
@@ -58,7 +58,7 @@ public class McuClientActivity extends AppCompatActivity {
     private TextView mStatusView;
     private CheckBox mSendAudio;
     private CheckBox mSendVideo;
-    private LabelledSpinner mTransportOutput;
+    private Spinner mTransportOutput;
     private Button mStartButton;
     private Session session;
     private Stream publishStream;
@@ -91,7 +91,7 @@ public class McuClientActivity extends AppCompatActivity {
         mSendAudio = (CheckBox) findViewById(R.id.send_audio);
         mSendVideo = (CheckBox) findViewById(R.id.send_video);
         mStartButton = (Button) findViewById(R.id.connect_button);
-        mTransportOutput = (LabelledSpinner) findViewById(R.id.transport_output);
+        mTransportOutput = (Spinner) findViewById(R.id.transport_output);
 
         /**
          * Connection to server will be established and stream will be published when Start button is clicked.
@@ -148,7 +148,7 @@ public class McuClientActivity extends AppCompatActivity {
                                     StreamOptions streamOptions = new StreamOptions(publishStreamName);
                                     Constraints constraints = getConstraints();
                                     streamOptions.setConstraints(constraints);
-                                    streamOptions.setTransport(Transport.valueOf(mTransportOutput.getSpinner().getSelectedItem().toString()));
+                                    streamOptions.setTransport(Transport.valueOf(mTransportOutput.getSelectedItem().toString()));
 
                                     /**
                                      * Stream is created with method Session.createStream().
@@ -171,7 +171,7 @@ public class McuClientActivity extends AppCompatActivity {
                                                          */
                                                         String playStreamName = roomName + "-" + login + roomName;
                                                         StreamOptions streamOptions = new StreamOptions(playStreamName);
-                                                        streamOptions.setTransport(Transport.valueOf(mTransportOutput.getSpinner().getSelectedItem().toString()));
+                                                        streamOptions.setTransport(Transport.valueOf(mTransportOutput.getSelectedItem().toString()));
                                                         playStream = session.createStream(streamOptions);
 
                                                         /**

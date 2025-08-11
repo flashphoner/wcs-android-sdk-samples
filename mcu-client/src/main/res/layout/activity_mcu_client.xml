@@ -59,13 +59,18 @@
                 android:checked="true"
                 android:text="@string/send_video" />
 
-            <com.satsuware.usefulviews.LabelledSpinner
-                android:id="@+id/transport_output"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                ls:labelText="@string/prompt_transport"
-                ls:spinnerEntries="@array/transport" />
+                android:hint="@string/prompt_transport">
+
+                <Spinner
+                    android:id="@+id/transport_output"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/transport"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/status"

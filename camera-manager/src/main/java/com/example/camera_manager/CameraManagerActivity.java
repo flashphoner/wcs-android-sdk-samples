@@ -24,6 +24,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -48,7 +49,6 @@ import com.flashphoner.fpwcsapi.session.Stream;
 import com.flashphoner.fpwcsapi.session.StreamOptions;
 import com.flashphoner.fpwcsapi.session.StreamStatusEvent;
 import com.flashphoner.fpwcsapi.webrtc.MediaDevice;
-import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.webrtc.CameraVideoCapturer;
 import org.webrtc.FlashlightCameraCapturer;
@@ -76,7 +76,7 @@ public class CameraManagerActivity extends AppCompatActivity {
     private CheckBox mUsePngOverlay;
     private SeekBar mZoomSeekBar;
     private Button mSwitchFlashlightButton;
-    private LabelledSpinner mCameraCapturer;
+    private Spinner mCameraCapturer;
     private EditText mPngYPosition;
     private EditText mPngXPosition;
     private EditText mPngWidth;
@@ -119,11 +119,12 @@ public class CameraManagerActivity extends AppCompatActivity {
         mWcsUrlView.setText(sharedPref.getString("wcs_url", getString(R.string.wcs_url)));
         mStreamNameView = (EditText) findViewById(R.id.stream_name);
         mStatusView = (TextView) findViewById(R.id.status);
-        mCameraCapturer = (LabelledSpinner) findViewById(R.id.camera_capturer);
-        mCameraCapturer.setOnItemChosenListener(new LabelledSpinner.OnItemChosenListener() {
+        mCameraCapturer = (Spinner) findViewById(R.id.camera_capturer);
+        mCameraCapturer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
-            public void onItemChosen(View labelledSpinner, AdapterView<?> adapterView, View itemView, int position, long id) {
-                String captureType = getResources().getStringArray(R.array.camera_capturer)[position];
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String captureType = (String) adapterView.getItemAtPosition(i);
                 switch (captureType) {
                     case "Flashlight":
                         changeFlashlightCamera();
@@ -141,7 +142,7 @@ public class CameraManagerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingChosen(View labelledSpinner, AdapterView<?> adapterView) {
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
@@ -900,7 +901,7 @@ public class CameraManagerActivity extends AppCompatActivity {
 
     private void muteButton() {
         mStartButton.setEnabled(false);
-        mCameraCapturer.getSpinner().setEnabled(false);
+        mCameraCapturer.setEnabled(false);
     }
 
     private void onStarted() {
@@ -914,7 +915,7 @@ public class CameraManagerActivity extends AppCompatActivity {
         mStartButton.setText(R.string.action_start);
         mStartButton.setTag(R.string.action_start);
         turnOffFlashlight();
-        mCameraCapturer.getSpinner().setEnabled(true);
+        mCameraCapturer.setEnabled(true);
         mStartButton.setEnabled(true);
         mCameraCapturer.setEnabled(true);
         mSwitchFlashlightButton.setEnabled(false);
